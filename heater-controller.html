@@ -1,6 +1,6 @@
 <script type="text/x-red" data-template-name="heater-controller">
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i>&nbsp;Name</span></label>
+        <label for="node-input-name"><i class="fa fa-tag"></i>&nbsp;Name</label>
         <input type="text" id="node-input-name">
     </div>
     <div class="form-row" id="template-row-group">
@@ -14,8 +14,8 @@
         <button class="editor-button" id="node-input-size"></button>
     </div>
 	<div class="form-row">
-            <label style="width:95%; border-bottom: 1px solid #eee;"><span> Slider</span></label>
-        </div>
+        <label style="width:95%; border-bottom: 1px solid #eee;"><span> Slider</span></label>
+    </div>
     <div class="ident">
 		<div class="form-row">
 			<label for="node-input-sliderMinValue">&nbsp;Min</label>
@@ -28,11 +28,6 @@
 		<div class="form-row">
 			<label for="node-input-sliderStep">&nbsp;Step</label>
 			<input type="text" id="node-input-sliderStep">
-		</div>
-		<div class="form-row">
-			<label>&nbsp;</label>
-			<input type="checkbox" id="node-input-sliderSteps" style="display: inline-block; width: auto; vertical-align: top;">
-			<label for="node-input-sliderSteps" style="width: 70%;">&nbsp;Steps</label>
 		</div>
 	</div>
 
@@ -86,14 +81,13 @@
             height: {value: 0},
 			sliderMinValue : {value: 10},
 			sliderMaxValue : {value: 35},
-			sliderStep : {value: 0.5},
-			sliderSteps : {value: true}
+			sliderStep : {value: 0.5}
         },
         inputs:1,
         outputs:1,
         //icon: "icon.png",
-        paletteLabel: "heater-controller",
-        label: function() { return this.name || "heater-controller"; },
+        paletteLabel: "HeaterController",
+        label: function() { return this.name || "HeaterController"; },
         oneditprepare: function() {
             $("#node-input-size").elementSizer({
                 width: "#node-input-width",

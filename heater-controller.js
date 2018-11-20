@@ -1,10 +1,4 @@
 module.exports = function(RED) {
-    var line2class = {
-        "one" : null,
-        "two" : "md-2-line",
-        "three" : "md-3-line"
-    };
-
     function checkConfig(node, conf) {
         if (!conf || !conf.hasOwnProperty("group")) {
             node.error(RED._("heater-controller.error.no-group"));
@@ -44,15 +38,18 @@ module.exports = function(RED) {
 		<div layout="column" flex layout-align="center stretch">
 			<div layout="row"  layout-align="center center" class="container" flex>
 			  <div layout-align="end center" layout="column">
-				  <div class="temp">{{msg.items.currentTemp | number:1}}&deg;C</div>
+				  <div class="temp">{{targetValue | number:1}}&deg;C</div>
 			  </div>
 			  <div class='heaterContr' layout-align="center center" layout="column">
-				  <div class="targetTemp">{{msg.items.targetTemp | number:1}}</div>
-				  <i ng-class="msg.items.currentHeaterStatus == 'on' ? 'iconTrue' : 'iconFalse'" class="fa fa-fire icon" aria-hidden="true"></i>
+					<div class="targetTemp">{{msg.items.currentTemp | number:1}}</div>
+					<div layout-align="space-between" layout="row">
+						<i class="fa fa-fire icon" ng-class="msg.items.currentHeaterStatus == 'on' ? 'iconTrue' : 'iconFalse'" aria-hidden="true"></i>
+						<i class="fa fa-user-o icon" aria-hidden="true"></i>
+					</div>
 			  </div>
 			</div>
 			<div layout-align="center stretch"  layout="column">
-				<md-slider ng-change="sendVal()" class="md-primary" ${(config.sliderSteps ? "md-discrete" : "")} ng-model="targetValue" step="${config.sliderStep}" min="${config.sliderMinValue}" max="${config.sliderMaxValue}">
+				<md-slider ng-change="sendVal()" class="md-primary" md-discrete ng-model="targetValue" step="${config.sliderStep}" min="${config.sliderMinValue}" max="${config.sliderMaxValue}">
 			</div>
 		</div>`
         return css + html;
@@ -92,14 +89,15 @@ module.exports = function(RED) {
                     },
                     initController: function($scope, events) {
 						$scope.targetValue = 10;
+						//$scope.msg.items.currentTemp = $scope.targetValue;
                         $scope.sendVal = function() {
+							$scope.msg.items.currentTemp = $scope.targetValue;
                             $scope.send({payload: $scope.targetValue});
                         };
                     }
                 });
             }
-        }
-        catch (e) {
+        } catch (e) {
             console.log(e);
         }
         node.on("close", function() {
