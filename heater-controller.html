@@ -39,7 +39,29 @@
 </script>
 
 <script type="text/x-red" data-help-name="heater-controller">
-
+	<p>An dashboard ui interface node for controlling a heater;</p>
+    <h3>Properties</h3>
+    <dl class="message-properties">
+		<dt>Min <span class="property-type">integer</span></dt>
+		<dd>Minimum vale selectable using slider</dd>
+    </dl>
+	<dl class="message-properties">
+		<dt>Max <span class="property-type">boolean</span></dt>
+		<dd>Maximum vale selectable using slider</dd>
+    </dl>
+    <dl class="message-properties">
+		<dt>Step <span class="property-type">integer</span></dt>
+		<dd>Step value selectable from slider</dd>
+    </dl>
+    <h3>Inputs</h3>
+	<dl class="message-properties">
+		<dt>payload.currentTemp<span class="property-type">float</span></dt>
+		<dd>Current room temperature, shown as small number in right corner </dd>
+		<dt>payload.targetTemp<span class="property-type">float</span></dt>
+		<dd>Current target temperature, shown as big number in center. </dd>		
+		<dt>payload.currentHeaterStatus<span class="property-type">String</span></dt>
+		<dd>on - Heater is running <br> off - heater is not running</dd>	
+    </dl>
 </script>
 
 <script type="text/javascript">
