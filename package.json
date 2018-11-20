@@ -21,7 +21,7 @@
     "url": "git+https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller.git"
   },
   "keywords": [
-    "node-red"
+    "node-red", "dashboard", "heater", "controler"
   ],
   "author": "Sergiu Toporjinschi",
   "license": "SEE LICENSE IN LICENSE",
