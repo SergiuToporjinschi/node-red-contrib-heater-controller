@@ -1,0 +1,19 @@
+{
+    "_where": "C:\\Users\\User\\.node-red",
+    "name" : "node-red-contrib-heater-controller",
+	"version": "0.0.1",
+    "bundleDependencies": false,
+    "contributors": [],
+    "dependencies": {},
+    "deprecated": false,
+    "description": "Offers possibility to send a binary code via radio waves. I'm personally using this for controlling different IOT devices by radio.",
+    "homepage": "https://github.com/SergiuToporjinschi/rf-command#readme",
+	"scripts": {
+        "start": "node heater-controller.js"
+    },
+    "node-red" : {
+        "nodes": {
+            "lower-case": "heater-controller.js"
+        }
+    }
+}
