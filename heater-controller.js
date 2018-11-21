@@ -82,7 +82,6 @@ module.exports = function(RED) {
 					storeFrontEndInputAsState: true,
 					// --> toFrontEnd
 					beforeEmit: function(msg, value) {
-						//return value; 
 						return { msg: value };
 					},
 					// <-- TO backEnd
@@ -95,16 +94,9 @@ module.exports = function(RED) {
 						}
 					},
 					initController: function($scope, events) {console.log('contr:', $scope.msg);
-						//$scope.userTargetValue = 0;
 						$scope.init = function(conf) {console.log('init');
 							$scope.config = conf;
-							/*$scope.userTargetValue = conf.userTargetValue;
-							$scope.isUserCustom = !!$scope.userTargetValue;*/
 						};
-						/*events.on('update-value', function (payload){console.log('update-value'); debugger;
-							$scope.userTargetValue = payload.userTargetValue;
-							$scope.isUserCustom = !!$scope.userTargetValue;
-						});*/
 						$scope.setUserCustom = function(){
 							$scope.isUserCustom = false;
 							$scope.userTargetValue = undefined;
