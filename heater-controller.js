@@ -66,7 +66,13 @@ module.exports = function(RED) {
 			if(ui === undefined) {
 				ui = RED.require("node-red-dashboard")(RED);
 			}
-
+			function storeInContext(node, value) {
+				node.context().values = node.context().values || {};
+				for (var i in value){
+					node.context().values[i] = value[i];
+				}
+				return node.context().values;
+			}
 			RED.nodes.createNode(this, config);
 			var done = null;
 			if (checkConfig(node, config)) {
@@ -82,8 +88,8 @@ module.exports = function(RED) {
 					forwardInputMessages: false,
 					storeFrontEndInputAsState: true,
 					// --> toFrontEnd
-					beforeEmit: function(msg, value) {
-						return { msg: value };
+					beforeEmit: function(msg, value) {console.log('s', node.context().values);
+						return { msg: storeInContext(node, value)};
 					},
 					// <-- TO backEnd
 					convertBack: function (value) {
@@ -91,7 +97,7 @@ module.exports = function(RED) {
 					},
 					beforeSend: function (msg, orig) {console.log("beforeSend"); console.log("msg : " ,  msg);
 						if (orig) {
-							return { payload: orig.msg}; 
+							return { payload: storeInContext(node, orig.msg)}; 
 						}
 					},
 					initController: function($scope, events) {console.log('contr:', $scope.msg);
@@ -103,8 +109,13 @@ module.exports = function(RED) {
 							$scope.msg.userTargetValue = undefined;
 							$scope.sendVal();
 						};
-						$scope.sendVal = function() {console.log('sendVal');debugger;
+						events.on('update-value', function (payload){console.log('update-value', payload); debugger;
+                            console.log('scope', $scope);
+                        });
+
+						$scope.sendVal = function() {console.log('sendVal', $scope.msg);debugger;
 							$scope.send({
+								currentTemp : $scope.msg.currentTemp,
 								userTargetValue : $scope.msg.userTargetValue,
 								targetValue : !!$scope.msg.userTargetValue ? $scope.msg.userTargetValue : 999,
 								isUserCustom : !!$scope.msg.userTargetValue
