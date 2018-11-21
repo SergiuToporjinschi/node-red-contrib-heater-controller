@@ -66,6 +66,7 @@ module.exports = function(RED) {
 			if(ui === undefined) {
 				ui = RED.require("node-red-dashboard")(RED);
 			}
+
 			RED.nodes.createNode(this, config);
 			var done = null;
 			if (checkConfig(node, config)) {
@@ -85,7 +86,7 @@ module.exports = function(RED) {
 						return { msg: value };
 					},
 					// <-- TO backEnd
-					convertBack: function (value) {console.log("convertBack"); console.log("value: ", value);
+					convertBack: function (value) {
 						return value;
 					},
 					beforeSend: function (msg, orig) {console.log("beforeSend"); console.log("msg : " ,  msg);
@@ -98,8 +99,8 @@ module.exports = function(RED) {
 							$scope.config = conf;
 						};
 						$scope.toSchedule = function(){
-							$scope.isUserCustom = false;
-							$scope.userTargetValue = undefined;
+							$scope.msg.isUserCustom = false;
+							$scope.msg.userTargetValue = undefined;
 							$scope.sendVal();
 						};
 						$scope.sendVal = function() {console.log('sendVal');debugger;
