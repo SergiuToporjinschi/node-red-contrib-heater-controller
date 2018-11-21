@@ -37,23 +37,23 @@ module.exports = function(RED) {
 			font-weight: bold;
 		}
 		</style>`
-		var conf = JSON.stringify(config);
+		var conf = JSON.stringify(config);console.log( 'html:' , conf);
 		var html = String.raw`
-		<div layout="column" flex layout-align="center stretch" ng-init='init(${conf})'>{{isUserCustom}} - {{userTargetValue}}
+		<div layout="column" flex layout-align="center stretch" ng-init='init(${conf})'>{{msg.isUserCustom}} - {{msg.targetValue}} - {{msg.userTargetValue}}
 			<div layout="row" layout-align="center center" class="container" flex>
-				<i ng-click="setUserCustom()" ng-if="userTargetValue" class="fa fa-user-o userSettingsIcon" aria-hidden="true" style="font-size: 36px"></i>
+				<i ng-click="setUserCustom()" ng-if="msg.userTargetValue" class="fa fa-user-o userSettingsIcon" aria-hidden="true" style="font-size: 36px"></i>
 				<div layout-align="end center" layout="column">
-					<div class="temp">{{userTargetValue | number:1}}&deg;C</div>
+					<div class="temp">{{msg.userTargetValue | number:1}}&deg;C</div>
 				</div>
 				<div class='heaterContr' layout-align="center center" layout="column">
-					<div class="targetTemp" flex="50">{{msg.items.currentTemp | number:1}}</div>
+					<div class="targetTemp" flex="50">{{msg.currentTemp | number:1}}</div>
 					<div layout-align="space-between" layout="row" flex="50">
-						<i class="fa fa-fire icon" ng-class="msg.items.currentHeaterStatus == 'on' ? 'iconTrue' : 'iconFalse'" aria-hidden="true"></i>
+						<i class="fa fa-fire icon" ng-class="msg.currentHeaterStatus == 'on' ? 'iconTrue' : 'iconFalse'" aria-hidden="true"></i>
 					</div>
 				</div>
 			</div>
 			<div layout-align="center stretch"	layout="column">
-				<md-slider ng-change="sendVal()" class="md-primary" md-discrete ng-model="userTargetValue" step="${config.sliderStep}" min="${config.sliderMinValue}" max="${config.sliderMaxValue}">
+				<md-slider ng-change="sendVal()" class="md-primary" md-discrete ng-model="msg.userTargetValue" step="${config.sliderStep}" min="${config.sliderMinValue}" max="${config.sliderMaxValue}">
 			</div>
 		</div>`
 		return css + html;
@@ -81,46 +81,39 @@ module.exports = function(RED) {
 					forwardInputMessages: false,
 					storeFrontEndInputAsState: true,
 					// --> toFrontEnd
-					convertBack: function (value) {
-						return value;
-					},
 					beforeEmit: function(msg, value) {
-						return {msg : {payload: value}};
+						//return value; 
+						return { msg: value };
 					},
 					// <-- TO backEnd
-					beforeSend: function (msg, orig) {
+					convertBack: function (value) {console.log("convertBack"); console.log("value: ", value);
+						return value;
+					},
+					beforeSend: function (msg, orig) {console.log("beforeSend"); console.log("msg : " ,  msg);
 						if (orig) {
-							orig.msg.payload.targetValue = orig.msg.payload.userTargetValue;
-							return orig.msg;
-							/*return {
-								payload: {
-									targetValue: orig.msg.payload.userTargetValue,
-									isUserCustom : orig.msg.payload.isUserCustom
-								}
-							}*/
+							return { payload: orig.msg}; 
 						}
 					},
-					initController: function($scope, events) {
-						$scope.init = function(conf) {
+					initController: function($scope, events) {console.log('contr:', $scope.msg);
+						//$scope.userTargetValue = 0;
+						$scope.init = function(conf) {console.log('init');
 							$scope.config = conf;
-							$scope.userTargetValue = $scope.userTargetValue;
-							$scope.isUserCustom = !!$scope.userTargetValue;
+							/*$scope.userTargetValue = conf.userTargetValue;
+							$scope.isUserCustom = !!$scope.userTargetValue;*/
 						};
-						events.on('update-value', function (msg){
-							$scope.userTargetValue = msg.msg.payload.userTargetValue;
+						/*events.on('update-value', function (payload){console.log('update-value'); debugger;
+							$scope.userTargetValue = payload.userTargetValue;
 							$scope.isUserCustom = !!$scope.userTargetValue;
-						});
+						});*/
 						$scope.setUserCustom = function(){
 							$scope.isUserCustom = false;
 							$scope.userTargetValue = undefined;
 							$scope.sendVal();
 						};
-						$scope.sendVal = function() {
+						$scope.sendVal = function() {console.log('sendVal');debugger;
 							$scope.send({
-								payload: {
-									userTargetValue :  $scope.userTargetValue,
-									isUserCustom : !!$scope.userTargetValue
-								}
+								userTargetValue :  $scope.msg.userTargetValue,
+								isUserCustom : !!$scope.msg.userTargetValue
 							});
 						};
 					}
