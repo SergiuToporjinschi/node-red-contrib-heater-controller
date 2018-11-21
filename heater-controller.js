@@ -88,20 +88,20 @@ module.exports = function(RED) {
 					forwardInputMessages: false,
 					storeFrontEndInputAsState: true,
 					// --> toFrontEnd
-					beforeEmit: function(msg, value) {console.log('s', node.context().values);
+					beforeEmit: function(msg, value) {
 						return { msg: storeInContext(node, value)};
 					},
 					// <-- TO backEnd
 					convertBack: function (value) {
 						return value;
 					},
-					beforeSend: function (msg, orig) {console.log("beforeSend"); console.log("msg : " ,  msg);
+					beforeSend: function (msg, orig) {
 						if (orig) {
 							return { payload: storeInContext(node, orig.msg)}; 
 						}
 					},
-					initController: function($scope, events) {console.log('contr:', $scope.msg);
-						$scope.init = function(conf) {console.log('init');
+					initController: function($scope, events) {
+						$scope.init = function(conf) {
 							$scope.config = conf;
 						};
 						$scope.toSchedule = function(){
@@ -109,9 +109,9 @@ module.exports = function(RED) {
 							$scope.msg.userTargetValue = undefined;
 							$scope.sendVal();
 						};
-						events.on('update-value', function (payload){console.log('update-value', payload); debugger;
+						/*events.on('update-value', function (payload){console.log('update-value', payload); debugger;
                             console.log('scope', $scope);
-                        });
+                        });*/
 
 						$scope.sendVal = function() {console.log('sendVal', $scope.msg);debugger;
 							$scope.send({
