@@ -79,15 +79,16 @@
                     return valid;
                 }},
             height: {value: 0},
-			sliderMinValue : {value: 10},
-			sliderMaxValue : {value: 35},
-			sliderStep : {value: 0.5}
+			sliderMinValue : {value: 10, validate:RED.validators.number()},
+			sliderMaxValue : {value: 35, validate:RED.validators.number()},
+			sliderStep : {value: 0.5, validate:RED.validators.number()}
         },
-        inputs:1,
-        outputs:1, 
-        //icon: "icon.png",
-        paletteLabel: "HeaterControl",
-        label: function() { return this.name || "HeaterControl"; },
+        inputs: 1,
+        outputs:1,
+		align: "left",
+        icon: "serial.png",
+        paletteLabel: "HeaterCtrl",
+        label: function() { return this.name || "HeaterCtrl"; },
         oneditprepare: function() {
             $("#node-input-size").elementSizer({
                 width: "#node-input-width",
