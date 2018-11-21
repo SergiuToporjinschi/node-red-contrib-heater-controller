@@ -104,7 +104,8 @@ module.exports = function(RED) {
 						};
 						$scope.sendVal = function() {console.log('sendVal');debugger;
 							$scope.send({
-								userTargetValue :  $scope.msg.userTargetValue,
+								userTargetValue : $scope.msg.userTargetValue,
+								targetValue : !!$scope.msg.userTargetValue ? $scope.msg.userTargetValue : 999,
 								isUserCustom : !!$scope.msg.userTargetValue
 							});
 						};
