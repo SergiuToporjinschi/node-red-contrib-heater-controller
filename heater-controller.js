@@ -41,7 +41,7 @@ module.exports = function(RED) {
 		var html = String.raw`
 		<div layout="column" flex layout-align="center stretch" ng-init='init(${conf})'>{{isUserCustom}} - {{userTargetValue}}
 			<div layout="row" layout-align="center center" class="container" flex>
-				<i ng-click="setUserCustom()" ng-if="userTargetValue" class="fa fa-user-o userSettingsIcon" aria-hidden="true" style="font-size: 36px"></i>
+				<i ng-click="restUserCustom()" ng-if="userTargetValue" class="fa fa-user-o userSettingsIcon" aria-hidden="true" style="font-size: 36px"></i>
 				<div layout-align="end center" layout="column">
 					<div class="temp">{{userTargetValue | number:1}}&deg;C</div>
 				</div>
@@ -103,14 +103,14 @@ module.exports = function(RED) {
 					initController: function($scope, events) {
 						$scope.init = function(conf) {
 							$scope.config = conf;
-							$scope.userTargetValue = $scope.userTargetValue;
+							$scope.userTargetValue = conf.userTargetValue;
 							$scope.isUserCustom = !!$scope.userTargetValue;
 						};
 						events.on('update-value', function (msg){
 							$scope.userTargetValue = msg.msg.payload.userTargetValue;
 							$scope.isUserCustom = !!$scope.userTargetValue;
 						});
-						$scope.setUserCustom = function(){
+						$scope.restUserCustom = function(){
 							$scope.isUserCustom = false;
 							$scope.userTargetValue = undefined;
 							$scope.sendVal();

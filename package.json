@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-heater-controller",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "bundleDependencies": false,
   "contributors": [],
   "dependencies": {},
