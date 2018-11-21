@@ -41,7 +41,7 @@ module.exports = function(RED) {
 		var html = String.raw`
 		<div layout="column" flex layout-align="center stretch" ng-init='init(${conf})'>{{msg.isUserCustom}} - {{msg.targetValue}} - {{msg.userTargetValue}}
 			<div layout="row" layout-align="center center" class="container" flex>
-				<i ng-click="setUserCustom()" ng-if="msg.userTargetValue" class="fa fa-user-o userSettingsIcon" aria-hidden="true" style="font-size: 36px"></i>
+				<i ng-click="toSchedule()" ng-if="msg.userTargetValue" class="fa fa-user-o userSettingsIcon" aria-hidden="true" style="font-size: 36px"></i>
 				<div layout-align="end center" layout="column">
 					<div class="temp">{{msg.userTargetValue | number:1}}&deg;C</div>
 				</div>
@@ -97,7 +97,7 @@ module.exports = function(RED) {
 						$scope.init = function(conf) {console.log('init');
 							$scope.config = conf;
 						};
-						$scope.setUserCustom = function(){
+						$scope.toSchedule = function(){
 							$scope.isUserCustom = false;
 							$scope.userTargetValue = undefined;
 							$scope.sendVal();
