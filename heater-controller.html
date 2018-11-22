@@ -1,4 +1,4 @@
-<script type="text/x-red" data-template-name="heater-controller">
+<script type="text/html text/x-red" data-template-name="heater-controller">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i>&nbsp;Name</label>
         <input type="text" id="node-input-name">
@@ -18,28 +18,40 @@
     </div>
     <div class="ident">
 		<div class="form-row">
-			<label for="node-input-sliderMinValue">&nbsp;Min</label>
-			<input type="text" id="node-input-sliderMinValue">
+			<label for="node-input-sliderMinValue"><i class="fa fa-step-forward" aria-hidden="true"/>&nbsp;Min</label>
+			<input type="text" id="node-input-sliderMinValue" placeholder="value">
 		</div>
 		<div class="form-row">
-			<label for="node-input-sliderMaxValue">&nbsp;Max</label>
-			<input type="text" id="node-input-sliderMaxValue">
+			<label for="node-input-sliderMaxValue"><i class="fa fa-step-backward" aria-hidden="true"/>&nbsp;Max</label>
+			<input type="text" id="node-input-sliderMaxValue" placeholder="value">
 		</div>
 		<div class="form-row">
 			<label for="node-input-sliderStep">&nbsp;Step</label>
-			<input type="text" id="node-input-sliderStep">
+			<input type="text" id="node-input-sliderStep" placeholder="value">
 		</div>
 	</div>
 	<div class="form-row">
-        <label style="width:95%; border-bottom: 1px solid #eee;"><span> Calendar</span></label>
+        <label style="width:95%; border-bottom: 1px solid #eee;"><i class="fa fa-arrows-v"/><span> Hysteresis</span></label>
+    </div>
+	<div class="ident">
+		<div class="form-row" style="display: block;">
+			<label style="width: 140px !important" for="node-input-thresholdRising"><i class="fa fa-level-up"/> Upper Threshold</label>
+			<input type="number" id="node-input-thresholdRising" placeholder="value" style="width: 280px" dir="">
+		</div>
+		<div class="form-row" style="display: block;">
+			<label style="width: 140px !important" for="node-input-thresholdFalling"><i class="fa fa-level-down"/> Lower Threshold</label>
+			<input type="number" id="node-input-thresholdFalling" placeholder="value" style="width: 280px" dir="">
+		</div>
+	</div>
+	<div class="form-row">
+        <label style="width:95%; border-bottom: 1px solid #eee;"><i class="fa fa-calendar"/><span> Calendar</span></label>
     </div>
     <div class="ident">
 		<div class="form-row">
-			<label for="node-input-calendarEditor"><i class="fa fa-calendar"/>&nbsp;Program</label>
 			<input type="hidden" id="node-input-calendar">
 		</div>
 		<div class="form-row node-text-editor-row">
-			<div style="height:250px; min-height:100px" class="node-text-editor" id="node-input-calendarEditor" ></div>
+			<div style="height:650px; min-height:100px" class="node-text-editor" id="node-input-calendarEditor" ></div>
 		</div>		
 	</div>
 </script>
@@ -49,62 +61,69 @@
         category: 'dashboard',
         color: 'rgb( 63, 173, 181)',
         defaults: {
-            group: {type: 'ui_group', required:true},
-            name: {value: ''},
-            order: {value: 0},
+            group: { type: 'ui_group', required: true },
+            name: { value: '' },
+            order: { value: 0 },
             width: {
                 value: 0,
-                validate: function(v) {
+                validate: function (v) {
                     var valid = true
-                    var width = v||0;
-                    var currentGroup = $('#node-input-group').val()|| this.group;
+                    var width = v || 0;
+                    var currentGroup = $('#node-input-group').val() || this.group;
                     var groupNode = RED.nodes.node(currentGroup);
                     valid = !groupNode || + width <= +groupNode.width;
-                    $("#node-input-size").toggleClass("input-error",!valid);
+                    $("#node-input-size").toggleClass("input-error", !valid);
                     return valid;
-                }},
-            height: {value: 0},
-			sliderMinValue : {value: 10, validate:RED.validators.number()},
-			sliderMaxValue : {value: 35, validate:RED.validators.number()},
-			sliderStep : {value: 0.5, validate:RED.validators.number()},
-			calendar: {value: ""}
+                }
+            },
+            height: { value: 0 },
+            sliderMinValue: { value: 10, validate: RED.validators.number() },
+            sliderMaxValue: { value: 35, validate: RED.validators.number() },
+            sliderStep: { value: 0.5, validate: RED.validators.number() },
+            thresholdRising: { value: 0.5, validate: RED.validators.number() },
+            thresholdFalling: { value: 0.5, validate: RED.validators.number() },
+            calendar: { value: "" }
         },
         inputs: 1,
-        outputs:1,
-		align: "left",
+        outputs: 1,
+        align: "left",
         icon: "serial.png",
         paletteLabel: "HeaterCtrl",
-        label: function() { return this.name || "HeaterCtrl"; },
-        oneditprepare: function() {
+        label: function () { return this.name || "HeaterCtrl"; },
+        oneditprepare: function () {
             $("#node-input-size").elementSizer({
                 width: "#node-input-width",
                 height: "#node-input-height",
                 group: "#node-input-group"
             });
-			this.editor = RED.editor.createEditor({
+            this.editor = RED.editor.createEditor({
                 id: 'node-input-calendarEditor',
                 mode: 'ace/mode/json',
                 value: $("#node-input-calendar").val()
             });
-			this.editor.focus();
+            this.editor.focus();
         },
-        oneditsave: function() {
-			var beautify = ace.require("ace/ext/beautify");
-			beautify.beautify(this.editor);
-			$("#node-input-calendar").val(this.editor.getValue());
+        oneditsave: function () {
+            $("#node-input-calendar").val(this.editor.getValue());
+            this.editor.destroy();
+            delete this.editor;
+            this.sliderMaxValue = Number.parseFloat(this.sliderMaxValue);
+            this.sliderMinValue = Number.parseFloat(this.sliderMinValue);
+            this.sliderStep = Number.parseFloat(this.sliderStep)
+            this.thresholdFalling = Number.parseFloat(this.thresholdFalling);
+            this.thresholdRising = Number.parseFloat(this.thresholdRising);
+            console.log('tttttt:', this);
+        },
+        oneditcancel: function () {
             this.editor.destroy();
             delete this.editor;
         },
-		oneditcancel: function() {
-            this.editor.destroy();
-            delete this.editor;
-        },
-        oneditresize: function(size) {
-			 this.editor.resize();
+        oneditresize: function (size) {
+            this.editor.resize();
         }
     });
 </script>
-<script type="text/x-red" data-help-name="heater-controller">
+<script type="text/html text/x-red" data-help-name="heater-controller">
 	<p>A dashboard ui interface node for controlling a heater;</p>
     <h3>Properties</h3>
     <dl class="message-properties">

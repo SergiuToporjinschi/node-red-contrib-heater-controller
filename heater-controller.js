@@ -1,20 +1,46 @@
-module.exports = function(RED) {
+module.exports = function (RED) {
 	function checkConfig(node, conf) {
 		if (!conf || !conf.hasOwnProperty("group")) {
 			node.error(RED._("heater-controller.error.no-group"));
 			return false;
 		}
+		if (conf.calendar) { //TODO a function to convert from string to int if is the case all configurations. 
+			conf.calendar = JSON.parse(conf.calendar);
+		}
+		node.config = conf;
 		return true;
-	}
-	function storeInContext(node, value) {
+	};
+	function storeInContext(node, value) { // TODO maybe I should replace this method or remove it
 		node.context().values = node.context().values || {};
-		for (var i in value){
+		for (var i in value) {
 			node.context().values[i] = value[i];
 		}
 		return node.context().values;
+	};
+	function storeKeyInContext(node, key, value) {
+		node.context().values = node.context().values || {};
+		if (key && value) {
+			node.context().values[key] = value;
+		}
+		return node.context().values;
 	}
-
-	function HTML(config) {debugger;
+	/**
+	 * Decides if we should turn on or off the heater;
+	 * @param {currentSettings} status current information about stauts of controller
+	 * @param {trashhold} threshold Trashsold to be able to calculate the new status of heater 
+	 */
+	function recalculateAndTrigger(status, thresholdRising, thresholdFalling) {
+		console.log('triggered with: ', status, thresholdRising, thresholdFalling);
+		var difference = (status.targetValue - status.currentTemp);
+		var newHeaterStatus = (difference < 0 ? "off" : "on");
+		var threshold = (newHeaterStatus === "off" ? thresholdRising : thresholdFalling);
+		var changeStatus = (Math.abs(difference) >= threshold);
+		if (changeStatus != status.currentHeaterStatus) {
+			status.currentHeaterStatus = newHeaterStatus;
+		}
+		return status;
+	};
+	function HTML(config) {
 		var css = String.raw`<style>
 		.iconFalse {
 			color: gray;
@@ -52,7 +78,7 @@ module.exports = function(RED) {
 			margin-right: 5px;
 		}
 		</style>`
-		var conf = JSON.stringify(config);console.log( 'html:' , conf);
+		var conf = JSON.stringify(config);
 		var html = String.raw`
 		<div layout="column" flex layout-align="center stretch" ng-init='init(${conf})'>
 				<div layout="row" layout-align="end center" class="warning-icon" ng-if="!msg.currentTemp" style="color:red">
@@ -79,16 +105,16 @@ module.exports = function(RED) {
 	};
 
 	var ui = undefined;
+	var allowedTopics = ['currentTemp', 'currentHeaterStatus'];
 	function ListNode(config) {
 		try {
 			var node = this;
-			if(ui === undefined) {
+			if (ui === undefined) {
 				ui = RED.require("node-red-dashboard")(RED);
 			}
 			RED.nodes.createNode(this, config);
 			var done = null;
 			if (checkConfig(node, config)) {
-				node.config = config;
 				var html = HTML(config);
 				done = ui.addWidget({
 					node: node,
@@ -101,15 +127,22 @@ module.exports = function(RED) {
 					forwardInputMessages: false,
 					storeFrontEndInputAsState: true,
 					// --> toFrontEnd
-					beforeEmit: function(msg, value) {
-						if (msg.topic == 'calendar') {
+					beforeEmit: function (msg, value) {
+						console.log("comming: ", { topic: msg.topic, value: value });
+						if (msg.topic === 'calendar') { //TODO de testat, trebuie decis daca ramane sau o scot
 							console.log('value: ', value);
 							console.log('msg: ', msg);
-							storeInContext(node, value)
-							return {};
-						} else {
-							return { msg: storeInContext(node, value)};
+							node.config.calendar = value;
+							return { msg: storeKeyInContext(node) }; //return what I already have
+						} else if (allowedTopics.indexOf(msg.topic) < 0) { //if topic is not a safe one just trigger a refresh of UI
+							return { msg: storeKeyInContext(node) }; //return what I already have
 						}
+						var returnValues = storeKeyInContext(node, msg.topic, value);
+						if ('currentTemp' === msg.topic) {
+							returnValues = recalculateAndTrigger(returnValues, node.config.thresholdRising, node.config.thresholdFalling);
+							node.send({ payload: returnValues });
+						}
+						return { msg: returnValues };
 					},
 					// <-- TO backEnd
 					convertBack: function (value) {
@@ -117,30 +150,25 @@ module.exports = function(RED) {
 					},
 					beforeSend: function (msg, orig) {
 						if (orig) {
-							console.log('nodec: ', node.c);
-							return { payload: storeInContext(node, orig.msg)}; 
+							return { payload: storeInContext(node, recalculateAndTrigger(orig.msg, node.config.thresholdRising, node.config.thresholdFalling)) };
 						}
 					},
-					initController: function($scope, events) {
-						$scope.init = function(conf) {
-							$scope.config = conf;//$scope.config.calendar = {};
+					initController: function ($scope, events) {
+						$scope.init = function (conf) {
+							$scope.config = conf;
 						};
-						$scope.toSchedule = function(){
+						$scope.toSchedule = function () {
 							$scope.msg.isUserCustom = false;
 							$scope.msg.userTargetValue = undefined;
 							$scope.sendVal();
 						};
-						/*events.on('update-value', function (payload){console.log('update-value', payload); debugger;
-                            console.log('scope', $scope);
-                        });*/
-
-						$scope.sendVal = function() {
+						$scope.sendVal = function () {
 							$scope.send({
-								currentTemp : $scope.msg.currentTemp,
-								currentHeaterStatus : $scope.msg.currentHeaterStatus,
-								userTargetValue : $scope.msg.userTargetValue,
-								targetValue : !!$scope.msg.userTargetValue ? $scope.msg.userTargetValue : 999,
-								isUserCustom : !!$scope.msg.userTargetValue
+								currentTemp: $scope.msg.currentTemp,
+								currentHeaterStatus: $scope.msg.currentHeaterStatus,
+								userTargetValue: $scope.msg.userTargetValue,
+								targetValue: !!$scope.msg.userTargetValue ? $scope.msg.userTargetValue : 999,//TODO moment targert temperature
+								isUserCustom: !!$scope.msg.userTargetValue
 							});
 						};
 					}
@@ -149,7 +177,7 @@ module.exports = function(RED) {
 		} catch (e) {
 			console.log(e);
 		}
-		node.on("close", function() {
+		node.on("close", function () {
 			if (done) {
 				done();
 			}
