@@ -30,9 +30,79 @@
 			<input type="text" id="node-input-sliderStep">
 		</div>
 	</div>
-
+	<div class="form-row">
+        <label style="width:95%; border-bottom: 1px solid #eee;"><span> Calendar</span></label>
+    </div>
+    <div class="ident">
+		<div class="form-row">
+			<label for="node-input-calendarEditor"><i class="fa fa-calendar"/>&nbsp;Program</label>
+			<input type="hidden" id="node-input-calendar">
+		</div>
+		<div class="form-row node-text-editor-row">
+			<div style="height:250px; min-height:100px" class="node-text-editor" id="node-input-calendarEditor" ></div>
+		</div>		
+	</div>
 </script>
 
+
+<script type="text/javascript">
+    RED.nodes.registerType("heater-controller", {
+        category: 'dashboard',
+        color: 'rgb( 63, 173, 181)',
+        defaults: {
+            group: {type: 'ui_group', required:true},
+            name: {value: ''},
+            order: {value: 0},
+            width: {
+                value: 0,
+                validate: function(v) {
+                    var valid = true
+                    var width = v||0;
+                    var currentGroup = $('#node-input-group').val()|| this.group;
+                    var groupNode = RED.nodes.node(currentGroup);
+                    valid = !groupNode || + width <= +groupNode.width;
+                    $("#node-input-size").toggleClass("input-error",!valid);
+                    return valid;
+                }},
+            height: {value: 0},
+			sliderMinValue : {value: 10, validate:RED.validators.number()},
+			sliderMaxValue : {value: 35, validate:RED.validators.number()},
+			sliderStep : {value: 0.5, validate:RED.validators.number()},
+			calendar: {value: ""}
+        },
+        inputs: 1,
+        outputs:1,
+		align: "left",
+        icon: "serial.png",
+        paletteLabel: "HeaterCtrl",
+        label: function() { return this.name || "HeaterCtrl"; },
+        oneditprepare: function() {
+            $("#node-input-size").elementSizer({
+                width: "#node-input-width",
+                height: "#node-input-height",
+                group: "#node-input-group"
+            });
+			this.editor = RED.editor.createEditor({
+                id: 'node-input-calendarEditor',
+                mode: 'ace/mode/json',
+                value: $("#node-input-calendar").val()
+            });
+			this.editor.focus();
+        },
+        oneditsave: function() {
+			$("#node-input-calendar").val(this.editor.getValue());
+            this.editor.destroy();
+            delete this.editor;
+        },
+		oneditcancel: function() {
+            this.editor.destroy();
+            delete this.editor;
+        },
+        oneditresize: function(size) {
+			 this.editor.resize();
+        }
+    });
+</script>
 <script type="text/x-red" data-help-name="heater-controller">
 	<p>A dashboard ui interface node for controlling a heater;</p>
     <h3>Properties</h3>
@@ -57,48 +127,4 @@
 		<dt>payload.currentHeaterStatus<span class="property-type">String</span></dt>
 		<dd>on - Heater is running <br> off - heater is not running</dd>	
     </dl>
-</script>
-
-<script type="text/javascript">
-    RED.nodes.registerType("heater-controller", {
-        category: 'dashboard',
-        color: 'rgb( 63, 173, 181)',
-        defaults: {
-            group: {type: 'ui_group', required:true},
-            name: {value: ''},
-            order: {value: 0},
-            width: {
-                value: 0,
-                validate: function(v) {
-                    var valid = true
-                    var width = v||0;
-                    var currentGroup = $('#node-input-group').val()|| this.group;
-                    var groupNode = RED.nodes.node(currentGroup);
-                    valid = !groupNode || + width <= +groupNode.width;
-                    $("#node-input-size").toggleClass("input-error",!valid);
-                    return valid;
-                }},
-            height: {value: 0},
-			sliderMinValue : {value: 10, validate:RED.validators.number()},
-			sliderMaxValue : {value: 35, validate:RED.validators.number()},
-			sliderStep : {value: 0.5, validate:RED.validators.number()}
-        },
-        inputs: 1,
-        outputs:1,
-		align: "left",
-        icon: "serial.png",
-        paletteLabel: "HeaterCtrl",
-        label: function() { return this.name || "HeaterCtrl"; },
-        oneditprepare: function() {
-            $("#node-input-size").elementSizer({
-                width: "#node-input-width",
-                height: "#node-input-height",
-                group: "#node-input-group"
-            });
-        },
-        oneditsave: function() {
-        },
-        oneditresize: function(size) {
-        }
-    });
 </script>

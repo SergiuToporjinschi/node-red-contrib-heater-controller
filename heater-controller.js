@@ -6,6 +6,13 @@ module.exports = function(RED) {
 		}
 		return true;
 	}
+	function storeInContext(node, value) {
+		node.context().values = node.context().values || {};
+		for (var i in value){
+			node.context().values[i] = value[i];
+		}
+		return node.context().values;
+	}
 
 	function HTML(config) {debugger;
 		var css = String.raw`<style>
@@ -31,16 +38,28 @@ module.exports = function(RED) {
 		.heaterContr {
 		  margin-left: 10px;
 		}
+		.slider {
+			margin-left: 10px;
+			margin-right: 10px;
+		}
 		.temp {
 			color: #0094ce;
 			font-size: 4em;
 			font-weight: bold;
 		}
+		.warning-icon i {
+			margin-left: 5px;
+			margin-right: 5px;
+		}
 		</style>`
 		var conf = JSON.stringify(config);console.log( 'html:' , conf);
 		var html = String.raw`
-		<div layout="column" flex layout-align="center stretch" ng-init='init(${conf})'>{{msg.isUserCustom}} - {{msg.targetValue}} - {{msg.userTargetValue}}
-			<div layout="row" layout-align="center center" class="container" flex>
+		<div layout="column" flex layout-align="center stretch" ng-init='init(${conf})'>
+				<div layout="row" layout-align="end center" class="warning-icon" ng-if="!msg.currentTemp" style="color:red">
+					<i class="fa fa-calendar" aria-hidden="true" ng-if="!config.calendar"></i>
+					<i class="fa fa-thermometer-empty" aria-hidden="true" ng-if="!msg.currentTemp"></i>
+				</div>
+				<div layout="row" layout-align="center center" class="container">
 				<i ng-click="toSchedule()" ng-if="msg.userTargetValue" class="fa fa-user-o userSettingsIcon" aria-hidden="true" style="font-size: 36px"></i>
 				<div layout-align="end center" layout="column">
 					<div class="temp">{{msg.userTargetValue | number:1}}&deg;C</div>
@@ -53,7 +72,7 @@ module.exports = function(RED) {
 				</div>
 			</div>
 			<div layout-align="center stretch"	layout="column">
-				<md-slider ng-change="sendVal()" class="md-primary" md-discrete ng-model="msg.userTargetValue" step="${config.sliderStep}" min="${config.sliderMinValue}" max="${config.sliderMaxValue}">
+				<md-slider ng-change="sendVal()" class="md-primary slider" md-discrete ng-model="msg.userTargetValue" step="${config.sliderStep}" min="${config.sliderMinValue}" max="${config.sliderMaxValue}">
 			</div>
 		</div>`
 		return css + html;
@@ -66,16 +85,10 @@ module.exports = function(RED) {
 			if(ui === undefined) {
 				ui = RED.require("node-red-dashboard")(RED);
 			}
-			function storeInContext(node, value) {
-				node.context().values = node.context().values || {};
-				for (var i in value){
-					node.context().values[i] = value[i];
-				}
-				return node.context().values;
-			}
 			RED.nodes.createNode(this, config);
 			var done = null;
 			if (checkConfig(node, config)) {
+				node.config = config;
 				var html = HTML(config);
 				done = ui.addWidget({
 					node: node,
@@ -89,7 +102,14 @@ module.exports = function(RED) {
 					storeFrontEndInputAsState: true,
 					// --> toFrontEnd
 					beforeEmit: function(msg, value) {
-						return { msg: storeInContext(node, value)};
+						if (msg.topic == 'calendar') {
+							console.log('value: ', value);
+							console.log('msg: ', msg);
+							storeInContext(node, value)
+							return {};
+						} else {
+							return { msg: storeInContext(node, value)};
+						}
 					},
 					// <-- TO backEnd
 					convertBack: function (value) {
@@ -97,12 +117,13 @@ module.exports = function(RED) {
 					},
 					beforeSend: function (msg, orig) {
 						if (orig) {
+							console.log('nodec: ', node.c);
 							return { payload: storeInContext(node, orig.msg)}; 
 						}
 					},
 					initController: function($scope, events) {
 						$scope.init = function(conf) {
-							$scope.config = conf;
+							$scope.config = conf;//$scope.config.calendar = {};
 						};
 						$scope.toSchedule = function(){
 							$scope.msg.isUserCustom = false;
@@ -113,9 +134,10 @@ module.exports = function(RED) {
                             console.log('scope', $scope);
                         });*/
 
-						$scope.sendVal = function() {console.log('sendVal', $scope.msg);debugger;
+						$scope.sendVal = function() {
 							$scope.send({
 								currentTemp : $scope.msg.currentTemp,
+								currentHeaterStatus : $scope.msg.currentHeaterStatus,
 								userTargetValue : $scope.msg.userTargetValue,
 								targetValue : !!$scope.msg.userTargetValue ? $scope.msg.userTargetValue : 999,
 								isUserCustom : !!$scope.msg.userTargetValue
