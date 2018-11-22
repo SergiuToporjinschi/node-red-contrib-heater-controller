@@ -90,6 +90,8 @@
 			this.editor.focus();
         },
         oneditsave: function() {
+			var beautify = ace.require("ace/ext/beautify");
+			beautify.beautify(this.editor);
 			$("#node-input-calendar").val(this.editor.getValue());
             this.editor.destroy();
             delete this.editor;
