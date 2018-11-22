@@ -60,7 +60,7 @@ module.exports = function(RED) {
 					<i class="fa fa-thermometer-empty" aria-hidden="true" ng-if="!msg.currentTemp"></i>
 				</div>
 				<div layout="row" layout-align="center center" class="container">
-				<i ng-click="toSchedule()" ng-if="msg.userTargetValue" class="fa fa-user-o userSettingsIcon" aria-hidden="true" style="font-size: 36px"></i>
+				<i ng-dblclick="toSchedule()" ng-if="msg.userTargetValue" class="fa fa-user-o userSettingsIcon" aria-hidden="true" style="font-size: 36px"></i>
 				<div layout-align="end center" layout="column">
 					<div class="temp">{{msg.userTargetValue | number:1}}&deg;C</div>
 				</div>
