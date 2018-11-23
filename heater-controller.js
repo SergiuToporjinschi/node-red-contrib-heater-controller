@@ -4,7 +4,6 @@ module.exports = function (RED) {
             node.error(RED._("heater-controller.error.no-group"));
             return false;
         }
-        //console.log("converting calendar", node.config);
         return true;
     }
 
@@ -34,7 +33,7 @@ module.exports = function (RED) {
      * @param {trashhold} threshold Trashsold to be able to calculate the new status of heater
      */
     function recalculateAndTrigger(status, thresholdRising, thresholdFalling) {
-        console.log('triggered with: ', status, thresholdRising, thresholdFalling);
+        // console.log('triggered with: ', status, thresholdRising, thresholdFalling);
         var difference = (status.targetValue - status.currentTemp);
         var newHeaterStatus = (difference < 0 ? "off" : "on");
         var threshold = (newHeaterStatus === "off" ? thresholdRising : thresholdFalling);
@@ -145,7 +144,7 @@ module.exports = function (RED) {
                     forwardInputMessages: false,
                     storeFrontEndInputAsState: true,
                     beforeEmit: function (msg, value) {
-                        console.log('beforeEmit');
+                        // console.log('beforeEmit');
                         if (msg.topic === 'calendar') { //TODO de testat, trebuie decis daca ramane sau o scot
                             node.config.calendar = value;
                             return { msg: storeKeyInContext(node) }; //return what I already have
@@ -167,7 +166,7 @@ module.exports = function (RED) {
                     },
                     initController: function ($scope, events) {
                         $scope.init = function (conf) {
-                            console.log('init');
+                            // console.log('init');
                             $scope.config = conf;
                         };
                         function getScheduleTemp(calendar) {
