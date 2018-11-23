@@ -10,21 +10,21 @@ module.exports = function (RED) {
 
     // TODO maybe I should replace this method or remove it
     function storeInContext(node, value) {
-        var x = node.context();
-        var values = x.get("values") || {};
+        var context = node.context();
+        var values = context.get("values") || {};
         for (var i in value) {
             values[i] = value[i];
         }
-        x.set("values", values);
+        context.set("values", values);
         return values;
     }
     function storeKeyInContext(node, key, value) {
-        var x = node.context();
-        var values = x.get("values") || {};
+        var context = node.context();
+        var values = context.get("values") || {};
         if (key && value) {
             values[key] = value;
         }
-        x.set("values", values);
+        context.set("values", values);
         return values;
     }
 
@@ -144,10 +144,6 @@ module.exports = function (RED) {
                     emitOnlyNewValues: false,
                     forwardInputMessages: false,
                     storeFrontEndInputAsState: true,
-                    // --> toFrontEnd
-                    convert: function (value) {
-                        return value;
-                    },
                     beforeEmit: function (msg, value) {
                         console.log('beforeEmit');
                         if (msg.topic === 'calendar') { //TODO de testat, trebuie decis daca ramane sau o scot
@@ -156,16 +152,13 @@ module.exports = function (RED) {
                         } else if (allowedTopics.indexOf(msg.topic) < 0) { //if topic is not a safe one just trigger a refresh of UI
                             return { msg: storeKeyInContext(node) }; //return what I already have
                         }
+
                         var returnValues = storeKeyInContext(node, msg.topic, value);
                         if ('currentTemp' === msg.topic) {
                             returnValues = recalculateAndTrigger(returnValues, node.config.thresholdRising, node.config.thresholdFalling);
                             node.send({ payload: returnValues });
                         }
                         return { msg: returnValues };
-                    },
-                    // <-- TO backEnd
-                    convertBack: function (value) {
-                        return value;
                     },
                     beforeSend: function (msg, orig) {
                         if (orig) {
@@ -190,7 +183,6 @@ module.exports = function (RED) {
                         };
                         $scope.toSchedule = function () {
                             $scope.msg.isUserCustom = false;
-                            $scope.msg.userTargetValue = undefined;
                             $scope.msg.targetValue = getScheduleTemp($scope.config.calendar);
                             $scope.send($scope.msg);
                         };
