@@ -4,11 +4,24 @@ module.exports = function (RED) {
 			node.error(RED._("heater-controller.error.no-group"));
 			return false;
 		}
-		if (conf.calendar) { //TODO a function to convert from string to int if is the case all configurations. 
-			conf.calendar = JSON.parse(conf.calendar);
-		}
-		node.config = conf;
+		console.log(conf.calendar);
+		console.log(adaptCalendar(conf.calendar));
+		node.config = adaptCalendar(conf.calendar);
 		return true;
+	};
+	function adaptCalendar(calendar){
+		if (calendar) { //TODO a function to convert from string to int if is the case all configurations. 
+			calendar = JSON.parse(calendar);
+		}
+		var newCalendar = {};
+		for (var i in calendar){
+			newCalendar[i] = {};
+			for (var j in calendar[i]){
+				var key = j.replace(':','');
+				 newCalendar[i][key]= calendar[i][j];
+			}
+		}
+		return newCalendar;
 	};
 	function storeInContext(node, value) { // TODO maybe I should replace this method or remove it
 		node.context().values = node.context().values || {};
@@ -24,6 +37,7 @@ module.exports = function (RED) {
 		}
 		return node.context().values;
 	}
+
 	/**
 	 * Decides if we should turn on or off the heater;
 	 * @param {currentSettings} status current information about stauts of controller
@@ -157,6 +171,11 @@ module.exports = function (RED) {
 						$scope.init = function (conf) {
 							$scope.config = conf;
 						};
+						function getScheduleTemp(calendar) {
+							console.log(calendar);
+							//calendar[['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday', 'Sunday'][moment().day()]][]
+							return 99;
+						}	
 						$scope.toSchedule = function () {
 							$scope.msg.isUserCustom = false;
 							$scope.msg.userTargetValue = undefined;
@@ -167,7 +186,7 @@ module.exports = function (RED) {
 								currentTemp: $scope.msg.currentTemp,
 								currentHeaterStatus: $scope.msg.currentHeaterStatus,
 								userTargetValue: $scope.msg.userTargetValue,
-								targetValue: !!$scope.msg.userTargetValue ? $scope.msg.userTargetValue : 999,//TODO moment targert temperature
+								targetValue: !!$scope.msg.userTargetValue ? $scope.msg.userTargetValue : getScheduleTemp($scope.config.calendar),//TODO moment target temperature
 								isUserCustom: !!$scope.msg.userTargetValue
 							});
 						};
