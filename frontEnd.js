@@ -1,5 +1,5 @@
 'use strict';
-module.exports.init = function (config) { // { getHTML = function () {
+module.exports.init = function (config) {
     var conf = JSON.stringify(config);
     function getCSS() {
         return String.raw`<style>
@@ -95,11 +95,13 @@ module.exports.init = function (config) { // { getHTML = function () {
                 return calDay[times[times.indexOf(timeNow) - 1]];
             }
         };
+
         $scope.toSchedule = function () {
             $scope.msg.isUserCustom = false;
             $scope.msg.targetValue = getScheduleTemp($scope.config.calendar);
             $scope.send($scope.msg);
         };
+
         $scope.sendVal = function () {
             $scope.msg.targetValue = $scope.msg.userTargetValue;
             $scope.msg.isUserCustom = true;
@@ -113,5 +115,4 @@ module.exports.init = function (config) { // { getHTML = function () {
         },
         getController: getController
     };
-    // return getCSS() + html;
 };
