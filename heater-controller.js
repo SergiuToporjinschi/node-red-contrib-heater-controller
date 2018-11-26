@@ -43,6 +43,19 @@ module.exports = function (RED) {
         }
         return status;
     };
+    function getScheduleTemp(calendar) {
+        var timeNow = ("0" + new Date().getHours()).slice(-2) + ":" + ("0" + new Date().getMinutes()).slice(-2);
+        var weekDays = ["Sunday", "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+        var calDay = calendar[weekDays[new Date().getDay()]];
+        if (calDay[timeNow]) { //maybe I'm lucky
+            return calDay[timeNow];
+        } else {
+            var times = Object.keys(calDay);
+            times.push(timeNow);
+            times.sort();
+            return calDay[times[times.indexOf(timeNow) - 1]];
+        }
+    }; 
     function HTML(config) {
         var css = String.raw`<style>
         .iconFalse {
@@ -154,6 +167,7 @@ module.exports = function (RED) {
 
                         var returnValues = storeKeyInContext(node, msg.topic, value);
                         if ('currentTemp' === msg.topic) {
+                            returnValues.targetValue = getScheduleTemp(node.config.calendar);
                             returnValues = recalculateAndTrigger(returnValues, node.config.thresholdRising, node.config.thresholdFalling);
                             node.send({ payload: returnValues });
                         }
@@ -169,15 +183,18 @@ module.exports = function (RED) {
                             // console.log('init');
                             $scope.config = conf;
                         };
+                        
                         function getScheduleTemp(calendar) {
                             var timeNow = moment().format("HH:mm");
-                            if (calendar.Monday[timeNow]) { //maybe I'm lucky
-                                return calendar.Monday[timeNow];
+                            var weekDays = ["Sunday", "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+                            var calDay = calendar[weekDays[moment().weekday()]];
+                            if (calDay[timeNow]) { //maybe I'm lucky
+                                return calDay[timeNow];
                             } else {
-                                var times = Object.keys(calendar.Monday);
+                                var times = Object.keys(calDay);
                                 times.push(timeNow);
                                 times.sort();
-                                return calendar.Monday[times[times.indexOf(timeNow) - 1]];
+                                return calDay[times[times.indexOf(timeNow) - 1]];
                             }
                         };
                         $scope.toSchedule = function () {
