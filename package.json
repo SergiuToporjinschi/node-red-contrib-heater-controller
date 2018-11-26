@@ -12,7 +12,7 @@
   },
   "node-red": {
     "nodes": {
-      "lower-case": "heater-controller.js"
+      "heater-controller": "heater-controller.js"
     }
   },
   "main": "heater-controller.js",
