@@ -57,6 +57,7 @@ function recalculateAndTrigger(status, thresholdRising, thresholdFalling) {
     }
     return status;
 };
+
 backEndNode.prototype.getAdaptedConfig = function () {
     this.config.calendar = JSON.parse(this.config.calendar);
     return this.config;

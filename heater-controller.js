@@ -14,7 +14,6 @@ module.exports = function (RED) {
                 var BackEndNode = require('./backEndNode.js');
                 var backModule = new BackEndNode(node, config);
                 node.config = backModule.getAdaptedConfig();
-
                 done = ui.addWidget(Object.assign({
                     node: node,
                     width: config.width,
