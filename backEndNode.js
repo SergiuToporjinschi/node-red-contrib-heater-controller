@@ -47,7 +47,11 @@ function getScheduleTemp(calendar) {
  * @param {currentSettings} status current information about stauts of controller
  * @param {trashhold} threshold Trashsold to be able to calculate the new status of heater
  */
-function recalculateAndTrigger(status, thresholdRising, thresholdFalling) {
+function recalculateAndTrigger(status, thresholdRising, thresholdFalling, node) {
+    if (status.targetValue === undefined || status.currentTemp === undefined) {
+        node.error('Missing: ' + (status.currentTemp === undefined ? 'currentTemp ' : ' ') + (status.targetValue === undefined ? 'targetValue' : ''));
+        return undefined;
+    }
     var difference = (status.targetValue - status.currentTemp);
     var newHeaterStatus = (difference < 0 ? "off" : "on");
     var threshold = (newHeaterStatus === "off" ? thresholdRising : thresholdFalling);
@@ -86,6 +90,7 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
     var returnValues = storeKeyInContext(this.node, msg.topic, value);
     if ('currentTemp' === msg.topic) {
         returnValues.targetValue = getScheduleTemp(this.config.calendar);
+        returnValues.currentCalTarget = returnValues.targetValue;
         returnValues = recalculateAndTrigger(returnValues, this.config.thresholdRising, this.config.thresholdFalling);
         this.node.send({ payload: returnValues });
     }
@@ -94,7 +99,12 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
 
 backEndNode.prototype.beforeSend = function (msg, orig) {
     if (orig) {
-        return { payload: storeInContext(this.node, recalculateAndTrigger(orig.msg, this.config.thresholdRising, this.config.thresholdFalling)) };
+        var result = recalculateAndTrigger(orig.msg, this.config.thresholdRising, this.config.thresholdFalling, this.node);
+        if (result) {
+            return { payload: storeInContext(this.node, result) };
+        } else {
+            return undefined;
+        }
     }
 };
 

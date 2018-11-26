@@ -72,7 +72,7 @@ module.exports.init = function (config) {
                 </div>
             </div>
             <div layout-align="center stretch" layout="column">
-                <md-slider ng-change="sendVal()" class="md-primary slider" md-discrete ng-model="msg.userTargetValue" step="${config.sliderStep}" min="${config.sliderMinValue}" max="${config.sliderMaxValue}">
+                <md-slider ng-disabled='!msg.targetValue || !msg.currentTemp' ng-change="sendVal()" class="md-primary slider" md-discrete ng-model="msg.userTargetValue" step="${config.sliderStep}" min="${config.sliderMinValue}" max="${config.sliderMaxValue}">
             </div>
         </div>`;
     }
@@ -97,8 +97,9 @@ module.exports.init = function (config) {
         };
 
         $scope.toSchedule = function () {
+            debugger;
             $scope.msg.isUserCustom = false;
-            $scope.msg.targetValue = getScheduleTemp($scope.config.calendar);
+            $scope.msg.targetValue = $scope.msg.currentCalTarget;
             $scope.send($scope.msg);
         };
 
