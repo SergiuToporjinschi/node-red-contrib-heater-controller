@@ -1,0 +1,23 @@
+{
+    "heater_controller": {
+        "label": {
+            "size": "Size",
+            "name": "Name",
+            "group": "Group",
+            "slider": "Slider",
+            "min": "Min",
+            "max": "Max",
+            "step": "Step",
+            "hysteresis": "Hysteresis",
+            "upThreshold" : "Upper threshold",
+            "lowerThreshold" : "Lower threshold",
+            "calendar" : "Calendar"
+        },
+        "placeholder": {
+            "value" : "value"
+        },
+        "error": {
+            "no-group": "Group is missing"
+        }
+    }
+}

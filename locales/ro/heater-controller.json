@@ -1,0 +1,20 @@
+{
+    "heater_controller": {
+        "label": {
+            "size": "Dimensiune",
+            "name": "Nume",
+            "group": "Grup",
+            "slider": "Slider",
+            "min": "Min",
+            "max": "Max",
+            "step": "Step",
+            "hysteresis": "Hystereza",
+            "upThreshold" : "Limita superioara",
+            "lowerThreshold" : "Limita inferioara",
+            "calendar" : "Calendar"
+        },
+        "error": {
+            "no-group": "Grup neconfigurat"
+        }
+    }
+}

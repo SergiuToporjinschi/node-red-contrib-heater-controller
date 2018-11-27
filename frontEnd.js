@@ -26,8 +26,8 @@ module.exports.init = function (config, currentCalTemp, nextCalTemp) {
                 margin-left: 10px;
             }
             .slider {
-                margin-left: 10px;
-                margin-right: 10px;
+                margin-left: 14px;
+                margin-right: 14px;
             }
             .temp {
                 color: #0094ce;
@@ -51,25 +51,29 @@ module.exports.init = function (config, currentCalTemp, nextCalTemp) {
             .user-mode {
                 color: rgb(63,81,181);
             }
+            .info {
+                margin-right: 10px;
+            }
             </style>`;
     }
     function getHTML() {
         return String.raw`
         <div layout="column" flex layout-align="center stretch" ng-init='init(${conf}, ${currentCalTemp}, "${nextCalTemp}")'>
         <div layout="row" layout-align="end center" class="warning-icon">
-                <span title="Current calendar temp"><i class="fa fa-calendar-o" aria-hidden="true"></i>{{msg.currentCalTarget || currentCalTemp}}&deg;C</span>
-                <span title="Next calendar temp"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i>{{nextCalTemp}}&deg;C</span>
+                <span class="info" title="Current calendar temp"><i class="fa fa-calendar-o" aria-hidden="true"></i>{{msg.currentCalTarget || currentCalTemp}}&deg;C</span>
+                <span class="info" title="Next calendar temp"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i>{{nextCalTemp}}</span>
+                <div flex></div>
                 <i title="Calendar is missing" class="fa fa-calendar"  style="color:red" aria-hidden="true" ng-if="!config.calendar"></i>
                 <i title="Current temperature is missing" class="fa fa-thermometer-empty"  style="color:red" aria-hidden="true" ng-if="!msg.currentTemp"></i>
             </div>
             <div layout="row" layout-align="center center" class="container">
                 <div layout-align="end center" layout="column">
-                    <div ng-class="{'user-mode': msg.isUserCustom}" class="temp no-select" md-swipe-left="toSchedule()" md-swipe-right="toSchedule()" ng-dblclick="toSchedule()">{{msg.targetValue | number:1}}&deg;C</div>
+                    <div title="Current target (user value or calendar). Double-click for reset." ng-class="{'user-mode': msg.isUserCustom}" class="temp no-select" md-swipe-left="toSchedule()" md-swipe-right="toSchedule()" ng-dblclick="toSchedule()">{{msg.targetValue | number:1}}&deg;C</div>
                 </div>
                 <div class='heaterContr' layout-align="center center" layout="column">
                     <div class="targetTemp" flex="50">{{msg.currentTemp | number:1}}</div>
                     <div layout-align="space-between" layout="row" flex="50">
-                        <i class="fa fa-fire icon" ng-class="msg.currentHeaterStatus == 'on' ? 'iconTrue' : 'iconFalse'" aria-hidden="true"></i>
+                        <i title="Heater status" class="fa fa-fire icon" ng-class="msg.currentHeaterStatus == 'on' ? 'iconTrue' : 'iconFalse'" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 'use strict';
 function backEndNode(node, config) {
     if (!config || !config.hasOwnProperty("group")) {
-        throw 'heater-controller.error.no-group';
+        throw 'heater_controller.error.no-group';
     }
     this.node = node;
     this.allowedTopics = ['currentTemp', 'currentHeaterStatus'];
@@ -42,7 +42,7 @@ function getScheduleTemp(calendar, offset) {
             return calDay[times[times.indexOf(timeNow) - 1]];
         } else {
             var time = times[times.indexOf(timeNow) + offset];
-            return calDay[times[times.indexOf(timeNow) + offset]] + '(' + time + ')';
+            return calDay[times[times.indexOf(timeNow) + offset]] + '&deg;C (' + time + ')';
         }
     }
 };
