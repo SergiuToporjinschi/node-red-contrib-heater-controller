@@ -90,6 +90,8 @@ For example:
     True if current target temperature is set by the user
 ## Changelog
 
+### v1.0.1 (November 27, 2018)
+* Bug fixing
 ### v1.0.0 (November 27, 2018)
 * Stable release, fully functional.
 ### v0.0.1 (November 20, 2018)
