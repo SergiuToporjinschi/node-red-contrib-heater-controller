@@ -28,17 +28,22 @@ function storeKeyInContext(node, key, value) {
     return values;
 }
 
-function getScheduleTemp(calendar) {
+function getScheduleTemp(calendar, offset) {
     var timeNow = ("0" + new Date().getHours()).slice(-2) + ":" + ("0" + new Date().getMinutes()).slice(-2);
     var weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     var calDay = calendar[weekDays[new Date().getDay()]];
-    if (calDay[timeNow]) { //maybe I'm lucky
+    if (calDay[timeNow] && !offset) { //maybe I'm lucky
         return calDay[timeNow];
     } else {
         var times = Object.keys(calDay);
         times.push(timeNow);
         times.sort();
-        return calDay[times[times.indexOf(timeNow) - 1]];
+        if (!offset) {
+            return calDay[times[times.indexOf(timeNow) - 1]];
+        } else {
+            var time = times[times.indexOf(timeNow) + offset];
+            return calDay[times[times.indexOf(timeNow) + offset]] + '(' + time + ')';
+        }
     }
 };
 
@@ -67,8 +72,10 @@ backEndNode.prototype.getAdaptedConfig = function () {
     return this.config;
 }
 backEndNode.prototype.getWidget = function () {
-    var frontEnd = require('./frontEnd').init(this.config);
-    var html = frontEnd.getHTML(this.config);
+    var temp = getScheduleTemp(this.config.calendar);
+    var nextCalTemp = getScheduleTemp(this.config.calendar, 1);
+    var frontEnd = require('./frontEnd').init(this.config, temp, nextCalTemp);
+    var html = frontEnd.getHTML();
     var me = this;
     return {
         format: html,

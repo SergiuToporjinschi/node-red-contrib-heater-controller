@@ -1,5 +1,5 @@
 'use strict';
-module.exports.init = function (config) {
+module.exports.init = function (config, currentCalTemp, nextCalTemp) {
     var conf = JSON.stringify(config);
     function getCSS() {
         return String.raw`<style>
@@ -55,10 +55,12 @@ module.exports.init = function (config) {
     }
     function getHTML() {
         return String.raw`
-        <div layout="column" flex layout-align="center stretch" ng-init='init(${conf})'>
-            <div layout="row" layout-align="end center" class="warning-icon" ng-if="!msg.currentTemp" style="color:red">
-                <i class="fa fa-calendar" aria-hidden="true" ng-if="!config.calendar"></i>
-                <i class="fa fa-thermometer-empty" aria-hidden="true" ng-if="!msg.currentTemp"></i>
+        <div layout="column" flex layout-align="center stretch" ng-init='init(${conf}, ${currentCalTemp}, "${nextCalTemp}")'>
+        <div layout="row" layout-align="end center" class="warning-icon">
+                <span title="Current calendar temp"><i class="fa fa-calendar-o" aria-hidden="true"></i>{{msg.currentCalTarget || currentCalTemp}}</span>
+                <span title="Next calendar temp"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i>{{nextCalTemp}}</span>
+                <i title="Calendar is missing" class="fa fa-calendar"  style="color:red" aria-hidden="true" ng-if="!config.calendar"></i>
+                <i title="Current temperature is missing" class="fa fa-thermometer-empty"  style="color:red" aria-hidden="true" ng-if="!msg.currentTemp"></i>
             </div>
             <div layout="row" layout-align="center center" class="container">
                 <div layout-align="end center" layout="column">
@@ -78,26 +80,13 @@ module.exports.init = function (config) {
     }
 
     function getController($scope, events) {
-        $scope.init = function (conf) {
+        $scope.init = function (conf, currentCalTemp, nextCalTemp) {
             $scope.config = conf;
-        };
-
-        function getScheduleTemp(calendar) {
-            var timeNow = moment().format("HH:mm");
-            var weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-            var calDay = calendar[weekDays[moment().weekday()]];
-            if (calDay[timeNow]) { //maybe I'm lucky
-                return calDay[timeNow];
-            } else {
-                var times = Object.keys(calDay);
-                times.push(timeNow);
-                times.sort();
-                return calDay[times[times.indexOf(timeNow) - 1]];
-            }
+            $scope.currentCalTemp = currentCalTemp;
+            $scope.nextCalTemp = nextCalTemp;
         };
 
         $scope.toSchedule = function () {
-            debugger;
             $scope.msg.isUserCustom = false;
             $scope.msg.targetValue = $scope.msg.currentCalTarget;
             $scope.send($scope.msg);
