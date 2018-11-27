@@ -25,9 +25,9 @@ Once a custom value has been set will keep that value untill the user is resting
 ## Properties
 
   * **Min** (integer)
-    Minimum vale selectable using slider
+    Minimum value selectable using slider
   * **Max**  (boolean)
-    Maximum vale selectable using slider
+    Maximum value selectable using slider
   * **Step** (integer)
     Step value selectable from slider
   * **Upper** threshold (float)
