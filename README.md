@@ -18,7 +18,7 @@ A dashboard ui interface node for controlling a heater;
  * 4 - slider for setting a custom value
  * 5 - current temperature from calendar
  * 6 - next temperature from calendar and the starting hour
- * 7 - worning that current temperature is missing so the controller is not active
+ * 7 - warning that current temperature is missing so the controller is not active
 
 Once a custom value has been set will keep that value untill the user is resetting it by double clicking the tarvet value or by sliding it left or right, when the current calendar target value is taken from calendar.
 
