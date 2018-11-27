@@ -69,7 +69,16 @@ For example:
 {
     "currentTemp":25,
     "targetValue":20,
-    "currentCalTarget":19,
+    "currentSchedule":{
+        temp: 19,
+        day: "Wednesday",
+        time: "00:00"
+    },
+    "nextSchedule":{
+        temp: 22,
+        day: "Wednesday",
+        time: "06:20"
+    },
     "currentHeaterStatus":"off",
     "userTargetValue":20,
     "isUserCustom":true
@@ -80,8 +89,10 @@ For example:
     The last current temperature received
   * **targetValue** (float)
     Target temperature displyed in front-end. Coul be user custom value, if is changed by the user, or calendar current temperature value set by calendar
-  * **currentCalTarget** (float)
-    Current calendar temperature. The value which would be set if the controller is set on calendar
+  * **currentSchedule** (float)
+    Current calendar schedule. The value which would be set if the controller is set on calendar and some aditional information like day of the week and time
+  * **nextSchedule** (float)
+    Next calendar schedule. The value which will be set if the controller is set on calendar and some aditional information when this will like happen like day of the week and time
   * **currentHeaterStatus** (string (on|off))
     Calculated the heater status based on the difference between target value and current temperature
   * **userTargetValue** (float)

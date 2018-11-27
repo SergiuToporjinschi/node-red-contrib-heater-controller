@@ -31,19 +31,28 @@ function storeKeyInContext(node, key, value) {
 function getScheduleTemp(calendar, offset) {
     var timeNow = ("0" + new Date().getHours()).slice(-2) + ":" + ("0" + new Date().getMinutes()).slice(-2);
     var weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    var weekDay = weekDays[new Date().getDay()];
     var calDay = calendar[weekDays[new Date().getDay()]];
     if (calDay[timeNow] && !offset) { //maybe I'm lucky
-        return calDay[timeNow];
+        return {
+            temp: calDay[timeNow],
+            day: weekDay,
+            time: timeNow
+        };
     } else {
         var times = Object.keys(calDay);
         times.push(timeNow);
         times.sort();
+        var index
         if (!offset) {
-            return calDay[times[times.indexOf(timeNow) - 1]];
-        } else {
-            var time = times[times.indexOf(timeNow) + offset];
-            return calDay[times[times.indexOf(timeNow) + offset]] + '&deg;C (' + time + ')';
+            offset = -1;
         }
+        index = times.indexOf(timeNow) + offset;
+        return {
+            temp: calDay[times[index]],
+            day: weekDay,
+            time: times[index],
+        };
     }
 };
 
@@ -53,7 +62,9 @@ function getScheduleTemp(calendar, offset) {
  * @param {trashhold} threshold Trashsold to be able to calculate the new status of heater
  */
 function recalculateAndTrigger(status, thresholdRising, thresholdFalling, node) {
-    status.targetValue = status.targetValue || status.currentCalTarget;
+    if (!status.isUserCustom || !status.targetValue) {
+        status.targetValue = status.currentSchedule.temp;
+    }
     if (status.targetValue === undefined || status.currentTemp === undefined) {
         node.error('Missing: ' + (status.currentTemp === undefined ? 'currentTemp ' : ' ') + (status.targetValue === undefined ? 'targetValue' : ''));
         return undefined;
@@ -62,7 +73,7 @@ function recalculateAndTrigger(status, thresholdRising, thresholdFalling, node) 
     var newHeaterStatus = (difference < 0 ? "off" : "on");
     var threshold = (newHeaterStatus === "off" ? thresholdRising : thresholdFalling);
     var changeStatus = (Math.abs(difference) >= threshold);
-    if (changeStatus != status.currentHeaterStatus) {
+    if (changeStatus) {
         status.currentHeaterStatus = newHeaterStatus;
     }
     return status;
@@ -73,9 +84,7 @@ backEndNode.prototype.getAdaptedConfig = function () {
     return this.config;
 }
 backEndNode.prototype.getWidget = function () {
-    var temp = getScheduleTemp(this.config.calendar);
-    var nextCalTemp = getScheduleTemp(this.config.calendar, 1);
-    var frontEnd = require('./frontEnd').init(this.config, temp, nextCalTemp);
+    var frontEnd = require('./frontEnd').init(this.config);
     var html = frontEnd.getHTML();
     var me = this;
     return {
@@ -97,7 +106,8 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
 
     var returnValues = storeKeyInContext(this.node, msg.topic, value);
     if ('currentTemp' === msg.topic) {
-        returnValues.currentCalTarget = getScheduleTemp(this.config.calendar);
+        returnValues.currentSchedule = getScheduleTemp(this.config.calendar);
+        returnValues.nextSchedule = getScheduleTemp(this.config.calendar, 1);
         returnValues = recalculateAndTrigger(returnValues, this.config.thresholdRising, this.config.thresholdFalling, this.node);
         this.node.send({ payload: returnValues });
     }

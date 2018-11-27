@@ -1,5 +1,5 @@
 'use strict';
-module.exports.init = function (config, currentCalTemp, nextCalTemp) {
+module.exports.init = function (config) {
     var conf = JSON.stringify(config);
     function getCSS() {
         return String.raw`<style>
@@ -58,10 +58,10 @@ module.exports.init = function (config, currentCalTemp, nextCalTemp) {
     }
     function getHTML() {
         return String.raw`
-        <div layout="column" flex layout-align="center stretch" ng-init='init(${conf}, ${currentCalTemp}, "${nextCalTemp}")'>
+        <div layout="column" flex layout-align="center stretch" ng-init='init(${conf})'>
         <div layout="row" layout-align="end center" class="warning-icon">
-                <span class="info" title="Current calendar temp"><i class="fa fa-calendar-o" aria-hidden="true"></i>{{msg.currentCalTarget || currentCalTemp}}&deg;C</span>
-                <span class="info" title="Next calendar temp"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i>{{nextCalTemp}}</span>
+                <span class="info" title="Current calendar temp" ng-show="msg.currentSchedule != undefined"><i class="fa fa-calendar-o" aria-hidden="true"></i>{{msg.currentSchedule.temp}}&deg;C ({{msg.currentSchedule.time}})</span>
+                <span class="info" title="Next calendar temp" ng-show="msg.nextSchedule != undefined"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i>{{msg.nextSchedule.temp}}&deg;C ({{msg.nextSchedule.time}})</span>
                 <div flex></div>
                 <i title="Calendar is missing" class="fa fa-calendar"  style="color:red" aria-hidden="true" ng-if="!config.calendar"></i>
                 <i title="Current temperature is missing" class="fa fa-thermometer-empty"  style="color:red" aria-hidden="true" ng-if="!msg.currentTemp"></i>
@@ -84,15 +84,13 @@ module.exports.init = function (config, currentCalTemp, nextCalTemp) {
     }
 
     function getController($scope, events) {
-        $scope.init = function (conf, currentCalTemp, nextCalTemp) {
-            $scope.config = conf;
-            $scope.currentCalTemp = currentCalTemp;
-            $scope.nextCalTemp = nextCalTemp;
+        $scope.init = function (config) {
+            $scope.config = config;
         };
 
         $scope.toSchedule = function () {
             $scope.msg.isUserCustom = false;
-            $scope.msg.targetValue = $scope.msg.currentCalTarget;
+            $scope.msg.targetValue = $scope.msg.temp;
             $scope.send($scope.msg);
         };
 

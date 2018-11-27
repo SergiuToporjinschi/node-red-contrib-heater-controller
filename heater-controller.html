@@ -188,7 +188,16 @@
 {
     "currentTemp":25,
     "targetValue":20,
-    "currentCalTarget":19,
+    "currentSchedule":{
+        temp: 19,
+        day: "Wednesday",
+        time: "00:00"
+    },
+    "nextSchedule":{
+        temp: 22,
+        day: "Wednesday",
+        time: "06:20"
+    },
     "currentHeaterStatus":"off",
     "userTargetValue":20,
     "isUserCustom":true
@@ -203,8 +212,12 @@
         <dd>Target temperature displyed in front-end. Coul be user custom value, if is changed by the user, or calendar current temperature value set by calendar</dd>
     </dl>
     <dl class="message-properties">
-        <dt>currentCalTarget<span class="property-type">float</span></dt>
-        <dd>Current calendar temperature. The value which would be set if the controller is set on calendar</dd>
+        <dt>currentSchedule<span class="property-type">float</span></dt>
+        <dd>Current calendar schedule. The value which would be set if the controller is set on calendar and some aditional information like day of the week and time</dd>
+    </dl>
+    <dl class="message-properties">
+        <dt>nextSchedule<span class="property-type">float</span></dt>
+        <dd>Next calendar schedule. The value which will be set if the controller is set on calendar and some aditional information when this will like happen like day of the week and time</dd>
     </dl>
     <dl class="message-properties">
         <dt>currentHeaterStatus<span class="property-type">string (on|off)</span></dt>
