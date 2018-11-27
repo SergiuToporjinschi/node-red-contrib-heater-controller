@@ -137,13 +137,85 @@
 		<dt>Step <span class="property-type">integer</span></dt>
 		<dd>Step value selectable from slider</dd>
     </dl>
+    <dl class="message-properties">
+        <dt>Upper threshold<span class="property-type">float</span></dt>
+        <dd>Hysteresis upper threshold limit. This value is added to the target temperature to determinate the point of setting the heater to off</dd>
+    </dl>
+    <dl class="message-properties">
+        <dt>Lower threshold<span class="property-type">float</span></dt>
+        <dd>Hysteresis Lower threshold limit. This value is added to the target temperature to determinate the point of setting the heater to on</dd>
+    </dl>
+    <dl class="message-properties">
+        <dt>Calendar<span class="property-type">json</span></dt>
+        <dd>The calendar which will be apply in automatic mode. Needs to be a valid JSON with float values for temperature.<br>
+            Is important to cover the entire interval of 24/7, otherwise will keep the temperature untill next sice or next week day</dd>
+        <dd>For example:</dd>
+        <pre>
+{
+    "Monday" : {
+        "00:00" : 19,
+        "06:20" : 22,
+        "08:00" : 19,
+        "16:40" : 22,
+        "23:59" : 19
+    },
+    "Tuesday" : {
+        "00:00" : 19,
+        "06:20" : 22,
+        "08:00" : 19,
+        "16:40" : 22,
+        "23:59" : 19
+    }
+}
+        </pre>
+    </dl>    
     <h3>Inputs</h3>
-	<dl class="message-properties">
-		<dt>payload.currentTemp<span class="property-type">float</span></dt>
-		<dd>Current room temperature, shown as small number in right corner </dd>
-		<dt>payload.targetTemp<span class="property-type">float</span></dt>
-		<dd>Current target temperature, shown as big number in center. </dd>		
-		<dt>payload.currentHeaterStatus<span class="property-type">String</span></dt>
-		<dd>on - Heater is running <br> off - heater is not running</dd>	
+    <p>This controller accepts one main input which has to have topic as "currentTemp" and payload needs to be a float</p>
+    <p style="color: #AD1625;">The entire control is not functional untill this message is received</p>
+    <p>The heater status is recalculated when this message recived, or when the user is changing the target temperature.</p>
+	<dd>Message example:</dd>
+        <pre>
+{
+    "topic" : "currentTemp",
+    "payload" : "22.5"
+}
+        </pre>
+    <h3>Output</h3>
+    <p>A message is emited when the status is recalculated (when the user is changing the target temperature or a new input message is received)</p>
+    
+    <dd>For example:</dd>
+    <pre>
+{
+    "currentTemp":25,
+    "targetValue":20,
+    "currentCalTarget":19,
+    "currentHeaterStatus":"off",
+    "userTargetValue":20,
+    "isUserCustom":true
+}
+    </pre>       
+    <dl class="message-properties">
+        <dt>currentTemp<span class="property-type">float</span></dt>
+        <dd>The last current temperature received</dd>
+    </dl>
+    <dl class="message-properties">
+        <dt>targetValue<span class="property-type">float</span></dt>
+        <dd>Target temperature displyed in front-end. Coul be user custom value, if is changed by the user, or calendar current temperature value set by calendar</dd>
+    </dl>
+    <dl class="message-properties">
+        <dt>currentCalTarget<span class="property-type">float</span></dt>
+        <dd>Current calendar temperature. The value which would be set if the controller is set on calendar</dd>
+    </dl>
+    <dl class="message-properties">
+        <dt>currentHeaterStatus<span class="property-type">string (on|off)</span></dt>
+        <dd>Calculated the heater status based on the difference between target value and current temperature</dd>
+    </dl>
+    <dl class="message-properties">
+        <dt>userTargetValue<span class="property-type">float</span></dt>
+        <dd>The last or current target temperature set by user</dd>
+    </dl>
+    <dl class="message-properties">
+        <dt>isUserCustom<span class="property-type">boolean</span></dt>
+        <dd>True if current target temperature is set by the user</dd>
     </dl>
 </script>
