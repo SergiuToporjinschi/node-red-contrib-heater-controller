@@ -62,8 +62,14 @@ function getScheduleTemp(calendar, offset) {
  * @param {trashhold} threshold Trashsold to be able to calculate the new status of heater
  */
 function recalculateAndTrigger(status, thresholdRising, thresholdFalling, node) {
+     //status.isUserCustomLocked 
     if (!status.isUserCustom || !status.targetValue) {
-        status.targetValue = status.currentSchedule.temp;
+        if (!status.isUserCustomLocked) {
+            status.targetValue = status.currentSchedule.temp;
+        } else {
+            node.error('Invalid state: target temperature and customer locking is active');
+            return undefined;
+        }
     }
     if (status.targetValue === undefined || status.currentTemp === undefined) {
         node.error('Missing: ' + (status.currentTemp === undefined ? 'currentTemp ' : ' ') + (status.targetValue === undefined ? 'targetValue' : ''));
