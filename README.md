@@ -101,6 +101,9 @@ For example:
     True if current target temperature is set by the user
 ## Changelog
 
+### v1.1.0 (December 03, 2018)
+* Bug fixing,
+* Adding locked user custom value; which is preventing schedule to change target temperature until user manual unlocks
 ### v1.0.1 (November 27, 2018)
 * Bug fixing
 ### v1.0.0 (November 27, 2018)

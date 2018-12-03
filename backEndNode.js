@@ -4,56 +4,38 @@ function backEndNode(node, config) {
         throw 'heater_controller.error.no-group';
     }
     this.node = node;
-    this.allowedTopics = ['currentTemp', 'currentHeaterStatus'];
+    this.allowedTopics = ['currentTemp'];
     this.config = config;
 }
-
-// TODO maybe I should replace this method or remove it
-function storeInContext(node, value) {
-    var context = node.context();
-    var values = context.get("values") || {};
-    for (var i in value) {
-        values[i] = value[i];
-    }
-    context.set("values", values);
-    return values;
-}
-function storeKeyInContext(node, key, value) {
-    var context = node.context();
-    var values = context.get("values") || {};
-    if (key && value) {
-        values[key] = value;
-    }
-    context.set("values", values);
-    return values;
+function override(target, source) {
+    return Object.assign(target, source);
 }
 
+/**
+ * Returns an scheduled event from calendar
+ * @param {Calendar} calendar the calendar configuration
+ * @param {int} offset a negative or positive offset, if is -1 will return the value of the previouse sechedule event if is +1 will return the next schedule event
+ */
 function getScheduleTemp(calendar, offset) {
     var timeNow = ("0" + new Date().getHours()).slice(-2) + ":" + ("0" + new Date().getMinutes()).slice(-2);
     var weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     var weekDay = weekDays[new Date().getDay()];
-    var calDay = calendar[weekDays[new Date().getDay()]];
-    if (calDay[timeNow] && !offset) { //maybe I'm lucky
-        return {
-            temp: calDay[timeNow],
-            day: weekDay,
-            time: timeNow
-        };
-    } else {
-        var times = Object.keys(calDay);
+    var calDay = calendar[weekDay];
+    var times = Object.keys(calDay);
+    if (!calDay[timeNow]) {
         times.push(timeNow);
         times.sort();
-        var index
         if (!offset) {
             offset = -1;
         }
-        index = times.indexOf(timeNow) + offset;
-        return {
-            temp: calDay[times[index]],
-            day: weekDay,
-            time: times[index],
-        };
     }
+    var index = times.indexOf(timeNow) + (offset || 0);
+    var ret = {
+        temp: calDay[times[index]],
+        day: weekDay,
+        time: times[index],
+    };
+    return ret;
 };
 
 /**
@@ -61,23 +43,34 @@ function getScheduleTemp(calendar, offset) {
  * @param {currentSettings} status current information about stauts of controller
  * @param {trashhold} threshold Trashsold to be able to calculate the new status of heater
  */
-function recalculateAndTrigger(status, thresholdRising, thresholdFalling, node) {
-     //status.isUserCustomLocked 
-    if (!status.isUserCustom || !status.targetValue) {
-        if (!status.isUserCustomLocked) {
-            status.targetValue = status.currentSchedule.temp;
-        } else {
-            node.error('Invalid state: target temperature and customer locking is active');
-            return undefined;
-        }
+function recalculateAndTrigger(status, config, node) {
+    var currentSchedule = getScheduleTemp(config.calendar);
+    var lastSchedule = status.currentSchedule;
+    var changedSchedule = currentSchedule.temp !== lastSchedule.temp || currentSchedule.day !== lastSchedule.day || currentSchedule.time !== lastSchedule.time;
+    if ((changedSchedule && status.isUserCustom && !status.isUserCustomLocked) ||
+        !status.isUserCustom) {
+        status.targetValue = currentSchedule.temp;
+        status.isUserCustom = false;
+    } else if (status.isUserCustom) {
+        status.targetValue = status.userTargetValue;
+    } else if (!status.targetValue) {
+        status.targetValue = status.currentSchedule.temp;
+        status.isUserCustom = false;
+    } else {
+        node.error('Invalid state: target temperature and customer locking is active');
+        return undefined;
     }
+
     if (status.targetValue === undefined || status.currentTemp === undefined) {
         node.error('Missing: ' + (status.currentTemp === undefined ? 'currentTemp ' : ' ') + (status.targetValue === undefined ? 'targetValue' : ''));
         return undefined;
     }
+    status.currentSchedule = currentSchedule;
+    status.nextSchedule = getScheduleTemp(config.calendar, 1);
+
     var difference = (status.targetValue - status.currentTemp);
     var newHeaterStatus = (difference < 0 ? "off" : "on");
-    var threshold = (newHeaterStatus === "off" ? thresholdRising : thresholdFalling);
+    var threshold = (newHeaterStatus === "off" ? config.thresholdRising : config.thresholdFalling);
     var changeStatus = (Math.abs(difference) >= threshold);
     if (changeStatus) {
         status.currentHeaterStatus = newHeaterStatus;
@@ -106,15 +99,18 @@ backEndNode.prototype.getWidget = function () {
 }
 
 backEndNode.prototype.beforeEmit = function (msg, value) {
+    var context = this.node.context();
+    var existingValues = context.get("values") || {};
     if (this.allowedTopics.indexOf(msg.topic) < 0) { //if topic is not a safe one just trigger a refresh of UI
-        return { msg: storeKeyInContext(this.node) }; //return what I already have
+        return { msg: existingValues }; //return what I already have
     }
-
-    var returnValues = storeKeyInContext(this.node, msg.topic, value);
+    //in case we need more topics we have to see if we should convert value 
+    value = parseFloat(value);
+    var returnValues = override(existingValues, { [msg.topic]: value });
+    context.set("values", returnValues);
     if ('currentTemp' === msg.topic) {
-        returnValues.currentSchedule = getScheduleTemp(this.config.calendar);
-        returnValues.nextSchedule = getScheduleTemp(this.config.calendar, 1);
-        returnValues = recalculateAndTrigger(returnValues, this.config.thresholdRising, this.config.thresholdFalling, this.node);
+        returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
+        context.set("values", returnValues);
         this.node.send({ payload: returnValues });
     }
     return { msg: returnValues };
@@ -122,9 +118,11 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
 
 backEndNode.prototype.beforeSend = function (msg, orig) {
     if (orig) {
-        var result = recalculateAndTrigger(orig.msg, this.config.thresholdRising, this.config.thresholdFalling, this.node);
+        var result = recalculateAndTrigger(orig.msg, this.config, this.node);
         if (result) {
-            return { payload: storeInContext(this.node, result) };
+            var newValues = override(this.node.context().get("values") || {}, result); //merge user changes and store them in context
+            this.node.context().set("values", newValues); //Store in conetext
+            return { payload: newValues };
         } else {
             return undefined;
         }

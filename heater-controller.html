@@ -13,47 +13,47 @@
         <input type="hidden" id="node-input-height"> 
         <button class="editor-button" id="node-input-size"></button>
     </div>
-	<div class="form-row">
+    <div class="form-row">
         <label style="width:95%; border-bottom: 1px solid #eee;"><span data-i18n="heater_controller.label.slider"> </span></label>
     </div>
     <div class="ident">
-		<div class="form-row">
-			<label for="node-input-sliderMinValue"><i class="fa fa-step-forward" aria-hidden="true"/> <span data-i18n="heater_controller.label.min"></span></label>
-			<input type="text" id="node-input-sliderMinValue" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
-		</div>
-		<div class="form-row">
-			<label for="node-input-sliderMaxValue"><i class="fa fa-step-backward" aria-hidden="true"/> <span data-i18n="heater_controller.label.min"></span></label>
-			<input type="text" id="node-input-sliderMaxValue" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
-		</div>
-		<div class="form-row">
-			<label for="node-input-sliderStep"> <span data-i18n="heater_controller.label.step"></span></label>
-			<input type="text" id="node-input-sliderStep" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
-		</div>
-	</div>
-	<div class="form-row">
+        <div class="form-row">
+            <label for="node-input-sliderMinValue"><i class="fa fa-step-forward" aria-hidden="true"/> <span data-i18n="heater_controller.label.min"></span></label>
+            <input type="text" id="node-input-sliderMinValue" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
+        </div>
+        <div class="form-row">
+            <label for="node-input-sliderMaxValue"><i class="fa fa-step-backward" aria-hidden="true"/> <span data-i18n="heater_controller.label.min"></span></label>
+            <input type="text" id="node-input-sliderMaxValue" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
+        </div>
+        <div class="form-row">
+            <label for="node-input-sliderStep"> <span data-i18n="heater_controller.label.step"></span></label>
+            <input type="text" id="node-input-sliderStep" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
+        </div>
+    </div>
+    <div class="form-row">
         <label style="width:95%; border-bottom: 1px solid #eee;"><i class="fa fa-arrows-v"/> <span data-i18n="heater_controller.label.hysteresis"></label>
     </div>
-	<div class="ident">
-		<div class="form-row" style="display: block;">
-			<label style="width: 140px !important" for="node-input-thresholdRising"><i class="fa fa-level-up"/> <span data-i18n="heater_controller.label.upThreshold"></label>
-			<input type="number" id="node-input-thresholdRising" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
-		</div>
-		<div class="form-row" style="display: block;">
-			<label style="width: 140px !important" for="node-input-thresholdFalling"><i class="fa fa-level-down"/> <span data-i18n="heater_controller.label.lowerThreshold"></label>
-			<input type="number" id="node-input-thresholdFalling" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
-		</div>
-	</div>
-	<div class="form-row">
+    <div class="ident">
+        <div class="form-row" style="display: block;">
+            <label style="width: 140px !important" for="node-input-thresholdRising"><i class="fa fa-level-up"/> <span data-i18n="heater_controller.label.upThreshold"></label>
+            <input type="number" id="node-input-thresholdRising" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
+        </div>
+        <div class="form-row" style="display: block;">
+            <label style="width: 140px !important" for="node-input-thresholdFalling"><i class="fa fa-level-down"/> <span data-i18n="heater_controller.label.lowerThreshold"></label>
+            <input type="number" id="node-input-thresholdFalling" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
+        </div>
+    </div>
+    <div class="form-row">
         <label style="width:95%; border-bottom: 1px solid #eee;"><i class="fa fa-calendar"/> <span data-i18n="heater_controller.label.calendar"></label>
     </div>
     <div class="ident">
-		<div class="form-row">
-			<input type="hidden" id="node-input-calendar">
-		</div>
-		<div class="form-row node-text-editor-row">
-			<div style="height:650px; min-height:100px" class="node-text-editor" id="node-input-calendarEditor" ></div>
-		</div>		
-	</div>
+        <div class="form-row">
+            <input type="hidden" id="node-input-calendar">
+        </div>
+        <div class="form-row node-text-editor-row">
+            <div style="height:650px; min-height:100px" class="node-text-editor" id="node-input-calendarEditor" ></div>
+        </div>        
+    </div>
 </script>
 
 <script type="text/javascript">
@@ -123,19 +123,19 @@
     });
 </script>
 <script type="text/html text/x-red" data-help-name="heater-controller">
-	<p>A dashboard ui interface node for controlling a heater;</p>
+    <p>A dashboard ui interface node for controlling a heater;</p>
     <h3>Properties</h3>
     <dl class="message-properties">
-		<dt>Min <span class="property-type">integer</span></dt>
-		<dd>Minimum vale selectable using slider</dd>
-    </dl>
-	<dl class="message-properties">
-		<dt>Max <span class="property-type">boolean</span></dt>
-		<dd>Maximum vale selectable using slider</dd>
+        <dt>Min <span class="property-type">integer</span></dt>
+        <dd>Minimum vale selectable using slider</dd>
     </dl>
     <dl class="message-properties">
-		<dt>Step <span class="property-type">integer</span></dt>
-		<dd>Step value selectable from slider</dd>
+        <dt>Max <span class="property-type">boolean</span></dt>
+        <dd>Maximum vale selectable using slider</dd>
+    </dl>
+    <dl class="message-properties">
+        <dt>Step <span class="property-type">integer</span></dt>
+        <dd>Step value selectable from slider</dd>
     </dl>
     <dl class="message-properties">
         <dt>Upper threshold<span class="property-type">float</span></dt>
@@ -173,7 +173,7 @@
     <p>This controller accepts one main input which has to have topic as "currentTemp" and payload needs to be a float</p>
     <p style="color: #AD1625;">The entire control is not functional untill this message is received</p>
     <p>The heater status is recalculated when this message recived, or when the user is changing the target temperature.</p>
-	<dd>Message example:</dd>
+    <dd>Message example:</dd>
         <pre>
 {
     "topic" : "currentTemp",
@@ -225,10 +225,14 @@
     </dl>
     <dl class="message-properties">
         <dt>userTargetValue<span class="property-type">float</span></dt>
-        <dd>The last or current target temperature set by user</dd>
+        <dd>The current target temperature set by user. This value will be the target until the next schedule if the isUserCustomLocked is false.</dd>
     </dl>
     <dl class="message-properties">
         <dt>isUserCustom<span class="property-type">boolean</span></dt>
         <dd>True if current target temperature is set by the user</dd>
+    </dl>
+    <dl class="message-properties">
+        <dt>isUserCustomLocked<span class="property-type">boolean</span></dt>
+        <dd>True if current target temperature is locked; if is true, the calendar value will not become targetValue, if is false and the user has set a custom value that value will be available until next schedule change</dd>
     </dl>
 </script>
