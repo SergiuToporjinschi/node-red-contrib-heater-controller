@@ -46,7 +46,7 @@ function getScheduleTemp(calendar, offset) {
 function recalculateAndTrigger(status, config, node) {
     var currentSchedule = getScheduleTemp(config.calendar);
     var lastSchedule = status.currentSchedule;
-    var changedSchedule = currentSchedule.temp !== lastSchedule.temp || currentSchedule.day !== lastSchedule.day || currentSchedule.time !== lastSchedule.time;
+    var changedSchedule = !lastSchedule || currentSchedule.temp !== lastSchedule.temp || currentSchedule.day !== lastSchedule.day || currentSchedule.time !== lastSchedule.time;
     if ((changedSchedule && status.isUserCustom && !status.isUserCustomLocked) ||
         !status.isUserCustom) {
         status.targetValue = currentSchedule.temp;
