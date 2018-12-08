@@ -2,7 +2,7 @@
 module.exports.init = function (config) {
     var conf = JSON.stringify(config);
     function getCSS() {
-        return String.raw`<style>
+        return String.raw`<style> 
             .iconFalse {
                 color: gray;
             }
@@ -106,7 +106,7 @@ module.exports.init = function (config) {
             $scope.msg.isUserCustom = true;
             $scope.send($scope.msg);
         };
-        $scope.lockCustom = function(){
+        $scope.lockCustom = function () {
             debugger;
             if ($scope.msg) {
                 $scope.msg.isUserCustomLocked = !$scope.msg.isUserCustomLocked;
