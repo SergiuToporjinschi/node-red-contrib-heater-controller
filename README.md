@@ -101,6 +101,10 @@ For example:
     True if current target temperature is set by the user
 ## Changelog
 
+### v1.1.1 (December 03, 2018)
+* Bug fixing,
+* Fixing validation of config parameters;
+* Changing the controller name to be complaint to the rule according which all UI controls needs to be prefixed with "ui_"
 ### v1.1.0 (December 03, 2018)
 * Bug fixing,
 * Adding locked user custom value; which is preventing schedule to change target temperature until user manual unlocks
