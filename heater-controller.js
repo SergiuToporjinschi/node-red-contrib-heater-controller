@@ -19,7 +19,7 @@ module.exports = function (RED) {
                     width: parseInt(config.width),
                     height: parseInt(config.height),
                     group: config.group,
-                    order: config.order || 1
+                    order: config.order || 0
                 }, backModule.getWidget()));
             } catch (error) {
                 node.error(RED._(error));

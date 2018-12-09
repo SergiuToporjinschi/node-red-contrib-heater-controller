@@ -101,6 +101,7 @@ For example:
     True if current target temperature is set by the user
 ## Changelog
 
+
 ### v1.1.4 (December 09, 2018)
 * Changing icon
 ### v1.1.1 (December 09, 2018)
