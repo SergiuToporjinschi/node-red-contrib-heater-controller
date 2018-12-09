@@ -11,7 +11,7 @@
   },
   "node-red": {
     "nodes": {
-      "heater_controller": "heater-controller.js"
+      "heater-controller": "heater-controller.js"
     }
   },
   "main": "heater-controller.js",
@@ -27,7 +27,7 @@
     "thermostat"
   ],
   "author": "Sergiu Toporjinschi",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "GPL 3.0",
   "bugs": {
     "url": "https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/issues"
   }

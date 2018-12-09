@@ -16,9 +16,10 @@ module.exports = function (RED) {
                 node.config = backModule.getAdaptedConfig();
                 done = ui.addWidget(Object.assign({
                     node: node,
-                    width: config.width,
-                    height: config.height,
-                    group: config.group
+                    width: parseInt(config.width),
+                    height: parseInt(config.height),
+                    group: config.group,
+                    order: config.order || 1
                 }, backModule.getWidget()));
             } catch (error) {
                 node.error(RED._(error));
@@ -28,7 +29,6 @@ module.exports = function (RED) {
             console.log(e);
         }
         node.on("close", function () {
-            console.log('done');
             if (done) {
                 done();
             }

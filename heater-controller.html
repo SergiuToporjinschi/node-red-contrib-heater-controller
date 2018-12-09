@@ -18,33 +18,53 @@
     </div>
     <div class="ident">
         <div class="form-row">
-            <label for="node-input-sliderMinValue"><i class="fa fa-step-forward" aria-hidden="true"/> <span data-i18n="heater_controller.label.min"></span></label>
-            <input type="text" id="node-input-sliderMinValue" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
+            <label for="node-input-sliderMinValue"><i class="fa fa-step-forward" aria-hidden="true"></i> <span data-i18n="heater_controller.label.min"></span></label>
+            <input type="number" step="1" id="node-input-sliderMinValue" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
         </div>
         <div class="form-row">
-            <label for="node-input-sliderMaxValue"><i class="fa fa-step-backward" aria-hidden="true"/> <span data-i18n="heater_controller.label.min"></span></label>
-            <input type="text" id="node-input-sliderMaxValue" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
+            <label for="node-input-sliderMaxValue"><i class="fa fa-step-backward" aria-hidden="true"></i> <span data-i18n="heater_controller.label.min"></span></label>
+            <input type="number" step="1" id="node-input-sliderMaxValue" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
         </div>
         <div class="form-row">
             <label for="node-input-sliderStep"> <span data-i18n="heater_controller.label.step"></span></label>
-            <input type="text" id="node-input-sliderStep" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
+            <input type="number" min="0.1" step="0.1" list="stepSliderValues" id="node-input-sliderStep" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
         </div>
+        <datalist id="stepSliderValues">
+                <option value="0.1">
+                <option value="0.5">
+                <option value="1">
+                <option value="1.5">
+                <option value="2">
+                <option value="2.5">
+                <option value="3">
+        </datalist>
     </div>
     <div class="form-row">
-        <label style="width:95%; border-bottom: 1px solid #eee;"><i class="fa fa-arrows-v"/> <span data-i18n="heater_controller.label.hysteresis"></label>
+        <label style="width:95%; border-bottom: 1px solid #eee;"><i class="fa fa-arrows-v"></i> <span data-i18n="heater_controller.label.hysteresis"></label>
     </div>
     <div class="ident">
         <div class="form-row" style="display: block;">
-            <label style="width: 140px !important" for="node-input-thresholdRising"><i class="fa fa-level-up"/> <span data-i18n="heater_controller.label.upThreshold"></label>
-            <input type="number" id="node-input-thresholdRising" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
+            <label style="width: 140px !important" for="node-input-thresholdRising"><i class="fa fa-level-up"></i> <span data-i18n="heater_controller.label.upThreshold"></label>
+            <input type="number" min="0" max="100" step="0.5" list="defaultNumbers" id="node-input-thresholdRising" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
         </div>
         <div class="form-row" style="display: block;">
-            <label style="width: 140px !important" for="node-input-thresholdFalling"><i class="fa fa-level-down"/> <span data-i18n="heater_controller.label.lowerThreshold"></label>
-            <input type="number" id="node-input-thresholdFalling" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
+            <label style="width: 140px !important" for="node-input-thresholdFalling"><i class="fa fa-level-down"></i> <span data-i18n="heater_controller.label.lowerThreshold"></label>
+            <input type="number" min="0" max="100" step="0.5" list="defaultNumbers" id="node-input-thresholdFalling"  data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
         </div>
+        <datalist id="defaultNumbers">
+                <option value="0">
+                <option value="0.5">
+                <option value="1">
+                <option value="1.5">
+                <option value="2">
+        </datalist>
     </div>
     <div class="form-row">
-        <label style="width:95%; border-bottom: 1px solid #eee;"><i class="fa fa-calendar"/> <span data-i18n="heater_controller.label.calendar"></label>
+        <label id="node-input-calendarEditorLabel" style="width:95%; border-bottom: 1px solid #eee;">
+            <i class="fa fa-calendar"></i> 
+            <span data-i18n="heater_controller.label.calendar"></span>
+            <button id="node-input-json-format" class="editor-button editor-button-small" style="float: right"><span data-i18n="editor:jsonEditor.format"></span></button>
+        </label>
     </div>
     <div class="ident">
         <div class="form-row">
@@ -62,12 +82,14 @@
         color: 'rgb( 63, 173, 181)',
         defaults: {
             group: { type: 'ui_group', required: true },
-            name: { value: '' },
+            name: { value: 'heater-controller' },
             order: { value: 0 },
             width: {
-                value: 0,
+                value: 8,
+                required: true,
                 validate: function (v) {
-                    var valid = true
+                    debugger
+                    var valid = true;
                     var width = v || 0;
                     var currentGroup = $('#node-input-group').val() || this.group;
                     var groupNode = RED.nodes.node(currentGroup);
@@ -76,20 +98,125 @@
                     return valid;
                 }
             },
-            height: { value: 0 },
-            sliderMinValue: { value: 10, validate: RED.validators.number() },
-            sliderMaxValue: { value: 35, validate: RED.validators.number() },
-            sliderStep: { value: 0.5, validate: RED.validators.number() },
-            thresholdRising: { value: 0.5, validate: RED.validators.number() },
-            thresholdFalling: { value: 0.5, validate: RED.validators.number() },
-            calendar: { value: "" }
+            height: { value: 3 },
+            sliderMinValue: {
+                value: 10,
+                required: true,
+                validate: function (v) {
+                    var max = $('#node-input-sliderMaxValue').val() || this.sliderMaxValue;
+                    return RED.validators.number(v)(v) && v > 0 && max > v;
+                }
+            },
+            sliderMaxValue: {
+                value: 35,
+                required: true,
+                validate: function (v) {
+                    var min = $('#node-input-sliderMinValue').val() || this.sliderMinValue;
+                    return RED.validators.number(v)(v) && v > 0 && min < v;
+                }
+            },
+            sliderStep: {
+                value: 0.5,
+                required: true,
+                validate: function (v) {
+                    return RED.validators.number(v)(v) && v > 0;
+                }
+            },
+            thresholdRising: {
+                value: 0.5,
+                validate: function (v) {
+                    return RED.validators.number(v)(v) && v >= 0 && v <= 100;
+                }
+            },
+            thresholdFalling: {
+                value: 0.5,
+                validate: function (v) {
+                    return RED.validators.number(v)(v) && v >= 0 && v <= 100;
+                }
+            },
+            calendar: {
+                required: true,
+                validate: function (v) {
+                    var valid = true;
+                    var calendar = {};
+                    try {
+                        calendar = JSON.parse(v);
+                    } catch (e) {
+                        valid = false;
+                        console.log("Invalid JSON in Heater calendar ", e);
+                    }
+                    var wd = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].sort();
+                    if (valid && wd.length != Object.keys(calendar).sort().length) {
+                        valid = false;
+                    }
+
+                    for (var i = 0; valid && i < wd.length; i++) {
+                        if (Object.keys(calendar[wd[i]]).length <= 0) {
+                            valid = false;
+                        }
+                    }
+                    $("#node-input-calendarEditorLabel").toggleClass("input-error", !valid);
+                    $("#node-input-calendarEditor").toggleClass("input-error", !valid);
+                    return valid;
+                },
+                value: JSON.stringify(
+                    {
+                        "Monday": {
+                            "00:00": 19,
+                            "06:20": 22,
+                            "08:00": 19,
+                            "16:40": 22,
+                            "23:59": 19
+                        },
+                        "Tuesday": {
+                            "00:00": 19,
+                            "06:20": 22,
+                            "08:00": 19,
+                            "16:40": 22,
+                            "23:59": 19
+                        },
+                        "Wednesday": {
+                            "00:00": 19,
+                            "06:20": 22,
+                            "08:00": 19,
+                            "16:40": 22,
+                            "23:59": 19
+                        },
+                        "Thursday": {
+                            "00:00": 19,
+                            "06:20": 22,
+                            "08:00": 19,
+                            "16:40": 22,
+                            "23:59": 19
+                        },
+                        "Friday": {
+                            "00:00": 19,
+                            "06:20": 23,
+                            "08:00": 19,
+                            "16:40": 22,
+                            "23:59": 19
+                        },
+                        "Saturday": {
+                            "00:00": 19,
+                            "08:00": 20,
+                            "20:00": 22,
+                            "23:59": 19
+                        },
+                        "Sunday": {
+                            "00:00": 19,
+                            "08:00": 20,
+                            "20:00": 22,
+                            "23:59": 19
+                        }
+                    }, null, 4)
+            }
         },
         inputs: 1,
         outputs: 1,
         align: "left",
         icon: "serial.png",
-        paletteLabel: "HeaterCtrl",
-        label: function () { return this.name || "HeaterCtrl"; },
+        paletteLabel: "heater",
+        label: function () { return this.name || "heater"; },
         oneditprepare: function () {
             $("#node-input-size").elementSizer({
                 width: "#node-input-width",
@@ -100,6 +227,15 @@
                 id: 'node-input-calendarEditor',
                 mode: 'ace/mode/json',
                 value: $("#node-input-calendar").val()
+            });
+            var editor = this.editor;
+            $("#node-input-json-format").on('click', function (e) {
+                e.preventDefault();
+                try {
+                    editor.getSession().setValue(JSON.stringify(JSON.parse(editor.getSession().getValue()), null, 4));
+                } catch (e) {
+                    console.log("Invalid JSON in Heater calendar ")
+                }
             });
             this.editor.focus();
         },
@@ -112,6 +248,11 @@
             this.sliderStep = Number.parseFloat(this.sliderStep)
             this.thresholdFalling = Number.parseFloat(this.thresholdFalling);
             this.thresholdRising = Number.parseFloat(this.thresholdRising);
+            try {
+                this.calendar = JSON.parse(this.calendar);
+            } catch (e) {
+                console.log("Invalid JSON in Heater calendar ", e);
+            }
         },
         oneditcancel: function () {
             this.editor.destroy();

@@ -98,7 +98,6 @@ module.exports.init = function (config) {
         };
 
         $scope.sendVal = function () {
-            debugger;
             if (!$scope.msg.userTargetValue) {
                 $scope.msg.userTargetValue == $scope.config.sliderMinValue;
             }
@@ -107,7 +106,6 @@ module.exports.init = function (config) {
             $scope.send($scope.msg);
         };
         $scope.lockCustom = function () {
-            debugger;
             if ($scope.msg) {
                 $scope.msg.isUserCustomLocked = !$scope.msg.isUserCustomLocked;
                 $scope.sendVal();
