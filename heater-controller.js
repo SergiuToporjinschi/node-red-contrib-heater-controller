@@ -34,5 +34,5 @@ module.exports = function (RED) {
             }
         });
     }
-    RED.nodes.registerType('heater-controller', getNode);
+    RED.nodes.registerType('ui_heater_controller', getNode);
 };

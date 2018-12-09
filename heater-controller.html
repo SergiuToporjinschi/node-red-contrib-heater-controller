@@ -1,4 +1,4 @@
-<script type="text/html text/x-red" data-template-name="heater-controller">
+<script type="text/html text/x-red" data-template-name="ui_heater_controller">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="heater_controller.label.name"></span></label>
         <input type="text" id="node-input-name">
@@ -10,7 +10,7 @@
     <div class="form-row" id="template-row-size">
         <label><i class="fa fa-object-group"></i> <span data-i18n="heater_controller.label.size"></span></label>
         <input type="hidden" id="node-input-width">
-        <input type="hidden" id="node-input-height"> 
+        <input type="hidden" id="node-input-height">
         <button class="editor-button" id="node-input-size"></button>
     </div>
     <div class="form-row">
@@ -77,12 +77,17 @@
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType("heater-controller", {
+    RED.nodes.registerType("ui_heater_controller", {
         category: 'dashboard',
         color: 'rgb( 63, 173, 181)',
         defaults: {
-            group: { type: 'ui_group', required: true },
-            name: { value: 'heater-controller' },
+            name: { value: 'heater' },
+            group: {
+                type: 'ui_group', required: true,
+                validate: function (v) {
+                    return v && RED.nodes.node(v) && RED.nodes.node(v).type === 'ui_group';
+                }
+            },
             order: { value: 0 },
             width: {
                 value: 8,
@@ -262,7 +267,7 @@
         }
     });
 </script>
-<script type="text/html text/x-red" data-help-name="heater-controller">
+<script type="text/html text/x-red" data-help-name="ui_heater_controller">
     <p>A dashboard ui interface node for controlling a heater;</p>
     <h3>Properties</h3>
     <dl class="message-properties">
