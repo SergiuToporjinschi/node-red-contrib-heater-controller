@@ -101,7 +101,9 @@ For example:
     True if current target temperature is set by the user
 ## Changelog
 
-### v1.1.1 (December 03, 2018)
+### v1.1.4 (December 09, 2018)
+* Changing icon
+### v1.1.1 (December 09, 2018)
 * Bug fixing,
 * Fixing validation of config parameters;
 * Changing the controller name to be complaint to the rule according which all UI controls needs to be prefixed with "ui_"
