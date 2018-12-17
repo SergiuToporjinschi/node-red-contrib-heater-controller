@@ -111,7 +111,11 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
     if ('currentTemp' === msg.topic) {
         returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
         context.set("values", returnValues);
-        this.node.send({ payload: returnValues });
+
+        this.node.send({
+            topic: this.config.topic,
+            payload: returnValues
+        });
     }
     return { msg: returnValues };
 };
@@ -122,7 +126,10 @@ backEndNode.prototype.beforeSend = function (msg, orig) {
         if (result) {
             var newValues = override(this.node.context().get("values") || {}, result); //merge user changes and store them in context
             this.node.context().set("values", newValues); //Store in conetext
-            return { payload: newValues };
+            return {
+                payload: newValues,
+                topic: this.config.topic
+            };
         } else {
             return undefined;
         }
