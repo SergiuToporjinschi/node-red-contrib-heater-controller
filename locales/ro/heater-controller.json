@@ -8,10 +8,17 @@
             "min": "Min",
             "max": "Max",
             "step": "Step",
+            "unit": "Unit",
+            "celsiusUnit": "Celsius",
+            "fahrenheitUnit": "Fahrenheit",
+            "kelvinUnit": "Kelvin",
             "hysteresis": "Hystereza",
-            "upThreshold" : "Limita superioara",
-            "lowerThreshold" : "Limita inferioara",
-            "calendar" : "Calendar"
+            "upThreshold": "Limita superioara",
+            "lowerThreshold": "Limita inferioara",
+            "calendar": "Calendar"
+        },
+        "placeholder": {
+            "value": "value"
         },
         "error": {
             "no-group": "Grup neconfigurat"

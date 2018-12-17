@@ -70,7 +70,7 @@ module.exports.init = function (config) {
                 <div layout-align="start center" flex="20"><i ng-click='lockCustom()' ng-class="msg.isUserCustomLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select" style="font-size: 2em; color:#0094ce"></i></div>
                 <div layout="row" layout-align="center center" flex>
                     <div layout-align="end center" layout="column">
-                        <div title="Current target (user value or calendar). Double-click for reset." ng-class="{'user-mode': msg.isUserCustom}" class="temp no-select" md-swipe-left="toSchedule()" md-swipe-right="toSchedule()" ng-dblclick="toSchedule()">{{msg.targetValue | number:1}}&deg;C</div>
+                        <div title="Current target (user value or calendar). Double-click for reset." ng-class="{'user-mode': msg.isUserCustom}" class="temp no-select" md-swipe-left="toSchedule()" md-swipe-right="toSchedule()" ng-dblclick="toSchedule()">{{msg.targetValue | number:1}}&deg;{{config.unit}}</div>
                     </div>
                     <div class='heaterContr' layout-align="center center" layout="column">
                         <div class="targetTemp" flex="50">{{msg.currentTemp | number:1}}</div>

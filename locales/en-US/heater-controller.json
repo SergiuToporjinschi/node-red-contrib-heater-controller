@@ -8,13 +8,17 @@
             "min": "Min",
             "max": "Max",
             "step": "Step",
+            "unit": "Unit",
+            "celsiusUnit": "Celsius",
+            "fahrenheitUnit": "Fahrenheit",
+            "kelvinUnit": "Kelvin",
             "hysteresis": "Hysteresis",
-            "upThreshold" : "Upper threshold",
-            "lowerThreshold" : "Lower threshold",
-            "calendar" : "Calendar"
+            "upThreshold": "Upper threshold",
+            "lowerThreshold": "Lower threshold",
+            "calendar": "Calendar"
         },
         "placeholder": {
-            "value" : "value"
+            "value": "value"
         },
         "error": {
             "no-group": "Group is missing"

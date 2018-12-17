@@ -25,7 +25,8 @@ A dashboard ui interface node for controlling a heater;
 Once a custom value has been set will keep that value untill the user is resetting it by double clicking the tarvet value or by sliding it left or right, when the current calendar target value is taken from calendar.
 
 ## Properties
-
+  * **Unit** (Celsius/Fahrenheit/Kelvin)
+    Display unit
   * **Min** (integer)
     Minimum value selectable using slider
   * **Max**  (boolean)
@@ -103,7 +104,8 @@ For example:
     True if current target temperature is set by the user
 ## Changelog
 
-
+### v1.1.6 (December 09, 2018)
+* Configurable measurement unit
 ### v1.1.4 (December 09, 2018)
 * Changing icon
 ### v1.1.1 (December 09, 2018)
@@ -122,5 +124,5 @@ For example:
 
 ## Testing schema
 ```
-[{"id":"e36110bc.07cfc","type":"inject","z":"d6abf2dd.559db","name":"","topic":"currentTemp","payload":"23.5","payloadType":"num","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":480,"y":340,"wires":[["1610944.99ab86c"]]},{"id":"1610944.99ab86c","type":"ui_heater_controller","z":"d6abf2dd.559db","name":"","group":"b65552e.2f213b","order":0,"width":8,"height":3,"sliderMinValue":10,"sliderMaxValue":35,"sliderStep":0.5,"thresholdRising":0.5,"thresholdFalling":0.5,"calendar":"{\n    \"Monday\": {\n        \"00:00\": 19,\n        \"06:20\": 22,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Tuesday\": {\n        \"00:00\": 19,\n        \"06:20\": 22,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Wednesday\": {\n        \"00:00\": 19,\n        \"06:20\": 22,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Thursday\": {\n        \"00:00\": 19,\n        \"06:20\": 22,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Friday\": {\n        \"00:00\": 19,\n        \"06:20\": 23,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Saturday\": {\n        \"00:00\": 19,\n        \"08:00\": 20,\n        \"20:00\": 22,\n        \"23:59\": 19\n    },\n    \"Sunday\": {\n        \"00:00\": 19,\n        \"08:00\": 20,\n        \"20:00\": 22,\n        \"23:59\": 19\n    }\n}","x":700,"y":340,"wires":[["52e82c94.e61884"]]},{"id":"52e82c94.e61884","type":"debug","z":"d6abf2dd.559db","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","x":860,"y":340,"wires":[]},{"id":"b65552e.2f213b","type":"ui_group","z":"","name":"Group 1","tab":"1913485f.ed4198","order":1,"disp":true,"width":"8","collapse":false},{"id":"1913485f.ed4198","type":"ui_tab","name":"Tab 1","icon":"dashboard","order":1}]
+[{"id":"ddcd21b1.e0cf7","type":"inject","z":"d6abf2dd.559db","name":"","topic":"currentTemp","payload":"23.5","payloadType":"num","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":360,"y":440,"wires":[["d21bf12d.1fc07"]]},{"id":"d21bf12d.1fc07","type":"ui_heater_controller","z":"d6abf2dd.559db","name":"","group":"b65552e.2f213b","unit":"C","order":0,"width":8,"height":3,"sliderMinValue":10,"sliderMaxValue":35,"sliderStep":0.5,"thresholdRising":0.5,"thresholdFalling":0.5,"calendar":"{\n    \"Monday\": {\n        \"00:00\": 19,\n        \"06:20\": 22,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Tuesday\": {\n        \"00:00\": 19,\n        \"06:20\": 22,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Wednesday\": {\n        \"00:00\": 19,\n        \"06:20\": 22,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Thursday\": {\n        \"00:00\": 19,\n        \"06:20\": 22,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Friday\": {\n        \"00:00\": 19,\n        \"06:20\": 23,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Saturday\": {\n        \"00:00\": 19,\n        \"08:00\": 20,\n        \"20:00\": 22,\n        \"23:59\": 19\n    },\n    \"Sunday\": {\n        \"00:00\": 19,\n        \"08:00\": 20,\n        \"20:00\": 22,\n        \"23:59\": 19\n    }\n}","x":580,"y":440,"wires":[["d5d1d9b4.384c08"]]},{"id":"d5d1d9b4.384c08","type":"debug","z":"d6abf2dd.559db","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","x":740,"y":440,"wires":[]},{"id":"b65552e.2f213b","type":"ui_group","z":"","name":"Group 1","tab":"1913485f.ed4198","order":1,"disp":true,"width":"8","collapse":false},{"id":"1913485f.ed4198","type":"ui_tab","name":"Tab 1","icon":"dashboard","order":1}]
 ```

@@ -14,6 +14,14 @@
         <button class="editor-button" id="node-input-size"></button>
     </div>
     <div class="form-row">
+        <label for="Unit"><i class="fa fa-thermometer-empty"></i> <span data-i18n="heater_controller.label.unit"></span></label>
+        <select id="unit">
+            <option value="C" id="cUnit"><span data-i18n="heater_controller.label.celsiusUnit"></span>x</option>
+            <option value="F" id="fUnit"><span data-i18n="heater_controller.label.fahrenheitUnit"></span>x</option>
+            <option value="K" id="kUnit"><span data-i18n="heater_controller.label.kelvinUnit"></span>xs</option>
+        </select>
+    </div>
+    <div class="form-row">
         <label style="width:95%; border-bottom: 1px solid #eee;"><span data-i18n="heater_controller.label.slider"> </span></label>
     </div>
     <div class="ident">
@@ -87,6 +95,10 @@
                 validate: function (v) {
                     return v && RED.nodes.node(v) && RED.nodes.node(v).type === 'ui_group';
                 }
+            },
+            unit: {
+                value: "C",
+                required: true
             },
             order: { value: 0 },
             width: {
@@ -222,6 +234,9 @@
         paletteLabel: "heater",
         label: function () { return this.name || "heater"; },
         oneditprepare: function () {
+            $('#cUnit').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.celsiusUnit"));
+            $('#fUnit').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.fahrenheitUnit"));
+            $('#kUnit').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.kelvinUnit"));
             $("#node-input-size").elementSizer({
                 width: "#node-input-width",
                 height: "#node-input-height",
@@ -241,6 +256,7 @@
                     console.log("Invalid JSON in Heater calendar ")
                 }
             });
+            $('#unit').val(this.unit || "C");
             this.editor.focus();
         },
         oneditsave: function () {
@@ -252,6 +268,7 @@
             this.sliderStep = Number.parseFloat(this.sliderStep)
             this.thresholdFalling = Number.parseFloat(this.thresholdFalling);
             this.thresholdRising = Number.parseFloat(this.thresholdRising);
+            this.unit = $('#unit').val();
             try {
                 this.calendar = JSON.parse(this.calendar);
             } catch (e) {
@@ -270,6 +287,10 @@
 <script type="text/html text/x-red" data-help-name="ui_heater_controller">
     <p>A dashboard ui interface node for controlling a heater;</p>
     <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Unit <span class="property-type">Celsius/Fahrenheit/Kelvin</span></dt>
+        <dd>Display unit</dd>
+    </dl>
     <dl class="message-properties">
         <dt>Min <span class="property-type">integer</span></dt>
         <dd>Minimum vale selectable using slider</dd>
