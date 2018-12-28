@@ -50,8 +50,8 @@ Once a custom value has been set will keep that value untill the user is resetti
 
 This controller accepts one main input which has to have topic as
 "currentTemp" and payload needs to be a float
-The entire control is not functional untill this message is received
-The heater status is recalculated when this message recived, or when the
+The entire control is not functional until this message is received
+The heater status is recalculated when this message received, or when the
 user is changing the target temperature.
 
 Message example:
@@ -60,6 +60,15 @@ Message example:
     "topic" : "currentTemp",
     "payload" : "22.5"
 }      
+```
+
+To set the temperature target value other than through the UI (eg. Voice command), the optional topic "userTargetValue" can be used.
+
+``` 
+{
+    "topic" : "userTargetValue",
+    "payload" : "20.0"
+}
 ```
 
 ## Output
