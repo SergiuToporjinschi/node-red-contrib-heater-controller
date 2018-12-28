@@ -4,7 +4,7 @@ function backEndNode(node, config) {
         throw 'heater_controller.error.no-group';
     }
     this.node = node;
-    this.allowedTopics = ['currentTemp'];
+    this.allowedTopics = ['currentTemp', 'userTargetValue'];
     this.config = config;
 }
 function override(target, source) {
@@ -108,14 +108,19 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
     value = parseFloat(value);
     var returnValues = override(existingValues, { [msg.topic]: value });
     context.set("values", returnValues);
-    if ('currentTemp' === msg.topic) {
-        returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
-        context.set("values", returnValues);
+    switch (msg.topic) {
+        case 'userTargetValue':
+            returnValues.isUserCustom = true;
+            /* No break, continue with updating values... */
+        case 'currentTemp':
+            returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
+            context.set("values", returnValues);
 
-        this.node.send({
-            topic: this.config.topic,
-            payload: returnValues
-        });
+            this.node.send({
+                topic: this.config.topic,
+                payload: returnValues
+            });
+            break;
     }
     return { msg: returnValues };
 };

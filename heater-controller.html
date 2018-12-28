@@ -348,13 +348,20 @@
     </dl>    
     <h3>Inputs</h3>
     <p>This controller accepts one main input which has to have topic as "currentTemp" and payload needs to be a float</p>
-    <p style="color: #AD1625;">The entire control is not functional untill this message is received</p>
-    <p>The heater status is recalculated when this message recived, or when the user is changing the target temperature.</p>
+    <p style="color: #AD1625;">The entire control is not functional until this message is received</p>
+    <p>The heater status is recalculated when this message received, or when the user is changing the target temperature.</p>
     <dd>Message example:</dd>
         <pre>
 {
     "topic" : "currentTemp",
     "payload" : "22.5"
+}
+        </pre>
+    <p>To set the temperature target value other than through the UI (eg. Voice command), the optional topic "userTargetValue" can be used.</p>
+        <pre>
+{
+    "topic" : "userTargetValue",
+    "payload" : "20.0"
 }
         </pre>
     <h3>Output</h3>
