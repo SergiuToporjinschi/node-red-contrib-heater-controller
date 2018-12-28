@@ -114,8 +114,8 @@ For example:
 ## Changelog
 
 ### v1.2.0 (December 28, 2018)
-* Add German translation (thanks to [![HanSolo72](https://github.com/HanSolo72)])
-* Chang user value using "userTargetValue" topic (thanks to [![Alcantor](https://github.com/Alcantor)])
+* Add German translation (thanks to [HanSolo72](https://github.com/HanSolo72))
+* Chang user value using "userTargetValue" topic (thanks to [Alcantor](https://github.com/Alcantor))
 ### v1.1.9 (December 12, 2018)
 * Adding topic
 ### v1.1.6 (December 12, 2018)
