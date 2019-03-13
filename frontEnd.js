@@ -1,5 +1,6 @@
 'use strict';
 module.exports.init = function (config) {
+	delete config._flow;
     var conf = JSON.stringify(config);
     function getCSS() {
         return String.raw`<style> 
