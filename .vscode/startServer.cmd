@@ -1,1 +1,1 @@
-nodemon -w ../**/*.* -i ../.vscode -V C:\Users\Toporjinschi\AppData\Roaming\npm\node_modules\node-red\red.js
+nodemon C:\Users\Toporjinschi\AppData\Roaming\npm\node_modules\node-red\red.js --config nodemon.json

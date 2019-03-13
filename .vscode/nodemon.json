@@ -1,0 +1,16 @@
+{
+    "restartable": "rs",
+    "ignore": [
+      ".git",
+      ".vscode"
+    ],
+    "verbose": true,
+    "watch": [
+      "../"
+    ],
+    "env": {
+      "NODE_ENV": "development"
+    },
+    "nodeArgs": "--inspect",
+    "ext": "js json md html"
+  }
