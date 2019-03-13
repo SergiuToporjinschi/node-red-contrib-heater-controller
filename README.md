@@ -21,6 +21,7 @@ A dashboard ui interface node for controlling a heater;
  * 5 - current temperature from calendar
  * 6 - next temperature from calendar and the starting hour
  * 7 - warning that current temperature is missing so the controller is not active
+ * 8 - if is locked, will keep the target temperature until user intervention; If is unlocked, will keep the target temperature until next calendar change; 
 
 Once a custom value has been set will keep that value untill the user is resetting it by double clicking the tarvet value or by sliding it left or right, when the current calendar target value is taken from calendar.
 
@@ -55,7 +56,7 @@ The heater status is recalculated when this message received, or when the
 user is changing the target temperature.
 
 Message example:
-``` 
+```json
 {
     "topic" : "currentTemp",
     "payload" : "22.5"
@@ -64,13 +65,70 @@ Message example:
 
 To set the temperature target value other than through the UI (eg. Voice command), the optional topic "userTargetValue" can be used.
 
-``` 
+```json
 {
     "topic" : "userTargetValue",
     "payload" : "20.0"
 }
 ```
 
+To set the calendar by imput message. 
+**<span style="color:red">ATTENTION</span>**<span style="color:red">: payload needs to be JSON Type</span>
+
+```json
+{
+    "topic" : "setCalendar",
+    "payload" : {
+        "Monday": {
+            "00:00": 99,
+            "06:20": 22,
+            "08:00": 19,
+            "16:40": 22,
+            "23:59": 19
+        },
+        "Tuesday": {
+            "00:00": 19,
+            "06:20": 22,
+            "08:00": 19,
+            "16:40": 22,
+            "23:59": 19
+        },
+        "Wednesday": {
+            "00:00": 19,
+            "06:20": 22,
+            "08:00": 19,
+            "16:40": 22,
+            "23:59": 19
+        },
+        "Thursday": {
+            "00:00": 19,
+            "06:20": 22,
+            "08:00": 19,
+            "16:40": 22,
+            "23:59": 19
+        },
+        "Friday": {
+            "00:00": 19,
+            "06:20": 23,
+            "08:00": 19,
+            "16:40": 22,
+            "23:59": 19
+        },
+        "Saturday": {
+            "00:00": 19,
+            "08:00": 20,
+            "20:00": 22,
+            "23:59": 19
+        },
+        "Sunday": {
+            "00:00": 19,
+            "08:00": 20,
+            "20:00": 22,
+            "23:59": 19
+        }
+    }
+}
+```
 ## Output
 
 A message is emited when the status is recalculated (when the user is
@@ -113,6 +171,10 @@ For example:
     True if current target temperature is set by the user
 ## Changelog
 
+### v1.2.1 (March 13, 2019)
+* Allowing negative values in hysteresis (ticket [Allow a minus figure in the upper hysteresis entry #18](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/issues/18))
+* Update documentation (ticket [Padlock function ? #17](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/issues/17))
+* Changeable Calendar by message (ticket [Changeable Calendar by message #16](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/issues/16))
 ### v1.2.0 (December 28, 2018)
 * Add German translation (thanks to [HanSolo72](https://github.com/HanSolo72))
 * Chang user value using "userTargetValue" topic (thanks to [Alcantor](https://github.com/Alcantor))
@@ -138,5 +200,5 @@ For example:
 
 ## Testing schema
 ```
-[{"id":"dd2014ed.0858b8","type":"inject","z":"d6abf2dd.559db","name":"","topic":"currentTemp","payload":"23.5","payloadType":"num","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":120,"y":180,"wires":[["576ecd80.efbc04"]]},{"id":"576ecd80.efbc04","type":"ui_heater_controller","z":"d6abf2dd.559db","name":"heater","group":"b65552e.2f213b","unit":"C","order":0,"width":8,"height":3,"topic":"heaterMessage","sliderMinValue":10,"sliderMaxValue":35,"sliderStep":0.5,"thresholdRising":0.5,"thresholdFalling":0.5,"calendar":"{\n    \"Monday\": {\n        \"00:00\": 19,\n        \"06:20\": 22,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Tuesday\": {\n        \"00:00\": 19,\n        \"06:20\": 22,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Wednesday\": {\n        \"00:00\": 19,\n        \"06:20\": 22,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Thursday\": {\n        \"00:00\": 19,\n        \"06:20\": 22,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Friday\": {\n        \"00:00\": 19,\n        \"06:20\": 23,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Saturday\": {\n        \"00:00\": 19,\n        \"08:00\": 20,\n        \"20:00\": 22,\n        \"23:59\": 19\n    },\n    \"Sunday\": {\n        \"00:00\": 19,\n        \"08:00\": 20,\n        \"20:00\": 22,\n        \"23:59\": 19\n    }\n}","x":290,"y":180,"wires":[["a7503252.5ecee"]]},{"id":"a7503252.5ecee","type":"debug","z":"d6abf2dd.559db","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","x":430,"y":180,"wires":[]},{"id":"b65552e.2f213b","type":"ui_group","z":"","name":"Group 1","tab":"1913485f.ed4198","order":1,"disp":true,"width":"8","collapse":false},{"id":"1913485f.ed4198","type":"ui_tab","name":"Tab 1","icon":"dashboard","order":1}]
+[{"id":"1bd80269.b8fb3e","type":"inject","z":"8a6eba9e.37afb8","name":"setCalendar","topic":"setCalendar","payload":"{\"Monday\":{\"00:00\":29,\"06:20\":22,\"08:00\":19,\"16:40\":22,\"23:59\":19},\"Tuesday\":{\"00:00\":19,\"06:20\":22,\"08:00\":19,\"16:40\":22,\"23:59\":19},\"Wednesday\":{\"00:00\":19,\"06:20\":22,\"08:00\":19,\"16:40\":10,\"23:59\":10},\"Thursday\":{\"00:00\":10,\"06:20\":10,\"08:00\":10,\"16:40\":10,\"23:59\":10},\"Friday\":{\"00:00\":19,\"06:20\":23,\"08:00\":19,\"16:40\":22,\"23:59\":19},\"Saturday\":{\"00:00\":19,\"08:00\":20,\"20:00\":22,\"23:59\":19},\"Sunday\":{\"00:00\":19,\"08:00\":20,\"20:00\":22,\"23:59\":19}}","payloadType":"json","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":190,"y":260,"wires":[["a47a34f8.a58ec8"]]},{"id":"a47a34f8.a58ec8","type":"ui_heater_controller","z":"8a6eba9e.37afb8","name":"heater","group":"e7110dea.42a4f","unit":"C","order":0,"width":8,"height":3,"topic":"","sliderMinValue":11,"sliderMaxValue":30,"sliderStep":0.5,"thresholdRising":0.5,"thresholdFalling":0.5,"calendar":"{\n    \"Monday\": {\n        \"00:00\": 99,\n        \"06:20\": 22,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Tuesday\": {\n        \"00:00\": 19,\n        \"06:20\": 22,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Wednesday\": {\n        \"00:00\": 19,\n        \"06:20\": 22,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Thursday\": {\n        \"00:00\": 19,\n        \"06:20\": 22,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Friday\": {\n        \"00:00\": 19,\n        \"06:20\": 23,\n        \"08:00\": 19,\n        \"16:40\": 22,\n        \"23:59\": 19\n    },\n    \"Saturday\": {\n        \"00:00\": 19,\n        \"08:00\": 20,\n        \"20:00\": 22,\n        \"23:59\": 19\n    },\n    \"Sunday\": {\n        \"00:00\": 19,\n        \"08:00\": 20,\n        \"20:00\": 22,\n        \"23:59\": 19\n    }\n}","x":390,"y":260,"wires":[["9c97d5a.ffc3d28"]]},{"id":"d4e58ace.1c50b8","type":"inject","z":"8a6eba9e.37afb8","name":"","topic":"currentTemp","payload":"23","payloadType":"num","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":200,"y":220,"wires":[["a47a34f8.a58ec8"]]},{"id":"9c97d5a.ffc3d28","type":"debug","z":"8a6eba9e.37afb8","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","x":530,"y":260,"wires":[]},{"id":"29a31b65.adcd74","type":"inject","z":"8a6eba9e.37afb8","name":"","topic":"userTargetValue","payload":"27","payloadType":"num","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":210,"y":300,"wires":[["a47a34f8.a58ec8"]]},{"id":"e7110dea.42a4f","type":"ui_group","z":"","name":"Default","tab":"3d03ca82.b2eac6","disp":true,"width":"8","collapse":false},{"id":"3d03ca82.b2eac6","type":"ui_tab","z":"","name":"Home","icon":"dashboard","disabled":false,"hidden":false}]
 ```

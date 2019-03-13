@@ -91,13 +91,13 @@ module.exports.init = function (config) {
         $scope.init = function (config) {
             $scope.config = config;
         };
-
+        //front->back
         $scope.toSchedule = function () {
             $scope.msg.isUserCustom = false;
             $scope.msg.targetValue = $scope.msg.temp;
             $scope.send($scope.msg);
         };
-
+        //front->back
         $scope.sendVal = function () {
             if (!$scope.msg.userTargetValue) {
                 $scope.msg.userTargetValue == $scope.config.sliderMinValue;
@@ -106,6 +106,7 @@ module.exports.init = function (config) {
             $scope.msg.isUserCustom = true;
             $scope.send($scope.msg);
         };
+        //front->back
         $scope.lockCustom = function () {
             if ($scope.msg) {
                 $scope.msg.isUserCustomLocked = !$scope.msg.isUserCustomLocked;

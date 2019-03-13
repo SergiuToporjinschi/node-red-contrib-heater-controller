@@ -4,7 +4,7 @@ function backEndNode(node, config) {
         throw 'heater_controller.error.no-group';
     }
     this.node = node;
-    this.allowedTopics = ['currentTemp', 'userTargetValue'];
+    this.allowedTopics = ['currentTemp', 'userTargetValue', 'setCalendar'];
     this.config = config;
 }
 function override(target, source) {
@@ -105,23 +105,34 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
         return { msg: existingValues }; //return what I already have
     }
     //in case we need more topics we have to see if we should convert value 
-    value = parseFloat(value);
-    var returnValues = override(existingValues, { [msg.topic]: value });
-    context.set("values", returnValues);
+    var returnValues = existingValues;
     switch (msg.topic) {
+        case 'setCalendar':
+            this.config.calendar = value;
+            returnValues = override(existingValues, { "calendar": value });
+            if(this.config.currentTemp) {
+                returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
+            }
+            context.set("values", returnValues);
+            break;
         case 'userTargetValue':
+            value = parseFloat(value);
+            returnValues = override(existingValues, { [msg.topic]: value });
+            context.set("values", returnValues);
             returnValues.isUserCustom = true;
-            /* No break, continue with updating values... */
+        /* No break, continue with updating values... */
         case 'currentTemp':
+            value = parseFloat(value);
+            returnValues = override(existingValues, { [msg.topic]: value });
+            context.set("values", returnValues);
             returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
             context.set("values", returnValues);
-
-            this.node.send({
-                topic: this.config.topic,
-                payload: returnValues
-            });
             break;
     }
+    this.node.send({
+        topic: this.config.topic,
+        payload: returnValues
+    });
     return { msg: returnValues };
 };
 

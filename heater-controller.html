@@ -30,11 +30,11 @@
     </div>
     <div class="ident">
         <div class="form-row">
-            <label for="node-input-sliderMinValue"><i class="fa fa-step-forward" aria-hidden="true"></i> <span data-i18n="heater_controller.label.min"></span></label>
+            <label for="node-input-sliderMinValue"><i class="fa fa-step-backward" aria-hidden="true"></i> <span data-i18n="heater_controller.label.min"></span></label>
             <input type="number" step="1" id="node-input-sliderMinValue" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
         </div>
         <div class="form-row">
-            <label for="node-input-sliderMaxValue"><i class="fa fa-step-backward" aria-hidden="true"></i> <span data-i18n="heater_controller.label.min"></span></label>
+            <label for="node-input-sliderMaxValue"><i class="fa fa-step-forward" aria-hidden="true"></i> <span data-i18n="heater_controller.label.max"></span></label>
             <input type="number" step="1" id="node-input-sliderMaxValue" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
         </div>
         <div class="form-row">
@@ -57,11 +57,11 @@
     <div class="ident">
         <div class="form-row" style="display: block;">
             <label style="width: 140px !important" for="node-input-thresholdRising"><i class="fa fa-level-up"></i> <span data-i18n="heater_controller.label.upThreshold"></label>
-            <input type="number" min="0" max="100" step="0.5" list="defaultNumbers" id="node-input-thresholdRising" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
+            <input type="number" min="-100" max="100" step="0.5" list="defaultNumbers" id="node-input-thresholdRising" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
         </div>
         <div class="form-row" style="display: block;">
             <label style="width: 140px !important" for="node-input-thresholdFalling"><i class="fa fa-level-down"></i> <span data-i18n="heater_controller.label.lowerThreshold"></label>
-            <input type="number" min="0" max="100" step="0.5" list="defaultNumbers" id="node-input-thresholdFalling"  data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
+            <input type="number" min="-100" max="100" step="0.5" list="defaultNumbers" id="node-input-thresholdFalling"  data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
         </div>
         <datalist id="defaultNumbers">
                 <option value="0">
@@ -146,13 +146,13 @@
             thresholdRising: {
                 value: 0.5,
                 validate: function (v) {
-                    return RED.validators.number(v)(v) && v >= 0 && v <= 100;
+                    return RED.validators.number(v)(v) && v >= -100 && v <= 100;
                 }
             },
             thresholdFalling: {
                 value: 0.5,
                 validate: function (v) {
-                    return RED.validators.number(v)(v) && v >= 0 && v <= 100;
+                    return RED.validators.number(v)(v) && v >= -100 && v <= 100;
                 }
             },
             calendar: {
