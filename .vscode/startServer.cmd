@@ -1,0 +1,1 @@
+nodemon -w ../**/*.* -i ../.vscode -V C:\Users\Toporjinschi\AppData\Roaming\npm\node_modules\node-red\red.js
