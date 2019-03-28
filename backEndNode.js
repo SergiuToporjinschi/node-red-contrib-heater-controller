@@ -83,7 +83,14 @@ backEndNode.prototype.getAdaptedConfig = function () {
     return this.config;
 }
 backEndNode.prototype.getWidget = function () {
-    var frontEnd = require('./frontEnd').init(this.config);
+    var frontConf = {
+		calendar: this.config.calendar,
+		unit: this.config.unit,
+		sliderStep: this.config.sliderStep,
+		sliderMinValue: this.config.sliderMinValue,
+		sliderMaxValue: this.config.sliderMaxValue
+	}
+    var frontEnd = require('./frontEnd').init(JSON.stringify(frontConf));
     var html = frontEnd.getHTML();
     var me = this;
     return {

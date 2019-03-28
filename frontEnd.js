@@ -1,7 +1,6 @@
 'use strict';
 module.exports.init = function (config) {
-	delete config._flow;
-    var conf = JSON.stringify(config);
+    var conf = config;
     function getCSS() {
         return String.raw`<style> 
             .iconFalse {
@@ -82,7 +81,7 @@ module.exports.init = function (config) {
                 </div>
             </div>
             <div layout-align="center stretch" layout="column">
-                <md-slider ng-disabled='!msg.targetValue || !msg.currentTemp' ng-change="sendVal()" class="md-primary" md-discrete ng-model="msg.userTargetValue" step="${config.sliderStep}" min="${config.sliderMinValue}" max="${config.sliderMaxValue}">
+                <md-slider md-discrete ng-disabled='!msg.targetValue || !msg.currentTemp' ng-change="sendVal()" class="md-primary" ng-model="msg.userTargetValue" step="{{config.sliderStep}}" min="{{config.sliderMinValue}}" max="{{config.sliderMaxValue}}">
             </div>
         </div>`;
     }
@@ -93,14 +92,15 @@ module.exports.init = function (config) {
         };
         //front->back
         $scope.toSchedule = function () {
+			debugger;
             $scope.msg.isUserCustom = false;
             $scope.msg.targetValue = $scope.msg.temp;
             $scope.send($scope.msg);
         };
         //front->back
-        $scope.sendVal = function () {
-            if (!$scope.msg.userTargetValue) {
-                $scope.msg.userTargetValue == $scope.config.sliderMinValue;
+        $scope.sendVal = function () {debugger;
+            if (!$scope.msg.userTargetValue) { 
+                $scope.msg.userTargetValue = $scope.config.sliderMinValue;
             }
             $scope.msg.targetValue = $scope.msg.userTargetValue;
             $scope.msg.isUserCustom = true;

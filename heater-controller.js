@@ -22,7 +22,6 @@ module.exports = function (RED) {
                     order: config.order || 0
                 }, backModule.getWidget()));
             } catch (error) { 
-                node.error(RED._(error));
                 throw error;
             }
         } catch (e) {

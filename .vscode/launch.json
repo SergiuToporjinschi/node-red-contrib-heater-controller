@@ -9,7 +9,8 @@
             "type": "node",
             "request": "attach",
             "name": "Attach by Process ID",
-            "processId": "${command:PickProcess}"
+            //"processId": "${command:PickProcess}"
+            "processId": 7516
         }
     ]
 }

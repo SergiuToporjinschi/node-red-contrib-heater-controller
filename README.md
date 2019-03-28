@@ -171,6 +171,8 @@ For example:
     True if current target temperature is set by the user
 ## Changelog
 
+### v1.2.2 (March 28, 2019)
+* Fixing (ticket [not working with latest node-red version 0.20.3 #20](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/issues/20))
 ### v1.2.1 (March 13, 2019)
 * Allowing negative values in hysteresis (ticket [Allow a minus figure in the upper hysteresis entry #18](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/issues/18))
 * Update documentation (ticket [Padlock function ? #17](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/issues/17))
