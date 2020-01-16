@@ -79,7 +79,11 @@ function recalculateAndTrigger(status, config, node) {
 };
 
 backEndNode.prototype.getAdaptedConfig = function () {
-    this.config.calendar = JSON.parse(this.config.calendar);
+    try {
+        this.config.calendar = JSON.parse(this.config.calendar);
+    } catch(err){
+        this.config.calendar = this.config.calendar;
+    }
     return this.config;
 }
 backEndNode.prototype.getWidget = function () {
@@ -111,7 +115,7 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
     if (this.allowedTopics.indexOf(msg.topic) < 0) { //if topic is not a safe one just trigger a refresh of UI
         return { msg: existingValues }; //return what I already have
     }
-    //in case we need more topics we have to see if we should convert value 
+    //in case we need more topics we have to see if we should convert value
     var returnValues = existingValues;
     switch (msg.topic) {
         case 'setCalendar':

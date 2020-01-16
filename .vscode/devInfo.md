@@ -13,7 +13,7 @@ in visual studio sett ```launch.json```
             "request": "attach",
             "name": "Attach by Process ID",
             "processId": "${command:PickProcess}",
-            "port": 9229
+            "port": 9228
         }
     ]
 }

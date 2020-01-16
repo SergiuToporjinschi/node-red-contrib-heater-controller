@@ -21,7 +21,7 @@ module.exports = function (RED) {
                     group: config.group,
                     order: config.order || 0
                 }, backModule.getWidget()));
-            } catch (error) { 
+            } catch (error) {
                 throw error;
             }
         } catch (e) {
