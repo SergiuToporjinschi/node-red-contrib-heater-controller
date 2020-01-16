@@ -57,11 +57,11 @@
     <div class="ident">
         <div class="form-row" style="display: block;">
             <label style="width: 140px !important" for="node-input-thresholdRising"><i class="fa fa-level-up"></i> <span data-i18n="heater_controller.label.upThreshold"></label>
-            <input type="number" min="-100" max="100" step="0.5" list="defaultNumbers" id="node-input-thresholdRising" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
+            <input type="number" min="-100" max="100" step="0.1" list="defaultNumbers" id="node-input-thresholdRising" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
         </div>
         <div class="form-row" style="display: block;">
             <label style="width: 140px !important" for="node-input-thresholdFalling"><i class="fa fa-level-down"></i> <span data-i18n="heater_controller.label.lowerThreshold"></label>
-            <input type="number" min="-100" max="100" step="0.5" list="defaultNumbers" id="node-input-thresholdFalling"  data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
+            <input type="number" min="-100" max="100" step="0.1" list="defaultNumbers" id="node-input-thresholdFalling"  data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
         </div>
         <datalist id="defaultNumbers">
                 <option value="0">
@@ -73,18 +73,18 @@
     </div>
     <div class="form-row">
         <label id="node-input-calendarEditorLabel" style="width:95%; border-bottom: 1px solid #eee;">
-            <i class="fa fa-calendar"></i> 
+            <i class="fa fa-calendar"></i>
             <span data-i18n="heater_controller.label.calendar"></span>
             <button id="node-input-json-format" class="editor-button editor-button-small" style="float: right"><span data-i18n="editor:jsonEditor.format"></span></button>
         </label>
     </div>
     <div class="ident">
         <div class="form-row">
-            <input type="hidden" id="node-input-calendar">
+            <input type="hidden" id="fix ode-input-calendar">
         </div>
         <div class="form-row node-text-editor-row">
             <div style="height:650px; min-height:100px" class="node-text-editor" id="node-input-calendarEditor" ></div>
-        </div>        
+        </div>
     </div>
 </script>
 
@@ -345,7 +345,7 @@
     }
 }
         </pre>
-    </dl>    
+    </dl>
     <h3>Inputs</h3>
     <p>This controller accepts one main input which has to have topic as "currentTemp" and payload needs to be a float</p>
     <p style="color: #AD1625;">The entire control is not functional until this message is received</p>
@@ -366,7 +366,7 @@
         </pre>
     <h3>Output</h3>
     <p>A message is emited when the status is recalculated (when the user is changing the target temperature or a new input message is received)</p>
-    
+
     <dd>For example:</dd>
     <pre>
 {
@@ -386,7 +386,7 @@
     "userTargetValue":20,
     "isUserCustom":true
 }
-    </pre>       
+    </pre>
     <dl class="message-properties">
         <dt>currentTemp<span class="property-type">float</span></dt>
         <dd>The last current temperature received</dd>
