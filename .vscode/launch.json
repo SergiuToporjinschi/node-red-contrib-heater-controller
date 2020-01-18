@@ -9,7 +9,9 @@
             "request": "attach",
             "name": "Attach by Process ID",
             "processId": "${command:PickProcess}",
-//            "port": 9228
+            "restart": true,
+            "protocol": "inspector"
+            // "port": 9229
             // "processId": 9228
         }
     ]
