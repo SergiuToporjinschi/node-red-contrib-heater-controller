@@ -4,7 +4,7 @@ function backEndNode(node, config) {
         throw 'heater_controller.error.no-group';
     }
     this.node = node;
-    this.allowedTopics = ['currentTemp', 'userTargetValue', 'setCalendar'];
+    this.allowedTopics = ['currentTemp', 'userTargetValue', 'setCalendar', "isUserCustomLocked"];
     this.config = config;
 }
 function override(target, source) {
@@ -81,19 +81,19 @@ function recalculateAndTrigger(status, config, node) {
 backEndNode.prototype.getAdaptedConfig = function () {
     try {
         this.config.calendar = JSON.parse(this.config.calendar);
-    } catch(err){
+    } catch (err) {
         this.config.calendar = this.config.calendar;
     }
     return this.config;
 }
 backEndNode.prototype.getWidget = function () {
     var frontConf = {
-		calendar: this.config.calendar,
-		unit: this.config.unit,
-		sliderStep: this.config.sliderStep,
-		sliderMinValue: this.config.sliderMinValue,
-		sliderMaxValue: this.config.sliderMaxValue
-	}
+        calendar: this.config.calendar,
+        unit: this.config.unit,
+        sliderStep: this.config.sliderStep,
+        sliderMinValue: this.config.sliderMinValue,
+        sliderMaxValue: this.config.sliderMaxValue
+    }
     var frontEnd = require('./frontEnd').init(JSON.stringify(frontConf));
     var html = frontEnd.getHTML();
     var me = this;
@@ -121,20 +121,25 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
         case 'setCalendar':
             this.config.calendar = value;
             returnValues = override(existingValues, { "calendar": value });
-            if(this.config.currentTemp) {
+            if (this.config.currentTemp) {
                 returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
             }
             context.set("values", returnValues);
             break;
+        case 'isUserCustomLocked':
+            returnValues = override(existingValues, { 'isUserCustomLocked': value });
+            context.set("values", returnValues);
+            returnValues.isUserCustomLocked = value;
+            break;
         case 'userTargetValue':
             value = parseFloat(value);
-            returnValues = override(existingValues, { [msg.topic]: value });
+            returnValues = override(existingValues, { 'userTargetValue': value });
             context.set("values", returnValues);
             returnValues.isUserCustom = true;
         /* No break, continue with updating values... */
         case 'currentTemp':
             value = parseFloat(value);
-            returnValues = override(existingValues, { [msg.topic]: value });
+            returnValues = override(existingValues, { 'currentTemp': value });
             context.set("values", returnValues);
             returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
             context.set("values", returnValues);
