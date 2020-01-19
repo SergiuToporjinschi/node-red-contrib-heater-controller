@@ -4,7 +4,7 @@ function backEndNode(node, config) {
         throw 'heater_controller.error.no-group';
     }
     this.node = node;
-    this.allowedTopics = ['currentTemp', 'userTargetValue', 'setCalendar', "isUserCustomLocked"];
+    this.allowedTopics = ['currentTemp', 'userTargetValue', 'setCalendar', "isUserCustomLocked", "userConfig"];
     this.config = config;
 }
 function override(target, source) {
@@ -118,6 +118,25 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
     //in case we need more topics we have to see if we should convert value
     var returnValues = existingValues;
     switch (msg.topic) {
+        case 'userConfig':
+            if (value.isUserCustomLocked !== undefined) {
+                returnValues = override(existingValues, { 'isUserCustomLocked': value.isUserCustomLocked });
+                returnValues.isUserCustomLocked = value.isUserCustomLocked;
+                context.set("values", returnValues);
+            }
+            if (value.userTargetValue !== undefined) {
+                var inValue = parseFloat(value.userTargetValue);
+                returnValues = override(existingValues, { 'userTargetValue': inValue });
+                returnValues.isUserCustom = true;
+                context.set("values", returnValues);
+            }
+            if (value.isUserCustom !== undefined) {
+                returnValues = override(existingValues, { 'isUserCustom': value.isUserCustom });
+                returnValues.isUserCustom = value.isUserCustom;
+                context.set("values", returnValues);
+            }
+
+            break;
         case 'setCalendar':
             this.config.calendar = value;
             returnValues = override(existingValues, { "calendar": value });
@@ -126,25 +145,28 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
             }
             context.set("values", returnValues);
             break;
+        //DEPRECATED
         case 'isUserCustomLocked':
             returnValues = override(existingValues, { 'isUserCustomLocked': value });
             context.set("values", returnValues);
             returnValues.isUserCustomLocked = value;
             break;
+        //DEPRECATED
         case 'userTargetValue':
             value = parseFloat(value);
             returnValues = override(existingValues, { 'userTargetValue': value });
-            context.set("values", returnValues);
             returnValues.isUserCustom = true;
-        /* No break, continue with updating values... */
+            break;
         case 'currentTemp':
             value = parseFloat(value);
             returnValues = override(existingValues, { 'currentTemp': value });
             context.set("values", returnValues);
-            returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
-            context.set("values", returnValues);
+            // returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
+            // context.set("values", returnValues);
             break;
     }
+    returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
+    context.set("values", returnValues);
     this.node.send({
         topic: this.config.topic,
         payload: returnValues
