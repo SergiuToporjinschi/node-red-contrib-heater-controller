@@ -161,8 +161,6 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
             value = parseFloat(value);
             returnValues = override(existingValues, { 'currentTemp': value });
             context.set("values", returnValues);
-            // returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
-            // context.set("values", returnValues);
             break;
     }
     returnValues = recalculateAndTrigger(returnValues, this.config, this.node);

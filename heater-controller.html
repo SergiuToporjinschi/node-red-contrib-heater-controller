@@ -351,23 +351,58 @@
         </pre>
     </dl>
     <h3>Inputs</h3>
-    <p>This controller accepts one main input which has to have topic as "currentTemp" and payload needs to be a float</p>
-    <p style="color: #AD1625;">The entire control is not functional until this message is received</p>
-    <p>The heater status is recalculated when this message received, or when the user is changing the target temperature.</p>
-    <dd>Message example:</dd>
-        <pre>
-{
+    <dl class="message-properties">
+        <dt>currentTemp</dt>
+        <dd>
+            This controller accepts one main input which has to have topic as "currentTemp" and payload needs to be a float
+            <p>The heater status is recalculated when this message received, or when the user is changing the target temperature.</p>
+            <p style="color: #AD1625;">The entire control is not functional until this message is received</p>
+<pre>{
     "topic" : "currentTemp",
     "payload" : "22.5"
-}
-        </pre>
-    <p>To set the temperature target value other than through the UI (eg. Voice command), the optional topic "userTargetValue" can be used.</p>
-        <pre>
-{
+}</pre>
+        </dd>
+    </dl>
+
+    <dl class="message-properties">
+        <dt>userConfig</dt>
+        <dd>To set user configuration value other than through the UI (eg. Voice command), the optional topic <b>userConfig</b> can be used.
+            <ul>
+                <li><b>isUserCustomLocked</b> - will enable/disable the lock on the deashboard;</li>
+                <li><b>userTargetValue</b> - will set a user target temperature on the deashboard, and will set `isUserCustom` as true if is not set in the message; </li>
+                <li><b>isUserCustom</b> - will set a user target temperature on the deashboard according to current target or to current `userTargetValue`, if is received on false without `userTargetValue` then the will change only the slider;</li>
+            </ul>
+<pre>{
+    "topic" : "userConfig",
+    "payload" : {"isUserCustomLocked": true, "userTargetValue": 25.5, "isUserCustom": false}
+}</pre>
+        </dd>
+    </dl>
+
+
+    <dl class="message-properties">
+        <dt>userTargetValue</dt>
+        <dd>To set the temperature target value other than through the UI (eg. Voice command), the optional topic <b>userTargetValue</b> can be used.
+        <p style="color: #AD1625;">DEPRECATED This feature will be remove on next release, use userConfig instead</p>
+<pre>{
     "topic" : "userTargetValue",
     "payload" : "20.0"
-}
-        </pre>
+}</pre>
+        </dd>
+    </dl>
+
+    <dl class="message-properties">
+        <dt>isUserCustomLocked</dt>
+        <dd>To set userCustomLocked value other than through the UI (eg. Voice command), the optional topic <b>isUuserCustomLocked</b> can be used.
+        <p style="color: #AD1625;">DEPRECATED This feature will be remove on next release, use userConfig instead</p>
+<pre>{
+        "topic" : "isUserCustomLocked",
+        "payload" : true
+}</pre>
+        </dd>
+    </dl>
+
+
     <h3>Output</h3>
     <p>A message is emited when the status is recalculated (when the user is changing the target temperature or a new input message is received)</p>
 

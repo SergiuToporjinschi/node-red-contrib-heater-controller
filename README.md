@@ -73,7 +73,7 @@ Message example:
 }
 ```
 * **userTargetValue** - To set the temperature target value other than through the UI (eg. Voice command), the optional topic "userTargetValue" can be used.
-**<span style="color:orange">DEPRECATED</span>**<span style="color:orange">: This feature will be remove on next release, use userConfig instead</span>
+**<span style="color:orange">DEPRECATED</span>**<span style="color:orange">: This feature will be remove on next release, use `userConfig` instead</span>
 ```json
 {
     "topic" : "userTargetValue",
@@ -81,7 +81,7 @@ Message example:
 }
 ```
 
-* **isUserCustomLocked** - To set userCustomLocked value other than through the UI (eg. Voice command), the optional topic "isUuserCustomLocked" can be used.
+* **isUserCustomLocked** - To set userCustomLocked value other than through the UI (eg. Voice command), the optional topic `isUuserCustomLocked` can be used.
 **<span style="color:orange">DEPRECATED</span>**<span style="color:orange">: This feature will be remove on next release, use userConfig instead</span>
 ```json
 {
