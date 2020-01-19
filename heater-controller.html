@@ -259,7 +259,7 @@
             this.editor = RED.editor.createEditor({
                 id: 'node-input-calendarEditor',
                 mode: 'ace/mode/json',
-                value: this.calendar
+                value: $("#node-input-calendar").val()
             });
             var editor = this.editor;
             $("#node-input-json-format").on('click', function (e) {
@@ -284,7 +284,7 @@
             this.thresholdFalling = Number.parseFloat(this.thresholdFalling);
             this.thresholdRising = Number.parseFloat(this.thresholdRising);
             this.unit = $('#unit').val();
-            this.calendar = JSON.parse(calendarVal);
+            $("#node-input-calendar").val(calendarVal);
         },
         oneditcancel: function () {
             this.editor.destroy();
