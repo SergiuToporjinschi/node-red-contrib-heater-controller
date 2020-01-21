@@ -62,6 +62,7 @@ module.exports.init = function (config) {
             <div layout="row" layout-align="end center" class="warning-icon">
                 <span class="info" title="Current calendar temp" ng-show="msg.currentSchedule != undefined"><i class="fa fa-calendar-o" aria-hidden="true"></i>{{msg.currentSchedule.temp}}&deg;{{config.unit}} ({{msg.currentSchedule.time}})</span>
                 <span class="info" title="Next calendar temp" ng-show="msg.nextSchedule != undefined"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i>{{msg.nextSchedule.temp}}&deg;{{config.unit}} ({{msg.nextSchedule.time}})</span>
+                <span class="info" title="Logs" ng-show="msg.logs.length > 0" ng-click="showLogs()"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i></span>
                 <div flex></div>
                 <i title="Calendar is missing" class="fa fa-calendar"  style="color:red" aria-hidden="true" ng-if="!config.calendar"></i>
                 <i title="Current temperature is missing" class="fa fa-thermometer-empty"  style="color:red" aria-hidden="true" ng-if="!msg.currentTemp"></i>
@@ -90,15 +91,19 @@ module.exports.init = function (config) {
         $scope.init = function (config) {
             $scope.config = config;
         };
+        $scope.showLogs = function(){
+            for(var i in $scope.msg.logs){
+                console.log($scope.msg.logs[i]);
+            }
+        }
         //front->back
         $scope.toSchedule = function () {
-			debugger;
             $scope.msg.isUserCustom = false;
             $scope.msg.targetValue = $scope.msg.temp;
             $scope.send($scope.msg);
         };
         //front->back
-        $scope.sendVal = function () {debugger;
+        $scope.sendVal = function () {
             if (!$scope.msg.userTargetValue) { 
                 $scope.msg.userTargetValue = $scope.config.sliderMinValue;
             }
