@@ -59,6 +59,7 @@ module.exports.init = function (config) {
     function getHTML() {
         return String.raw`
         <div class='wrapper' layout="column" flex layout-align="center stretch" ng-init='init(${conf})'>
+            <p ng-if="config.title" class="nr-dashboard-cardtitle">{{config.title}}</p>
             <div layout="row" layout-align="end center" class="warning-icon">
                 <span class="info" title="Current calendar temp" ng-show="msg.currentSchedule != undefined"><i class="fa fa-calendar-o" aria-hidden="true"></i>{{msg.currentSchedule.temp}}&deg;{{config.unit}} ({{msg.currentSchedule.time}})</span>
                 <span class="info" title="Next calendar temp" ng-show="msg.nextSchedule != undefined"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i>{{msg.nextSchedule.temp}}&deg;{{config.unit}} ({{msg.nextSchedule.time}})</span>

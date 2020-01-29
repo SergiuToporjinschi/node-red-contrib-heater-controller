@@ -1,5 +1,5 @@
 'use strict';
-function backEndNode(node, config) {
+function backEndNode(node, config, ui) {
     if (!config || !config.hasOwnProperty("group")) {
         throw 'heater_controller.error.no-group';
     }
@@ -90,6 +90,7 @@ backEndNode.prototype.getWidget = function () {
     var frontConf = {
         calendar: this.config.calendar,
         unit: this.config.unit,
+        title: this.config.title,
         sliderStep: this.config.sliderStep,
         sliderMinValue: this.config.sliderMinValue,
         sliderMaxValue: this.config.sliderMaxValue

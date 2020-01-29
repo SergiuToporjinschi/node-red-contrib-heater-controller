@@ -4,6 +4,7 @@
             "size": "Size",
             "name": "Name",
             "group": "Group",
+            "title": "Title",
             "topic": "Topic",
             "slider": "Slider",
             "min": "Min",

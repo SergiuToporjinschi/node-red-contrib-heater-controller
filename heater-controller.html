@@ -18,6 +18,10 @@
         <input type="text" id="node-input-topic">
     </div>
     <div class="form-row">
+        <label for="node-input-title"><i class="fa fa-tasks"></i> <span data-i18n="heater_controller.label.title"></span></label>
+        <input type="text" id="node-input-title">
+    </div>
+    <div class="form-row">
         <label for="Unit"><i class="fa fa-thermometer-empty"></i> <span data-i18n="heater_controller.label.unit"></span></label>
         <select id="unit">
             <option value="C" id="cUnit"><span data-i18n="heater_controller.label.celsiusUnit"></span>x</option>
@@ -120,6 +124,7 @@
             },
             height: { value: 3 },
             topic: { value: '' },
+            title: {value: ''},
             sliderMinValue: {
                 value: 10,
                 required: true,
@@ -301,6 +306,10 @@
     <dl class="message-properties">
         <dt>Topic <span class="property-type">string</span></dt>
         <dd>Topic sent with all messages; this cannot be taken from input since it expects a fixed topic</dd>
+    </dl>
+    <dl class="message-properties">
+        <dt>Title <span class="property-type">string</span></dt>
+        <dd>An optional title that will appear in front view to identify the heater.</dd>
     </dl>
     <dl class="message-properties">
         <dt>Unit <span class="property-type">Celsius/Fahrenheit/Kelvin</span></dt>
