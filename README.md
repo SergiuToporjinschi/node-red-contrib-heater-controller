@@ -188,6 +188,8 @@ For example:
     True if current target temperature is set by the user
 ## Changelog
 
+### v2.0.1 (January 29, 2020)
+* Adding optional title [Suggestion: UI element to identify heater / add heater name #35](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/issues/35);
 ### v2.0.0 (January 19, 2020)
 * Support for Node-red 1.0;
 * Adding `isUserCustomLocked` and `userConfig` as incoming message;
