@@ -1,5 +1,5 @@
 'use strict';
-function backEndNode(node, config, ui) {
+function backEndNode(node, config) {
     if (!config || !config.hasOwnProperty("group")) {
         throw 'heater_controller.error.no-group';
     }

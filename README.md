@@ -26,6 +26,8 @@ A dashboard ui interface node for controlling a heater;
 Once a custom value has been set will keep that value untill the user is resetting it by double clicking the tarvet value or by sliding it left or right, when the current calendar target value is taken from calendar.
 
 ## Properties
+  * **Title** (string)
+    Display an optional title in front-end
   * **Unit** (Celsius/Fahrenheit/Kelvin)
     Display unit
   * **Min** (integer)
