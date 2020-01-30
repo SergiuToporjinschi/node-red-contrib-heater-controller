@@ -144,8 +144,8 @@ module.exports.init = function (config) {
             }
         }
         //front->back
-        $scope.toSchedule = function () {
-            if (msg.isUserCustom) {
+        $scope.toSchedule = function () {debugger;
+            if ($scope.msg.isUserCustom) {
                 $scope.msg.isUserCustom = false;
                 $scope.msg.targetValue = $scope.msg.temp;
                 $scope.send($scope.msg);
