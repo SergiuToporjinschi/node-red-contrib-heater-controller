@@ -39,9 +39,12 @@ module.exports.init = function (config) {
                 margin-left: 5px;
                 margin-right: 5px;
             }
+            .link-pointer {
+                cursor: pointer;
+            }
+
             .no-select:focus {
                 outline: none;
-                cursor: pointer;
                 -webkit-touch-callout: none; /* iOS Safari */
                 -webkit-user-select: none; /* Safari */
                 -khtml-user-select: none; /* Konqueror HTML */
@@ -88,13 +91,13 @@ module.exports.init = function (config) {
                     <i title="Heater status" class="fa fa-fire icon" ng-class="msg.currentHeaterStatus == 'on' ? 'iconTrue' : 'iconFalse'" aria-hidden="true"></i>
                 </div>
                 <div flex layout="row"> 
-                    <div class="item"><i ng-click='lockCustom()' ng-class="msg.isUserCustomLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select" style="font-size: 2.2em; color:#0094ce"></i></div>
-                    <div class="item"><i ng-click='toSchedule()' ng-class="{'icon-enabled no-select' : msg.isUserCustom, 'icon-disabled' : !msg.isUserCustom}" class="fa fa-calendar-check-o" style="font-size: 2em"></i></div>
+                    <div class="item"><i ng-click='lockCustom()' ng-class="msg.isUserCustomLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select link-pointer" style="font-size: 2.2em; color:#0094ce"></i></div>
+                    <div class="item"><i ng-click='toSchedule()' ng-class="{'icon-enabled link-pointer' : msg.isUserCustom, 'icon-disabled' : !msg.isUserCustom}" class="fa fa-calendar-check-o no-select" style="font-size: 2em"></i></div>
                 </div>
             </div>
             <div layout="column" layout-align="stretch" flex class="container ">
                 <md-button ng-click="changeTemp('+')" md-no-ink class="md-raised"><i class="fa fa-chevron-up" style="max-hei"></i></md-button>
-                <span ng-class="{'user-mode': msg.isUserCustom}" class="temp no-select" md-swipe-left="toSchedule()" md-swipe-right="toSchedule()" ng-dblclick="toSchedule()" title="Current target (user value or calendar). Double-click for reset." >{{msg.targetValue | number:1}}&deg;{{config.unit}}</span>
+                <span ng-class="{'user-mode': msg.isUserCustom}" class="temp no-select link-pointer" md-swipe-left="toSchedule()" md-swipe-right="toSchedule()" ng-dblclick="toSchedule()" title="Current target (user value or calendar). Double-click for reset." >{{msg.targetValue | number:1}}&deg;{{config.unit}}</span>
                 <md-button ng-click="changeTemp('-')" md-no-ink class="md-raised"style="margin:0px"><i class="fa fa-chevron-down" ></i></md-button>
             </div>
         </div>`;
@@ -111,10 +114,10 @@ module.exports.init = function (config) {
                 <i title="Current temperature is missing" class="fa fa-thermometer-empty"  style="color:red" aria-hidden="true" ng-if="!msg.currentTemp"></i>
             </div>
             <div layout="row" layout-align="center center" class="container">
-                <div layout-align="start center" flex="20"><i ng-click='lockCustom()' ng-class="msg.isUserCustomLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select" style="font-size: 2em; color:#0094ce"></i></div>
+                <div layout-align="start center" flex="20"><i ng-click='lockCustom()' ng-class="msg.isUserCustomLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select link-pointer" style="font-size: 2em; color:#0094ce"></i></div>
                 <div layout="row" layout-align="center center" flex>
                     <div layout-align="end center" layout="column">
-                        <div title="Current target (user value or calendar). Double-click for reset." ng-class="{'user-mode': msg.isUserCustom}" class="temp no-select" md-swipe-left="toSchedule()" md-swipe-right="toSchedule()" ng-dblclick="toSchedule()">{{msg.targetValue | number:1}}&deg;{{config.unit}}</div>
+                        <div title="Current target (user value or calendar). Double-click for reset." ng-class="{'user-mode': msg.isUserCustom}" class="temp no-select link-pointer" md-swipe-left="toSchedule()" md-swipe-right="toSchedule()" ng-dblclick="toSchedule()">{{msg.targetValue | number:1}}&deg;{{config.unit}}</div>
                     </div>
                     <div class='heaterContr' layout-align="center center" layout="column">
                         <div class="targetTemp" flex="50">{{msg.currentTemp | number:1}}</div>
@@ -152,13 +155,14 @@ module.exports.init = function (config) {
             }
         };
         //front->back
-        $scope.sendVal = function () {
+        $scope.sendVal = function (event) { debugger;
             if (!$scope.msg.userTargetValue) {
                 $scope.msg.userTargetValue = $scope.config.sliderMinValue;
             }
             $scope.msg.targetValue = $scope.msg.userTargetValue;
             $scope.msg.isUserCustom = true;
             $scope.send($scope.msg);
+            event.stopPropagation();
         };
         //front->back
         $scope.lockCustom = function () {
