@@ -89,7 +89,7 @@ module.exports.init = function (config) {
                 </div>
                 <div flex layout="row"> 
                     <div class="item"><i ng-click='lockCustom()' ng-class="msg.isUserCustomLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select" style="font-size: 2.2em; color:#0094ce"></i></div>
-                    <div class="item"><i ng-click='toSchedule()' ng-class="{'icon-enabled' : msg.isUserCustom, 'icon-disabled' : !msg.isUserCustom}" class="fa fa-calendar-check-o no-select" style="font-size: 2em"></i></div>
+                    <div class="item"><i ng-click='toSchedule()' ng-class="{'icon-enabled no-select' : msg.isUserCustom, 'icon-disabled' : !msg.isUserCustom}" class="fa fa-calendar-check-o" style="font-size: 2em"></i></div>
                 </div>
             </div>
             <div layout="column" layout-align="stretch" flex class="container ">
