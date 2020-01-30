@@ -9,6 +9,7 @@ module.exports.init = function (config) {
             .iconTrue {
                 color: #ff4d4d;
             }
+
             .icon {
                 margin: 0;
                 margin-left: 10px;
@@ -54,11 +55,52 @@ module.exports.init = function (config) {
             .info {
                 margin-right: 10px;
             }
+            .btns .info .item {
+                margin-bottom: 7px
+            }
+            .btns .icon-disabled {
+                color: gray;
+            }
+            .btns .icon-enabled {
+                color:#0094ce;
+            }
+            .btns .temp {
+                color: #0094ce;
+                font-size: 3em;
+                font-weight: bold;
+                text-align: center;
+            }
             </style>`;
     }
     function getHTML() {
-        return String.raw`
-        <div class='wrapper' layout="column" flex layout-align="center stretch" ng-init='init(${conf})'>
+        var confString = JSON.stringify(config);
+        if (conf.displayMode === 'buttons') {
+            return String.raw`
+        <div class='btns' layout="row" flex layout-align="space-between stretch" ng-init='init(${confString})'>
+            <div layout="column" layout-align="space-between start" flex="43" class="warning-icon info">
+                <span ng-show="msg.currentSchedule != undefined" title="Current calendar temp" class="item"><i class="fa fa-calendar-o" aria-hidden="true"></i>{{msg.currentSchedule.temp}}&deg;{{config.unit}} ({{msg.currentSchedule.time}})</span>
+                <span ng-show="msg.nextSchedule != undefined" class="item" title="Next calendar temp" ><i class="fa fa-calendar-plus-o" aria-hidden="true"></i>{{msg.nextSchedule.temp}}&deg;{{config.unit}} ({{msg.nextSchedule.time}})</span>
+                <span ng-show="msg.logs.length > 0" ng-click="showLogs()" class="item" title="Logs"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i></span>
+                <span class="item" ><i class="fa fa-thermometer-3" aria-hidden="true"></i>{{msg.currentTemp | number:1}}&deg;{{config.unit}}</span>
+                <div layout="row" layout-align="space-between start" class="item">
+                    <i title="Calendar is missing" class="fa fa-calendar" style="color:red" aria-hidden="true" ng-if="!config.calendar"></i>
+                    <i title="Current temperature is missing" class="fa fa-thermometer-empty" style="color:red" aria-hidden="true" ng-if="!msg.currentTemp"></i>
+                    <i title="Heater status" class="fa fa-fire icon" ng-class="msg.currentHeaterStatus == 'on' ? 'iconTrue' : 'iconFalse'" aria-hidden="true"></i>
+                </div>
+                <div flex layout="row"> 
+                    <div class="item"><i ng-click='lockCustom()' ng-class="msg.isUserCustomLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select" style="font-size: 2.2em; color:#0094ce"></i></div>
+                    <div class="item"><i ng-click='toSchedule()' ng-class="{'icon-enabled' : msg.isUserCustom, 'icon-disabled' : !msg.isUserCustom}" class="fa fa-calendar-check-o no-select" style="font-size: 2em"></i></div>
+                </div>
+            </div>
+            <div layout="column" layout-align="stretch" flex class="container ">
+                <md-button ng-click="changeTemp('+')" md-no-ink class="md-raised"><i class="fa fa-chevron-up" style="max-hei"></i></md-button>
+                <span ng-class="{'user-mode': msg.isUserCustom}" class="temp no-select" md-swipe-left="toSchedule()" md-swipe-right="toSchedule()" ng-dblclick="toSchedule()" title="Current target (user value or calendar). Double-click for reset." >{{msg.targetValue | number:1}}&deg;{{config.unit}}</span>
+                <md-button ng-click="changeTemp('-')" md-no-ink class="md-raised"style="margin:0px"><i class="fa fa-chevron-down" ></i></md-button>
+            </div>
+        </div>`;
+        } else
+            return String.raw`
+        <div class='wrapper' layout="column" flex layout-align="center stretch" ng-init='init(${confString})'>
             <p ng-if="config.title" class="nr-dashboard-cardtitle">{{config.title}}</p>
             <div layout="row" layout-align="end center" class="warning-icon">
                 <span class="info" title="Current calendar temp" ng-show="msg.currentSchedule != undefined"><i class="fa fa-calendar-o" aria-hidden="true"></i>{{msg.currentSchedule.temp}}&deg;{{config.unit}} ({{msg.currentSchedule.time}})</span>
@@ -91,21 +133,27 @@ module.exports.init = function (config) {
     function getController($scope, events) {
         $scope.init = function (config) {
             $scope.config = config;
+            $scope.msg = {
+                currentSchedule: { temp: 20.90 },
+                nextSchedule: { temp: 20.90 }
+            };
         };
-        $scope.showLogs = function(){
-            for(var i in $scope.msg.logs){
+        $scope.showLogs = function () {
+            for (var i in $scope.msg.logs) {
                 console.log($scope.msg.logs[i]);
             }
         }
         //front->back
         $scope.toSchedule = function () {
-            $scope.msg.isUserCustom = false;
-            $scope.msg.targetValue = $scope.msg.temp;
-            $scope.send($scope.msg);
+            if (msg.isUserCustom) {
+                $scope.msg.isUserCustom = false;
+                $scope.msg.targetValue = $scope.msg.temp;
+                $scope.send($scope.msg);
+            }
         };
         //front->back
         $scope.sendVal = function () {
-            if (!$scope.msg.userTargetValue) { 
+            if (!$scope.msg.userTargetValue) {
                 $scope.msg.userTargetValue = $scope.config.sliderMinValue;
             }
             $scope.msg.targetValue = $scope.msg.userTargetValue;
@@ -119,6 +167,24 @@ module.exports.init = function (config) {
                 $scope.sendVal();
             }
         };
+        $scope.changeTemp = function (direction,a) {debugger;
+            if (!$scope.msg.userTargetValue) {
+                $scope.msg.userTargetValue = $scope.msg.currentTemp;
+            }
+            if (direction === '+') {
+                $scope.msg.userTargetValue = $scope.msg.targetValue + $scope.config.sliderStep;
+            } else {
+                $scope.msg.userTargetValue = $scope.msg.targetValue - $scope.config.sliderStep;
+            }
+            if ($scope.config.sliderMinValue >= $scope.msg.userTargetValue) {
+                $scope.msg.userTargetValue = $scope.config.sliderMinValue;
+            }
+            if ($scope.config.sliderMaxValue <= $scope.msg.userTargetValue) {
+                $scope.msg.userTargetValue = $scope.config.sliderMaxValue;
+            }
+            $scope.msg.isUserCustom = true;
+            $scope.send($scope.msg);
+        }
     }
 
     return {

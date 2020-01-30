@@ -91,11 +91,12 @@ backEndNode.prototype.getWidget = function () {
         calendar: this.config.calendar,
         unit: this.config.unit,
         title: this.config.title,
+        displayMode: this.config.displayMode,
         sliderStep: this.config.sliderStep,
         sliderMinValue: this.config.sliderMinValue,
         sliderMaxValue: this.config.sliderMaxValue
     }
-    var frontEnd = require('./frontEnd').init(JSON.stringify(frontConf));
+    var frontEnd = require('./frontEnd').init(frontConf);
     var html = frontEnd.getHTML();
     var me = this;
     return {
@@ -106,7 +107,6 @@ backEndNode.prototype.getWidget = function () {
         storeFrontEndInputAsState: true,
         initController: frontEnd.getController,
         convertBack: function(value) {
-            debugger
             return value
         },
         beforeEmit: function () { return me.beforeEmit.apply(me, arguments); },

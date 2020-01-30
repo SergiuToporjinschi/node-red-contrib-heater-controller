@@ -1,29 +1,32 @@
 {
-   "heater_controller":{
-      "label":{
-         "size":"Größe",
-         "name":"Name",
-         "group":"Gruppe",
-         "title": "Titel",         
-         "topic":"Topic",
-         "slider":"Schieberegler",
-         "min":"Min",
-         "max":"Max",
-         "step":"Schrittweite",
-         "unit":"Einheit",
-         "celsiusUnit":"Celsius",
-         "fahrenheitUnit":"Fahrenheit",
-         "kelvinUnit":"Kelvin",
-         "hysteresis":"Hysterese",
-         "upThreshold":"Oberer Schwellwert",
-         "lowerThreshold":"Unterer Schwellwert",
-         "calendar":"Kalender"
+   "heater_controller": {
+      "label": {
+         "size": "Größe",
+         "name": "Name",
+         "group": "Gruppe",
+         "title": "Titel",
+         "displayMode": "Anzeige",
+         "dmButtons": "Tasten",
+         "dmSlider": "Schieberegler",
+         "topic": "Topic",
+         "slider": "Schieberegler",
+         "min": "Min",
+         "max": "Max",
+         "step": "Schrittweite",
+         "unit": "Einheit",
+         "celsiusUnit": "Celsius",
+         "fahrenheitUnit": "Fahrenheit",
+         "kelvinUnit": "Kelvin",
+         "hysteresis": "Hysterese",
+         "upThreshold": "Oberer Schwellwert",
+         "lowerThreshold": "Unterer Schwellwert",
+         "calendar": "Kalender"
       },
-      "placeholder":{
-         "value":"value"
+      "placeholder": {
+         "value": "value"
       },
-      "error":{
-         "no-group":"Gruppe nicht konfiguriert"
+      "error": {
+         "no-group": "Gruppe nicht konfiguriert"
       }
    }
 }
