@@ -79,18 +79,19 @@ module.exports.init = function (config) {
         var confString = JSON.stringify(config);
         if (conf.displayMode === 'buttons') {
             return String.raw`
+            <p ng-if="config.title" class="nr-dashboard-cardtitle">{{config.title}}</p>
         <div class='btns' layout="row" flex layout-align="space-between stretch" ng-init='init(${confString})'>
             <div layout="column" layout-align="space-between start" flex="43" class="warning-icon info">
                 <span ng-show="msg.currentSchedule != undefined" title="Current calendar temp" class="item"><i class="fa fa-calendar-o" aria-hidden="true"></i>{{msg.currentSchedule.temp}}&deg;{{config.unit}} ({{msg.currentSchedule.time}})</span>
                 <span ng-show="msg.nextSchedule != undefined" class="item" title="Next calendar temp" ><i class="fa fa-calendar-plus-o" aria-hidden="true"></i>{{msg.nextSchedule.temp}}&deg;{{config.unit}} ({{msg.nextSchedule.time}})</span>
                 <span ng-show="msg.logs.length > 0" ng-click="showLogs()" class="item" title="Logs"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i></span>
-                <span class="item" ><i class="fa fa-thermometer-3" aria-hidden="true"></i>{{msg.currentTemp | number:1}}&deg;{{config.unit}}</span>
+                <span ng-show="msg.currentTemp" class="item" ><i class="fa fa-thermometer-3" aria-hidden="true"></i>{{msg.currentTemp | number:1}}&deg;{{config.unit}}</span>
                 <div layout="row" layout-align="space-between start" class="item">
                     <i title="Calendar is missing" class="fa fa-calendar" style="color:red" aria-hidden="true" ng-if="!config.calendar"></i>
-                    <i title="Current temperature is missing" class="fa fa-thermometer-empty" style="color:red" aria-hidden="true" ng-if="!msg.currentTemp"></i>
-                    <i title="Heater status" class="fa fa-fire icon" ng-class="msg.currentHeaterStatus == 'on' ? 'iconTrue' : 'iconFalse'" aria-hidden="true"></i>
+                    <i title="Current temperature is missing" ng-class="{'user-mode': msg.isUserCustom}" class="fa fa-thermometer-empty" style="color:red" aria-hidden="true" ng-if="!msg.currentTemp"></i>
+                    <i ng-show="msg.currentTemp" title="Heater status" class="fa fa-fire icon" ng-class="msg.currentHeaterStatus == 'on' ? 'iconTrue' : 'iconFalse'" aria-hidden="true"></i>
                 </div>
-                <div flex layout="row"> 
+                <div flex layout="row" ng-show="msg.currentTemp"> 
                     <div class="item"><i ng-click='lockCustom()' ng-class="msg.isUserCustomLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select link-pointer" style="font-size: 2.2em; color:#0094ce"></i></div>
                     <div class="item"><i ng-click='toSchedule()' ng-class="{'icon-enabled link-pointer' : msg.isUserCustom, 'icon-disabled' : !msg.isUserCustom}" class="fa fa-calendar-check-o no-select" style="font-size: 2em"></i></div>
                 </div>
