@@ -106,7 +106,7 @@ backEndNode.prototype.getWidget = function () {
         forwardInputMessages: false,
         storeFrontEndInputAsState: true,
         initController: frontEnd.getController,
-        convertBack: function(value) {
+        convertBack: function (value) {
             return value
         },
         beforeEmit: function () { return me.beforeEmit.apply(me, arguments); },
@@ -170,7 +170,7 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
     }
     returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
     context.set("values", returnValues);
-    returnValues.logs = this.node.context().get('logs');
+    // returnValues.logs = this.node.context().get('logs');
     this.node.send({
         topic: this.config.topic,
         payload: returnValues
@@ -180,20 +180,30 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
 
 backEndNode.prototype.beforeSend = function (msg, orig) {
     if (orig) {
-        var result = recalculateAndTrigger(orig.msg, this.config, this.node);
-        if (result) {
+        if (orig.msg.action === 'showLogs') {
+            delete orig.msg.action;
             var logs = this.node.context().get("logs") || [];
-            var newValues = override(this.node.context().get("values") || {}, result); //merge user changes and store them in context
-            this.node.context().set("values", newValues); //Store in conetext
-            newValues.time = new Date().toLocaleString();
-            logs.push(JSON.parse(JSON.stringify(newValues)));
-            this.node.context().set("logs", logs);
-            return {
-                payload: newValues,
-                topic: this.config.topic
-            };
+            return [undefined, {
+                payload: logs,
+                topic: 'logs'
+            }];
         } else {
-            return undefined;
+            var oldStatus = orig.msg.currentHeaterStatus;
+            var result = recalculateAndTrigger(orig.msg, this.config, this.node);
+            if (result && result.currentHeaterStatus != oldStatus) {
+                var logs = this.node.context().get("logs") || [];
+                var newValues = override(this.node.context().get("values") || {}, result); //merge user changes and store them in context
+                this.node.context().set("values", newValues); //Store in conetext
+                newValues.time = new Date().toLocaleString();
+                logs.push(JSON.parse(JSON.stringify(newValues)));
+                this.node.context().set("logs", logs);
+                return [{
+                    payload: newValues,
+                    topic: this.config.topic
+                }, undefined];
+            } else {
+                return [undefined, undefined];
+            }
         }
     }
 };

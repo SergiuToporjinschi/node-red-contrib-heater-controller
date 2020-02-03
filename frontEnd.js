@@ -81,10 +81,9 @@ module.exports.init = function (config) {
             return String.raw`
             <p ng-if="config.title" class="nr-dashboard-cardtitle">{{config.title}}</p>
         <div class='btns' layout="row" flex layout-align="space-between stretch" ng-init='init(${confString})'>
-            <div layout="column" layout-align="space-between start" flex="43" class="warning-icon info">
+            <div layout="column" layout-align="space-between start" flex="41" class="warning-icon info">
                 <span ng-show="msg.currentSchedule != undefined" title="Current calendar temp" class="item"><i class="fa fa-calendar-o" aria-hidden="true"></i>{{msg.currentSchedule.temp}}&deg;{{config.unit}} ({{msg.currentSchedule.time}})</span>
                 <span ng-show="msg.nextSchedule != undefined" class="item" title="Next calendar temp" ><i class="fa fa-calendar-plus-o" aria-hidden="true"></i>{{msg.nextSchedule.temp}}&deg;{{config.unit}} ({{msg.nextSchedule.time}})</span>
-                <span ng-show="msg.logs.length > 0" ng-click="showLogs()" class="item" title="Logs"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i></span>
                 <span ng-show="msg.currentTemp" class="item" ><i class="fa fa-thermometer-3" aria-hidden="true"></i>{{msg.currentTemp | number:1}}&deg;{{config.unit}}</span>
                 <div layout="row" layout-align="space-between start" class="item">
                     <i title="Calendar is missing" class="fa fa-calendar" style="color:red" aria-hidden="true" ng-if="!config.calendar"></i>
@@ -94,6 +93,7 @@ module.exports.init = function (config) {
                 <div flex layout="row" ng-show="msg.currentTemp"> 
                     <div class="item"><i ng-click='lockCustom()' ng-class="msg.isUserCustomLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select link-pointer" style="font-size: 2.2em; color:#0094ce"></i></div>
                     <div class="item"><i ng-click='toSchedule()' ng-class="{'icon-enabled link-pointer' : msg.isUserCustom, 'icon-disabled' : !msg.isUserCustom}" class="fa fa-calendar-check-o no-select" style="font-size: 2em"></i></div>
+                    <div class="item"><i ng-click="showLogs()" title="Logs" ng-class="{'icon-enabled ':msg.logs.length > 0, 'icon-disabled' : !msg.logs || msg.logs.length <= 0 }" class="fa fa-file-text-o no-select" style="font-size: 2em"></i></div>
                 </div>
             </div>
             <div layout="column" layout-align="stretch" flex class="container ">
@@ -109,9 +109,9 @@ module.exports.init = function (config) {
             <div layout="row" layout-align="end center" class="warning-icon">
                 <span class="info" title="Current calendar temp" ng-show="msg.currentSchedule != undefined"><i class="fa fa-calendar-o" aria-hidden="true"></i>{{msg.currentSchedule.temp}}&deg;{{config.unit}} ({{msg.currentSchedule.time}})</span>
                 <span class="info" title="Next calendar temp" ng-show="msg.nextSchedule != undefined"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i>{{msg.nextSchedule.temp}}&deg;{{config.unit}} ({{msg.nextSchedule.time}})</span>
-                <span class="info" title="Logs" ng-show="msg.logs.length > 0" ng-click="showLogs()"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i></span>
+                <span class="info" title="Logs" ng-show="msg.logs.length > 0" ng-click="showLogs()"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
                 <div flex></div>
-                <i title="Calendar is missing" class="fa fa-calendar"  style="color:red" aria-hidden="true" ng-if="!config.calendar"></i>
+                <i title="Calendar is missing" class="fa fa-calendar" style="color:red" aria-hidden="true" ng-if="!config.calendar"></i>
                 <i title="Current temperature is missing" class="fa fa-thermometer-empty"  style="color:red" aria-hidden="true" ng-if="!msg.currentTemp"></i>
             </div>
             <div layout="row" layout-align="center center" class="container">
@@ -137,18 +137,17 @@ module.exports.init = function (config) {
     function getController($scope, events) {
         $scope.init = function (config) {
             $scope.config = config;
-            $scope.msg = {
-                currentSchedule: { temp: 20.90 },
-                nextSchedule: { temp: 20.90 }
-            };
         };
         $scope.showLogs = function () {
-            for (var i in $scope.msg.logs) {
-                console.log($scope.msg.logs[i]);
-            }
+            // $scope.sendValue("showLogs");
+            $scope.msg.action = "showLogs";
+            $scope.sendVal();
+            // for (var i in $scope.msg.logs) {
+            //     console.log($scope.msg.logs[i]);
+            // }
         }
         //front->back
-        $scope.toSchedule = function () {debugger;
+        $scope.toSchedule = function () {
             if ($scope.msg.isUserCustom) {
                 $scope.msg.isUserCustom = false;
                 $scope.msg.targetValue = $scope.msg.temp;
@@ -156,23 +155,26 @@ module.exports.init = function (config) {
             }
         };
         //front->back
-        $scope.sendVal = function (event) { debugger;
+        $scope.sendVal = function (event) {
             if (!$scope.msg.userTargetValue) {
                 $scope.msg.userTargetValue = $scope.config.sliderMinValue;
             }
             $scope.msg.targetValue = $scope.msg.userTargetValue;
             $scope.msg.isUserCustom = true;
             $scope.send($scope.msg);
-            event.stopPropagation();
+            if (event && event.stopPropagation) {
+                event.stopPropagation();
+            }
         };
         //front->back
         $scope.lockCustom = function () {
+            debug
             if ($scope.msg) {
                 $scope.msg.isUserCustomLocked = !$scope.msg.isUserCustomLocked;
                 $scope.sendVal();
             }
         };
-        $scope.changeTemp = function (direction,a) {debugger;
+        $scope.changeTemp = function (direction) {
             if (!$scope.msg.userTargetValue) {
                 $scope.msg.userTargetValue = $scope.msg.currentTemp;
             }
