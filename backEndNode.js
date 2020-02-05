@@ -1,4 +1,5 @@
 'use strict';
+var _ = require('lodash');
 function backEndNode(node, config) {
     if (!config || !config.hasOwnProperty("group")) {
         throw 'heater_controller.error.no-group';
@@ -37,6 +38,32 @@ function getScheduleTemp(calendar, offset) {
     };
     return ret;
 };
+/*
+{
+   "topic":"",
+   "payload":{
+      "currentTemp":23, B
+      "targetValue":22, CALC
+      "isUserCustom":false, -> IB
+	  "isUserCustomLocked" : true, ->IB
+	  "userTargetValue": 23.5 -> IB
+      "currentSchedule":{ -> calendar
+         "temp":22,
+         "day":"Wednesday",
+         "time":"16:40"
+      },
+      "nextSchedule":{ ->calendar
+         "temp":19,
+         "day":"Wednesday",
+         "time":"23:59"
+      },
+      "currentHeaterStatus":"off", CALC
+      "time":"2/5/2020, 10:02:30 PM"
+   },
+   "_msgid":"28d1c13e.20ae7e"
+}
+
+calendar = 10
 
 /**
  * Decides if we should turn on or off the heater;
@@ -47,8 +74,7 @@ function recalculateAndTrigger(status, config, node) {
     var currentSchedule = getScheduleTemp(config.calendar);
     var lastSchedule = status.currentSchedule;
     var changedSchedule = !lastSchedule || currentSchedule.temp !== lastSchedule.temp || currentSchedule.day !== lastSchedule.day || currentSchedule.time !== lastSchedule.time;
-    if ((changedSchedule && status.isUserCustom && !status.isUserCustomLocked) ||
-        !status.isUserCustom) {
+    if ((changedSchedule && status.isUserCustom && !status.isUserCustomLocked) || !status.isUserCustom) {
         status.targetValue = currentSchedule.temp;
         status.isUserCustom = false;
     } else if (status.isUserCustom) {
@@ -86,6 +112,24 @@ function logChanges(node, newValues) {
         node.context().set("logs", logs);
     }
 };
+function recalculate(lastInfoNode, newInfoNode, node) {
+    newInfoNode.currentSchedule = getScheduleTemp(node.config.calendar);
+    newInfoNode.nextSchedule = getScheduleTemp(node.config.calendar, 1);
+
+    /** is true if the schedule has changed */
+    var changedBySchedule = lastInfoNode.currentSchedule.temp !== newInfoNode.currentSchedule.temp || lastInfoNode.currentSchedule.day !== newInfoNode.currentSchedule.day || lastInfoNode.currentSchedule.time !== newInfoNode.currentSchedule.time;
+    if (changedBySchedule && !newInfoNode.isUserCustomLocked) { //changed by schedule
+        /** Set temperature based on user preference or calendar */
+        newInfoNode.targetValue = newInfoNode.currentSchedule.temp;
+    } else if (changedBySchedule && !newInfoNode.isUserCustom) { //changed by schedule
+        /** Set temperature based on user preference or calendar */
+        newInfoNode.targetValue = newInfoNode.currentSchedule.temp;
+    }
+
+
+}
+
+
 backEndNode.prototype.getAdaptedConfig = function () {
     try {
         this.config.calendar = JSON.parse(this.config.calendar);
@@ -93,7 +137,28 @@ backEndNode.prototype.getAdaptedConfig = function () {
         this.config.calendar = this.config.calendar;
     }
     return this.config;
-}
+};
+
+backEndNode.prototype.defaultInfoNode = {
+    "currentTemp": 20,
+    "targetValue": 20,
+    "isUserCustom": false,
+    "isUserCustomLocked": false,
+    "userTargetValue": 20,
+    "currentSchedule": {
+        "temp": 20,
+        "day": "Monday",
+        "time": "00:00"
+    },
+    "nextSchedule": {
+        "temp": 20,
+        "day": "Monday",
+        "time": "08:00"
+    },
+    "currentHeaterStatus": "off",
+    "time": new Date().toLocaleString()
+};
+
 backEndNode.prototype.getWidget = function () {
     var frontConf = {
         calendar: this.config.calendar,
@@ -106,7 +171,12 @@ backEndNode.prototype.getWidget = function () {
     }
     var frontEnd = require('./frontEnd').init(frontConf);
     var html = frontEnd.getHTML();
+
     var me = this;
+    /** initialize infoNode */
+    var info = _.extend(this.defaultInfoNode, this.node.context().get('infoNode') || {});
+    this.node.context().set('infoNode', info);
+
     return {
         format: html,
         templateScope: "local",
@@ -121,9 +191,23 @@ backEndNode.prototype.getWidget = function () {
         beforeSend: function () { return me.beforeSend.apply(me, arguments); }
     };
 }
-
+//BACK toFront
 backEndNode.prototype.beforeEmit = function (msg, value) {
     var context = this.node.context();
+    var infoNode = context.get("infoNode");
+    var newInfoNode = JSON.parse(JSON.stringify(infoNode));
+    /**backword compatibility */
+    if (msg.topic === 'currentTemp') {
+        value = { 'currentTemp': value };
+        msg.topic = "userConfig";
+    }
+    if (msg.topic === 'userConfig') {
+        //filter incomming properties to allow only those that can be changed by message
+        var changedProp = _.pick(value, ['isUserCustom', 'isUserCustomLocked', 'userTargetValue', 'currentTemp']);
+        newInfoNode = _.extend(newInfoNode, changedProp);
+        recalculate(infoNode, newInfoNode, this.node);
+    }
+
     var existingValues = context.get("values") || {};
     if (this.allowedTopics.indexOf(msg.topic) < 0) { //if topic is not a safe one just trigger a refresh of UI
         return { msg: existingValues }; //return what I already have
@@ -132,22 +216,22 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
     var returnValues = existingValues;
     switch (msg.topic) {
         case 'userConfig':
-            if (value.isUserCustomLocked !== undefined) {
-                returnValues = override(existingValues, { 'isUserCustomLocked': value.isUserCustomLocked });
-                returnValues.isUserCustomLocked = value.isUserCustomLocked;
-                context.set("values", returnValues);
-            }
-            if (value.userTargetValue !== undefined) {
-                var inValue = parseFloat(value.userTargetValue);
-                returnValues = override(existingValues, { 'userTargetValue': inValue });
-                returnValues.isUserCustom = true;
-                context.set("values", returnValues);
-            }
-            if (value.isUserCustom !== undefined) {
-                returnValues = override(existingValues, { 'isUserCustom': value.isUserCustom });
-                returnValues.isUserCustom = value.isUserCustom;
-                context.set("values", returnValues);
-            }
+            // if (value.isUserCustomLocked !== undefined) {
+            //     returnValues = override(existingValues, { 'isUserCustomLocked': value.isUserCustomLocked });
+            //     returnValues.isUserCustomLocked = value.isUserCustomLocked;
+            //     context.set("values", returnValues);
+            // }
+            // if (value.userTargetValue !== undefined) {
+            //     var inValue = parseFloat(value.userTargetValue);
+            //     returnValues = override(existingValues, { 'userTargetValue': inValue });
+            //     returnValues.isUserCustom = true;
+            //     context.set("values", returnValues);
+            // }
+            // if (value.isUserCustom !== undefined) {
+            //     returnValues = override(existingValues, { 'isUserCustom': value.isUserCustom });
+            //     returnValues.isUserCustom = value.isUserCustom;
+            //     context.set("values", returnValues);
+            // }
 
             break;
         case 'setCalendar':
@@ -179,7 +263,7 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
     var oldStatus = existingValues.currentHeaterStatus;
     returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
     context.set("values", returnValues);
-    if (returnValues.currentHeaterStatus != oldStatus){
+    if (returnValues.currentHeaterStatus != oldStatus) {
         logChanges(this.node, returnValues);
     }
     // returnValues.logs = this.node.context().get('logs');
@@ -189,7 +273,7 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
     });
     return { msg: returnValues };
 };
-
+//BACK frontToBack
 backEndNode.prototype.beforeSend = function (msg, orig) {
     if (orig) {
         if (orig.msg.action === 'showLogs') {

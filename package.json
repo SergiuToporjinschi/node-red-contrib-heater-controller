@@ -2,7 +2,9 @@
   "name": "node-red-contrib-heater-controller",
   "version": "2.0.1",
   "contributors": [],
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "~4.17.15"
+  },
   "deprecated": false,
   "description": "A dashboard ui interface node for controlling a heater.",
   "homepage": "https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller#readme",
