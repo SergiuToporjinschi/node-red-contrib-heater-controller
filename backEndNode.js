@@ -78,6 +78,14 @@ function recalculateAndTrigger(status, config, node) {
     return status;
 };
 
+function logChanges(node, newValues) {
+    if (node.config.logLength > 0) {
+        var logs = node.context().get("logs") || [];
+        newValues.time = new Date().toLocaleString();
+        logs.push(JSON.parse(JSON.stringify(newValues)));
+        node.context().set("logs", logs);
+    }
+};
 backEndNode.prototype.getAdaptedConfig = function () {
     try {
         this.config.calendar = JSON.parse(this.config.calendar);
@@ -168,8 +176,12 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
             context.set("values", returnValues);
             break;
     }
+    var oldStatus = existingValues.currentHeaterStatus;
     returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
     context.set("values", returnValues);
+    if (returnValues.currentHeaterStatus != oldStatus){
+        logChanges(this.node, returnValues);
+    }
     // returnValues.logs = this.node.context().get('logs');
     this.node.send({
         topic: this.config.topic,
@@ -191,12 +203,9 @@ backEndNode.prototype.beforeSend = function (msg, orig) {
             var oldStatus = orig.msg.currentHeaterStatus;
             var result = recalculateAndTrigger(orig.msg, this.config, this.node);
             if (result && result.currentHeaterStatus != oldStatus) {
-                var logs = this.node.context().get("logs") || [];
                 var newValues = override(this.node.context().get("values") || {}, result); //merge user changes and store them in context
-                this.node.context().set("values", newValues); //Store in conetext
-                newValues.time = new Date().toLocaleString();
-                logs.push(JSON.parse(JSON.stringify(newValues)));
-                this.node.context().set("logs", logs);
+                this.node.context().set("values", newValues); //Store in context
+                logChanges(this.node, newValues);
                 return [{
                     payload: newValues,
                     topic: this.config.topic

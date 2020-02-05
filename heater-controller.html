@@ -24,22 +24,37 @@
     </div>
 
     <div class="form-row">
-        <label for="displayMode"><i class="fa fa-thermometer-empty"></i> <span data-i18n="heater_controller.label.displayMode"></span></label>
-        <select id="displayMode">
-            <option value="buttons" id="btns"><span data-i18n="heater_controller.label.dmButtons"></span></option>
+        <label for="node-input-displayMode"><i class="fa fa-thermometer-empty"></i> <span data-i18n="heater_controller.label.displayMode"></span></label>
+        <select id="node-input-displayMode">
+            <option value="buttons" id="btns" selected="selected"><span data-i18n="heater_controller.label.dmButtons"></span></option>
             <option value="slider" id="slide"><span data-i18n="heater_controller.label.dmSlider"></span></option>
         </select>
     </div>
 
     <div class="form-row">
-        <label for="Unit"><i class="fa fa-thermometer-empty"></i> <span data-i18n="heater_controller.label.unit"></span></label>
-        <select id="unit">
-            <option value="C" id="cUnit"><span data-i18n="heater_controller.label.celsiusUnit"></span>x</option>
+        <label for="node-input-unit"><i class="fa fa-thermometer-empty"></i> <span data-i18n="heater_controller.label.unit"></span></label>
+        <select id="node-input-unit">
+            <option value="C" id="cUnit" selected="selected"><span data-i18n="heater_controller.label.celsiusUnit"></span>x</option>
             <option value="F" id="fUnit"><span data-i18n="heater_controller.label.fahrenheitUnit"></span>x</option>
             <option value="K" id="kUnit"><span data-i18n="heater_controller.label.kelvinUnit"></span>xs</option>
         </select>
     </div>
-
+    <div class="form-row">
+        <label style="width:95%; border-bottom: 1px solid #eee;"><span data-i18n="heater_controller.label.logTitle"> </span></label>
+    </div>
+    <div class="ident">
+        <div class="form-row">
+            <label for="node-input-logLength"><i class="fa fa-file-text-o" aria-hidden="true"></i> <span data-i18n="heater_controller.label.logLength"></span></label>
+            <input type="number" id="node-input-logLength" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
+        </div>
+        <div class="form-row">
+            <label for="node-input-logLengthType"><i class="fa fa-file-text-o"></i> <span data-i18n="heater_controller.label.logLengthType"></span></label>
+            <select id="node-input-logLengthType">
+                <option value="days" id="daysType" selected="selected"><span data-i18n="heater_controller.label.daysType"></span>x</option>
+                <option value="changes" id="changesType"><span data-i18n="heater_controller.label.changesType"></span>x</option>
+            </select>
+        </div>
+    </div>
     <div class="form-row">
         <label style="width:95%; border-bottom: 1px solid #eee;"><span data-i18n="heater_controller.label.slider"> </span></label>
     </div>
@@ -110,18 +125,25 @@
         defaults: {
             name: { value: 'heater' },
             group: {
-                type: 'ui_group', required: true,
+                type: 'ui_group', 
+                required: true,
                 validate: function (v) {
                     return v && RED.nodes.node(v) && RED.nodes.node(v).type === 'ui_group';
                 }
             },
             unit: {
                 value: "C",
-                required: true
+                required: true,
+                validate: function (value) {
+                    return  ['C', 'F', 'K'].indexOf(value) >= 0;
+                }
             },
             displayMode: {
                 value: "buttons",
-                required: true
+                required: true,
+                validate: function (value) {
+                    return  ['buttons', 'slider'].indexOf(value) >= 0;
+                }
             },
             order: { value: 0 },
             width: {
@@ -140,6 +162,18 @@
             height: { value: 4 },
             topic: { value: '' },
             title: { value: 'Heater' },
+            logLengthType: {
+                value: 'days',
+                required: true,
+                validate: function (value) {
+                    return  ['days', 'changes'].indexOf(value) >= 0;
+                }
+            },
+            logLength: {
+                value: 1,
+                required: true,
+                validate: RED.validators.number()
+            },
             sliderMinValue: {
                 value: 10,
                 required: true,
@@ -271,8 +305,13 @@
             $('#cUnit').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.celsiusUnit"));
             $('#fUnit').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.fahrenheitUnit"));
             $('#kUnit').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.kelvinUnit"));
+
             $('#btns').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.dmButtons"));
             $('#slide').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.dmSlider"));
+
+            $('#daysType').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.daysType"));
+            $('#changesType').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.changesType"));
+
             $("#node-input-size").elementSizer({
                 width: "#node-input-width",
                 height: "#node-input-height",
@@ -292,8 +331,8 @@
                     console.log("Invalid JSON in Heater calendar ")
                 }
             });
-            $('#unit').val(this.unit || "C");
-            $('#displayMode').val(this.displayMode || "buttons");
+            // $('#unit').val(this.unit || "C");
+            // $('#displayMode').val(this.displayMode || "buttons");
             this.editor.focus();
         },
         oneditsave: function () {
@@ -301,13 +340,14 @@
             this.editor.destroy();
             delete this.editor;
             this.topic = $('#node-input-topic').val();
+            this.logLength = Number.parseInt(this.logLength);
             this.sliderMaxValue = Number.parseFloat(this.sliderMaxValue);
             this.sliderMinValue = Number.parseFloat(this.sliderMinValue);
             this.sliderStep = Number.parseFloat(this.sliderStep)
             this.thresholdFalling = Number.parseFloat(this.thresholdFalling);
             this.thresholdRising = Number.parseFloat(this.thresholdRising);
-            this.unit = $('#unit').val();
-            this.displayMode = $('#displayMode').val();
+            // this.unit = $('#unit').val();
+            // this.displayMode = $('#displayMode').val();
             $("#node-input-calendar").val(calendarVal);
         },
         oneditcancel: function () {
@@ -336,7 +376,7 @@
     </dl>
     <dl class="message-properties">
         <dt>Min <span class="property-type">integer</span></dt>
-        <dd>Minimum vale selectable using slider</dd>
+        <dd>Minimum value selectable using slider</dd>
     </dl>
     <dl class="message-properties">
         <dt>Max <span class="property-type">boolean</span></dt>
