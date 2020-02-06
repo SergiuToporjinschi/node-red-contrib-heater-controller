@@ -13,6 +13,18 @@
             "protocol": "inspector"
             // "port": 9229
             // "processId": 9228
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Jasmine Individual Test",
+            "program": "${workspaceRoot}/node_modules/mocha/bin/mocha",
+            "args": [
+                "${workspaceRoot}\\spec\\test.spec.js"
+            ],
+            "env": {
+                "NODE_PATH": "."
+            }
         }
     ]
 }

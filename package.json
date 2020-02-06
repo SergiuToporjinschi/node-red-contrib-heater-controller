@@ -9,7 +9,8 @@
   "description": "A dashboard ui interface node for controlling a heater.",
   "homepage": "https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller#readme",
   "scripts": {
-    "start": "node heater-controller.js"
+    "start": "node heater-controller.js",
+    "test": "mocha \"spec/**/*.spec.js\""
   },
   "node-red": {
     "nodes": {
@@ -32,5 +33,12 @@
   "license": "GPL 3.0",
   "bugs": {
     "url": "https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/issues"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "node-red": "file:C:/Users/Toporjinschi/AppData/Roaming/npm/node_modules/node-red",
+    "node-red-dashboard": "file:C:/Users/toporjinschi/.node-red/node_modules/node-red-dashboard",
+    "node-red-node-test-helper": "^0.2.3",
+    "should": "^8.4.0"
   }
 }
