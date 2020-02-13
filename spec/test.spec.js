@@ -1,12 +1,11 @@
 var should = require("should");
-var helper = require("node-red-node-test-helper");
+// var helper = require("node-red-node-test-helper");
 
-var heater = require("../heater-controller.js");
-helper.init(require.resolve('node-red'), { 
-    functionGlobalContext: { os:require('os') },
-    userDir: 'C:/Users/toporjinschi/.node-red/',
-    flowFile: 'C:/Users/toporjinschi/.node-red/flows_RO-WKS060W10.json'
-});
+// var heater = require("../heater-controller.js");
+// helper.init(require.resolve('node-red'), {
+//     functionGlobalContext: { os: require('os') },
+//     userDir: 'C:/Users/toporjinschi/.node-red/'
+// });
 
 describe("A suite", function () {
 
@@ -262,9 +261,15 @@ describe("A suite", function () {
     //         helper.stopServer(done);
     //     });
     // });
-    before(function(done) {
-        helper.startServer(done);
-    });
+
+    // before(function (done) {
+    //     helper.settings({
+    //         functionGlobalContext: { os: require('os') },
+    //         userDir: 'C:/Users/toporjinschi/.node-red/'
+    //     });
+    //     helper.startServer(done);
+    // });
+
     var flow1 = [
         {
             "id": "testNode",
@@ -272,13 +277,18 @@ describe("A suite", function () {
             "name": "theName"
         }
     ];
+    // const fs = require('fs');
+
+    // let rawdata = fs.readFileSync('C:/Users/toporjinschi/.node-red/flows_RO-WKS060W10.json');
+    // let student = JSON.parse(rawdata);
+    // "C:\Users\toporjinschi\.node-red\flows_RO-WKS060W10.json"
     it("Loading node", function (done) {
-        console.log(helper.url());
-        console.log('ss');
-        helper.load(heater, flow1, function () {
-            var n1 = helper.getNode("testNode");
-            n1.should.have.property('name', 'heater');
-            done();
-        });
+        var bn = require('backEndNode.js')({}, {});
+        bn.getAdaptedConfig();
+        // helper.load(heater, flow, function () {
+        //     var n1 = helper.getNode("452673c7.42763c");
+        //     n1.should.have.property('name', 'heater');
+        //     done();
+        // });
     });
 });
