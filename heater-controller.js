@@ -12,7 +12,13 @@ module.exports = function (RED) {
             var done = null;
             try {
                 var BackEndNode = require('./backEndNode.js');
-                var backModule = new BackEndNode(node, config);
+                // var backModule = new BackEndNode(config, node);
+                var backModule = new BackEndNode(config, {
+                    context: node.context(),
+                    send: node.send,
+                    error: node.error
+                });
+
                 node.config = backModule.getAdaptedConfig();
                 done = ui.addWidget(Object.assign({
                     node: node,

@@ -1,14 +1,18 @@
 'use strict';
 var _ = require('lodash');
-function backEndNode(node, config) {
+function backEndNode(config, nodeFn) {
     if (!config || !config.hasOwnProperty("group")) {
         throw 'heater_controller.error.no-group';
     }
-    this.node = node;
     this.allowedTopics = ['currentTemp', 'userTargetValue', 'setCalendar', "isUserCustomLocked", "userConfig"];
     this.config = config;
+    this.context = nodeFn.context;
+    this.send = nodeFn.send;
+    this.error = nodeFn.error;
 }
-function override(target, source) {
+
+/** make it gone */
+backEndNode.prototype.override = function (target, source) {
     return Object.assign(target, source);
 }
 
@@ -17,7 +21,7 @@ function override(target, source) {
  * @param {Calendar} calendar the calendar configuration
  * @param {int} offset a negative or positive offset, if is -1 will return the value of the previouse sechedule event if is +1 will return the next schedule event
  */
-function getScheduleTemp(calendar, offset) {
+backEndNode.prototype.getScheduleTemp = function (calendar, offset) {
     var timeNow = ("0" + new Date().getHours()).slice(-2) + ":" + ("0" + new Date().getMinutes()).slice(-2);
     var weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     var weekDay = weekDays[new Date().getDay()];
@@ -70,8 +74,8 @@ calendar = 10
  * @param {currentSettings} status current information about stauts of controller
  * @param {trashhold} threshold Trashsold to be able to calculate the new status of heater
  */
-function recalculateAndTrigger(status, config, node) {
-    var currentSchedule = getScheduleTemp(config.calendar);
+backEndNode.prototype.recalculateAndTrigger = function (status) {
+    var currentSchedule = this.getScheduleTemp(this.config.calendar);
     var lastSchedule = status.currentSchedule;
     var changedSchedule = !lastSchedule || currentSchedule.temp !== lastSchedule.temp || currentSchedule.day !== lastSchedule.day || currentSchedule.time !== lastSchedule.time;
     if ((changedSchedule && status.isUserCustom && !status.isUserCustomLocked) || !status.isUserCustom) {
@@ -83,16 +87,16 @@ function recalculateAndTrigger(status, config, node) {
         status.targetValue = status.currentSchedule.temp;
         status.isUserCustom = false;
     } else {
-        node.error('Invalid state: target temperature and customer locking is active');
+        this.error('Invalid state: target temperature and customer locking is active');
         return undefined;
     }
 
     if (status.targetValue === undefined || status.currentTemp === undefined) {
-        node.error('Missing: ' + (status.currentTemp === undefined ? 'currentTemp ' : ' ') + (status.targetValue === undefined ? 'targetValue' : ''));
+        this.error('Missing: ' + (status.currentTemp === undefined ? 'currentTemp ' : ' ') + (status.targetValue === undefined ? 'targetValue' : ''));
         return undefined;
     }
     status.currentSchedule = currentSchedule;
-    status.nextSchedule = getScheduleTemp(config.calendar, 1);
+    status.nextSchedule = this.getScheduleTemp(config.calendar, 1);
 
     var difference = (status.targetValue - status.currentTemp);
     var newHeaterStatus = (difference < 0 ? "off" : "on");
@@ -104,7 +108,7 @@ function recalculateAndTrigger(status, config, node) {
     return status;
 };
 
-function logChanges(node, newValues) {
+backEndNode.prototype.logChanges = function (node, newValues) {
     if (node.config.logLength > 0) {
         var logs = node.context().get("logs") || [];
         newValues.time = new Date().toLocaleString();
@@ -112,9 +116,10 @@ function logChanges(node, newValues) {
         node.context().set("logs", logs);
     }
 };
-function recalculate(lastInfoNode, newInfoNode, node) {
-    newInfoNode.currentSchedule = getScheduleTemp(node.config.calendar);
-    newInfoNode.nextSchedule = getScheduleTemp(node.config.calendar, 1);
+
+backEndNode.prototype.recalculate = function (lastInfoNode, newInfoNode) {
+    newInfoNode.currentSchedule = this.getScheduleTemp(this.config.calendar);
+    newInfoNode.nextSchedule = this.getScheduleTemp(this.config.calendar, 1);
 
     /** is true if the schedule has changed */
     var changedBySchedule = lastInfoNode.currentSchedule.temp !== newInfoNode.currentSchedule.temp || lastInfoNode.currentSchedule.day !== newInfoNode.currentSchedule.day || lastInfoNode.currentSchedule.time !== newInfoNode.currentSchedule.time;
@@ -174,8 +179,8 @@ backEndNode.prototype.getWidget = function () {
 
     var me = this;
     /** initialize infoNode */
-    var info = _.extend(this.defaultInfoNode, this.node.context().get('infoNode') || {});
-    this.node.context().set('infoNode', info);
+    var info = _.extend(this.defaultInfoNode, this.context.get('infoNode') || {});
+    this.context.set('infoNode', info);
 
     return {
         format: html,
@@ -193,22 +198,22 @@ backEndNode.prototype.getWidget = function () {
 }
 //BACK toFront
 backEndNode.prototype.beforeEmit = function (msg, value) {
-    var context = this.node.context();
-    var infoNode = context.get("infoNode");
+    // var context = this.node.context();
+    var infoNode = this.context.get("infoNode");
     var newInfoNode = JSON.parse(JSON.stringify(infoNode));
     /**backword compatibility */
-    if (msg.topic === 'currentTemp') {
-        value = { 'currentTemp': value };
-        msg.topic = "userConfig";
-    }
+    // if (msg.topic === 'currentTemp') {
+    //     value = { 'currentTemp': value };
+    //     msg.topic = "userConfig";
+    // }
     if (msg.topic === 'userConfig') {
         //filter incomming properties to allow only those that can be changed by message
         var changedProp = _.pick(value, ['isUserCustom', 'isUserCustomLocked', 'userTargetValue', 'currentTemp']);
         newInfoNode = _.extend(newInfoNode, changedProp);
-        recalculate(infoNode, newInfoNode, this.node);
+        this.recalculate(infoNode, newInfoNode);
     }
 
-    var existingValues = context.get("values") || {};
+    var existingValues = this.context.get("values") || {};
     if (this.allowedTopics.indexOf(msg.topic) < 0) { //if topic is not a safe one just trigger a refresh of UI
         return { msg: existingValues }; //return what I already have
     }
@@ -236,35 +241,35 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
             break;
         case 'setCalendar':
             this.config.calendar = value;
-            returnValues = override(existingValues, { "calendar": value });
+            returnValues = this.override(existingValues, { "calendar": value });
             if (this.config.currentTemp) {
-                returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
+                returnValues = this.recalculateAndTrigger(returnValues, this.config, this.node);
             }
-            context.set("values", returnValues);
+            this.context.set("values", returnValues);
             break;
-        //DEPRECATED
-        case 'isUserCustomLocked':
-            returnValues = override(existingValues, { 'isUserCustomLocked': value });
-            context.set("values", returnValues);
-            returnValues.isUserCustomLocked = value;
-            break;
-        //DEPRECATED
-        case 'userTargetValue':
-            value = parseFloat(value);
-            returnValues = override(existingValues, { 'userTargetValue': value });
-            returnValues.isUserCustom = true;
-            break;
+        // //DEPRECATED
+        // case 'isUserCustomLocked':
+        //     returnValues = this.override(existingValues, { 'isUserCustomLocked': value });
+        //     this.context.set("values", returnValues);
+        //     returnValues.isUserCustomLocked = value;
+        //     break;
+        // //DEPRECATED
+        // case 'userTargetValue':
+        //     value = parseFloat(value);
+        //     returnValues = this.override(existingValues, { 'userTargetValue': value });
+        //     returnValues.isUserCustom = true;
+        //     break;
         case 'currentTemp':
             value = parseFloat(value);
-            returnValues = override(existingValues, { 'currentTemp': value });
-            context.set("values", returnValues);
+            returnValues = this.override(existingValues, { 'currentTemp': value });
+            this.context.set("values", returnValues);
             break;
     }
     var oldStatus = existingValues.currentHeaterStatus;
-    returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
-    context.set("values", returnValues);
+    returnValues = this.recalculateAndTrigger(returnValues, this.config);
+    this.context.set("values", returnValues);
     if (returnValues.currentHeaterStatus != oldStatus) {
-        logChanges(this.node, returnValues);
+        this.logChanges(this.node, returnValues);
     }
     // returnValues.logs = this.node.context().get('logs');
     this.node.send({
@@ -273,23 +278,24 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
     });
     return { msg: returnValues };
 };
+
 //BACK frontToBack
 backEndNode.prototype.beforeSend = function (msg, orig) {
     if (orig) {
         if (orig.msg.action === 'showLogs') {
             delete orig.msg.action;
-            var logs = this.node.context().get("logs") || [];
+            var logs = this.context.get("logs") || [];
             return [undefined, {
                 payload: logs,
                 topic: 'logs'
             }];
         } else {
             var oldStatus = orig.msg.currentHeaterStatus;
-            var result = recalculateAndTrigger(orig.msg, this.config, this.node);
+            var result = this.recalculateAndTrigger(orig.msg, this.config);
             if (result && result.currentHeaterStatus != oldStatus) {
-                var newValues = override(this.node.context().get("values") || {}, result); //merge user changes and store them in context
-                this.node.context().set("values", newValues); //Store in context
-                logChanges(this.node, newValues);
+                var newValues = override(this.context.get("values") || {}, result); //merge user changes and store them in context
+                this.context.set("values", newValues); //Store in context
+                this.logChanges(this.node, newValues);
                 return [{
                     payload: newValues,
                     topic: this.config.topic
