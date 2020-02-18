@@ -137,6 +137,9 @@ module.exports.init = function (config) {
     function getController($scope, events) {
         $scope.init = function (config) {
             $scope.config = config;
+            $scope.$watch("msg", function(a, b, c){
+                debugger;
+            });
         };
         $scope.showLogs = function () {
             // $scope.sendValue("showLogs");
