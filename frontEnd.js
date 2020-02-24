@@ -2,7 +2,7 @@
 module.exports.init = function (config) {
     var conf = config;
     function getCSS() {
-        return String.raw`<style> 
+        return String.raw`<style>
             .iconFalse {
                 color: gray;
             }
@@ -53,7 +53,7 @@ module.exports.init = function (config) {
                 user-select: none;
             }
             .user-mode {
-                color: rgb(63,81,181);
+                color: rgb(63,81,181) !important;
             }
             .info {
                 margin-right: 10px;
@@ -90,16 +90,16 @@ module.exports.init = function (config) {
                     <i title="Current temperature is missing" ng-class="{'user-mode': msg.isUserCustom}" class="fa fa-thermometer-empty" style="color:red" aria-hidden="true" ng-if="!msg.currentTemp"></i>
                     <i ng-show="msg.currentTemp" title="Heater status" class="fa fa-fire icon" ng-class="msg.currentHeaterStatus == 'on' ? 'iconTrue' : 'iconFalse'" aria-hidden="true"></i>
                 </div>
-                <div flex layout="row" ng-show="msg.currentTemp"> 
+                <div flex layout="row" ng-show="msg.currentTemp">
                     <div class="item"><i ng-click='lockCustom()' ng-class="msg.isUserCustomLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select link-pointer" style="font-size: 2.2em; color:#0094ce"></i></div>
                     <div class="item"><i ng-click='toSchedule()' ng-class="{'icon-enabled link-pointer' : msg.isUserCustom, 'icon-disabled' : !msg.isUserCustom}" class="fa fa-calendar-check-o no-select" style="font-size: 2em"></i></div>
                     <div class="item"><i ng-click="showLogs()" title="Logs" ng-class="{'icon-enabled ':msg.logs.length > 0, 'icon-disabled' : !msg.logs || msg.logs.length <= 0 }" class="fa fa-file-text-o no-select" style="font-size: 2em"></i></div>
                 </div>
             </div>
-            <div layout="column" layout-align="stretch" flex class="container ">
-                <md-button ng-click="changeTemp('+')" md-no-ink class="md-raised"><i class="fa fa-chevron-up" style="max-hei"></i></md-button>
+            <div layout="column" layout-align="stretch" flex class="container ">{{ msg.isUserCustom}}
+                <md-button ng-click="changeTemp('+')" ng-disabled="!msg || !msg.currentTemp" md-no-ink class="md-raised"><i class="fa fa-chevron-up" style="max-hei"></i></md-button>
                 <span ng-class="{'user-mode': msg.isUserCustom}" class="temp no-select link-pointer" md-swipe-left="toSchedule()" md-swipe-right="toSchedule()" ng-dblclick="toSchedule()" title="Current target (user value or calendar). Double-click for reset." >{{msg.targetValue | number:1}}&deg;{{config.unit}}</span>
-                <md-button ng-click="changeTemp('-')" md-no-ink class="md-raised"style="margin:0px"><i class="fa fa-chevron-down" ></i></md-button>
+                <md-button ng-click="changeTemp('-')" ng-disabled="!msg || !msg.currentTemp" md-no-ink class="md-raised"style="margin:0px"><i class="fa fa-chevron-down" ></i></md-button>
             </div>
         </div>`;
         } else
@@ -129,7 +129,7 @@ module.exports.init = function (config) {
                 </div>
             </div>
             <div layout-align="center stretch" layout="column">
-                <md-slider md-discrete ng-disabled='!msg.targetValue || !msg.currentTemp' ng-change="sendVal()" class="md-primary" ng-model="msg.userTargetValue" step="{{config.sliderStep}}" min="{{config.sliderMinValue}}" max="{{config.sliderMaxValue}}">
+                <md-slider md-discrete ng-disabled='!msg || !msg.targetValue || !msg.currentTemp' ng-change="sendVal()" class="md-primary" ng-model="msg.userTargetValue" step="{{config.sliderStep}}" min="{{config.sliderMinValue}}" max="{{config.sliderMaxValue}}">
             </div>
         </div>`;
     }
@@ -149,9 +149,10 @@ module.exports.init = function (config) {
             //     console.log($scope.msg.logs[i]);
             // }
         }
+        //"update-value"
         //front->back
         $scope.toSchedule = function () {
-            if ($scope.msg.isUserCustom) {
+            if ($scope.msg && $scope.msg.isUserCustom) {
                 $scope.msg.isUserCustom = false;
                 $scope.msg.targetValue = $scope.msg.temp;
                 $scope.send($scope.msg);
@@ -171,13 +172,12 @@ module.exports.init = function (config) {
         };
         //front->back
         $scope.lockCustom = function () {
-            debug
             if ($scope.msg) {
                 $scope.msg.isUserCustomLocked = !$scope.msg.isUserCustomLocked;
                 $scope.sendVal();
             }
         };
-        $scope.changeTemp = function (direction) {
+        $scope.changeTemp = function (direction) {debugger;
             if (!$scope.msg.userTargetValue) {
                 $scope.msg.userTargetValue = $scope.msg.currentTemp;
             }

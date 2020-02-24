@@ -2,7 +2,8 @@
     "restartable": "rs",
     "ignore": [
       ".git",
-      ".vscode"
+      ".vscode",
+      "spec"
     ],
     "verbose": true,
     "watch": [
