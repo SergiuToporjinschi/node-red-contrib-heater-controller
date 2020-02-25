@@ -25,10 +25,9 @@ backEndNode.prototype.override = function (target, source) {
  * @param {int} offset a negative or positive offset, if is -1 will return the value of the previouse sechedule event if is +1 will return the next schedule event
  */
 backEndNode.prototype.getScheduleTemp = function (calendar, offset, date) {
-    var date = date || new Date();
-    var timeNow = ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2);
+    var timeNow = ("0" + new Date().getHours()).slice(-2) + ":" + ("0" + new Date().getMinutes()).slice(-2);
     var weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    var weekDay = weekDays[date.getDay()];
+    var weekDay = weekDays[new Date().getDay()];
     var calDay = calendar[weekDay];
     var times = Object.keys(calDay);
     if (!calDay[timeNow]) {
