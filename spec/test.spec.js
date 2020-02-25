@@ -206,7 +206,6 @@ describe("Functions", function () {
             });
 
             it('calendar is changing', (done) => {
-                //
                 helper.setMockedDate('2019-05-15T13:01:58.135Z'); //Wednesday
                 lastInfoNode = _.cloneDeep(newInfoNode);
                 newInfoNode = _.extend(_.cloneDeep(lastInfoNode), {
