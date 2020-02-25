@@ -1,1 +1,0 @@
-nodemon --inspect=127.0.0.1:9229 C:\Users\Sergi\AppData\Roaming\npm\node_modules\node-red\red.js --config nodemon.json

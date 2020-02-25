@@ -78,9 +78,10 @@ var exp = {
                 this.context[key] = value;
             }
         },
-        'send': function (value) {
-            // console.log('sendCalled: ');
-        }
+        'send': () => { },
+        'error': () => { },
+        'log': () => { },
+        'warn': () => { }
     },
     setMockedDate: function (dateString) {
         const currentDate = new Date(dateString);

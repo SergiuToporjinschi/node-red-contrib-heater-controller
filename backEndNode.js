@@ -9,6 +9,8 @@ function backEndNode(config, nodeFn) {
     this.context = nodeFn.context;
     this.send = nodeFn.send;
     this.error = nodeFn.error;
+    this.log = nodeFn.log;
+    this.warn = nodeFn.warn;
 
     var info = _.extend(this.defaultInfoNode, this.context.get('infoNode') || {});
     this.context.set('infoNode', info);
@@ -127,10 +129,10 @@ backEndNode.prototype.recalculate = function (lastInfoNode, newInfoNode) {
         (changedBySchedule && !lastInfoNode.isUserCustomLocked) || //changed by calendar
         (!changedBySchedule && lastInfoNode.isUserCustom && !newInfoNode.isUserCustom)
     ) {
-        console.log("ResetToCalendar || changedByCalendar");
+        this.log("ResetToCalendar || changedByCalendar");
         newInfoNode.targetValue = newInfoNode.currentSchedule.temp;
     } else if (newInfoNode.isUserCustom) {
-        console.log("ChangedByUser");
+        this.log("ChangedByUser");
         newInfoNode.targetValue = newInfoNode.userTargetValue;
     } else if (!newInfoNode.targetValue) {
         newInfoNode.targetValue = newInfoNode.currentSchedule.temp;

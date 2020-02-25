@@ -16,10 +16,12 @@ module.exports = function (RED) {
                 var backModule = new BackEndNode(config, {
                     context: node.context(),
                     send:  function () { return node.send.apply(node, arguments); },
-                    error: node.error
+                    error: node.error,
+                    log: node.log,
+                    warn: node.warn
                 });
 
-                // var frontConf = 
+                // var frontConf =
                 var frontEnd = require('./frontEnd').init({
                     calendar: config.calendar,
                     unit: config.unit,
@@ -29,7 +31,7 @@ module.exports = function (RED) {
                     sliderMinValue: config.sliderMinValue,
                     sliderMaxValue: config.sliderMaxValue
                 });
-                
+
                 var html = frontEnd.getHTML();
 
                 node.config = backModule.getAdaptedConfig();
@@ -40,7 +42,7 @@ module.exports = function (RED) {
                     height: parseInt(config.height),
                     group: config.group,
                     order: config.order || 0
-                }, 
+                },
                 {
                     format: html,
                     templateScope: "local",
