@@ -1,9 +1,10 @@
 var sinon = require('sinon');
 var should = require("should");
+var _ = require("lodash");
 require('should-sinon');
 var context = {};
 
-var lastInfoNode = {
+var defaLastInfoNode = {
     "currentTemp": 20, //B -> value calculated input from sensor
     "targetValue": 20, //CALC -> Value calculated based on calendar or usr input
     "isUserCustom": false, //-> IB
@@ -22,7 +23,7 @@ var lastInfoNode = {
     "currentHeaterStatus": "off",
     "time": new Date().toLocaleString()
 };
-
+var defaNewInfoNode = _.cloneDeep(defaLastInfoNode);
 var mockedNode = {
     'context': {
         context: {},
@@ -129,7 +130,7 @@ describe("Functions", function () {
         done();
     });
 
-    it('Recalculate', function (done) {
+    it('Test getScheduleTemp', function (done) {
         var backend = new node({
             'group': "test",
             calendar: calendar,
@@ -137,28 +138,126 @@ describe("Functions", function () {
             thresholdFalling: 0.5
         }, mockedNode);
 
-        var newInfoNode = {
-            "currentTemp": 20, //B -> value calculated input from sensor
-            "targetValue": 20, //CALC -> Value calculated based on calendar or usr input
-            "isUserCustom": false, //-> IB
-            "isUserCustomLocked": false, // -> IB
-            "userTargetValue": 20, //-> IB
-            "currentSchedule": { //-> calendar
-                "temp": 20,
-                "day": "Monday",
-                "time": "00:00"
-            },
-            "nextSchedule": { //-> calendar
-                "temp": 20,
-                "day": "Monday",
-                "time": "08:00"
-            },
-            "currentHeaterStatus": "off",
-            "time": new Date().toLocaleString()
+        var refDate = new Date(Date.parse('2020-02-25T12:00:00')); // Tuesday
+        // "Tuesday": {
+        //     "00:00": 19,
+        //     "06:20": 22,
+        //     "08:00": 19,
+        //     "16:40": 23,
+        //     "23:59": 19
+        // },
+        var ret = backend.getScheduleTemp(calendar, -1, refDate);
+        ret.day.should.be.equal('Tuesday');
+        ret.temp.should.be.equal(19);
+        ret.time.should.be.equal('08:00');
+
+        ret = backend.getScheduleTemp(calendar, 0, refDate);
+        ret.day.should.be.equal('Tuesday');
+        ret.temp.should.be.equal(19);
+        ret.time.should.be.equal('08:00');
+
+        ret = backend.getScheduleTemp(calendar, 1, refDate);
+        ret.day.should.be.equal('Tuesday');
+        ret.temp.should.be.equal(23);
+        ret.time.should.be.equal('16:40');
+
+        ret = backend.getScheduleTemp(calendar, -2, refDate);
+        ret.day.should.be.equal('Tuesday');
+        ret.temp.should.be.equal(22);
+        ret.time.should.be.equal('06:20');
+
+        var ret = backend.getScheduleTemp(calendar, -100, refDate);
+        ret.should.be.empty();
+        done();
+    });
+    // it('Recalculate based on calendar', function (done) {
+    //     var backend = new node({
+    //         'group': "test",
+    //         calendar: calendar,
+    //         thresholdRising: 0.5,
+    //         thresholdFalling: 0.5
+    //     }, mockedNode);
+    //     // "Wednesday": {
+    //     //     "00:00": 19,
+    //     //     "06:20": 22,
+    //     //     "08:00": 19,
+    //     //     "16:40": 22,
+    //     //     "23:59": 19
+    //     // },
+    //     const currentDate = new Date('2019-05-15T17:01:58.135Z'); //Wednesday
+    //     realDate = Date;
+    //     global.Date = class extends Date {
+    //       constructor(date) {
+    //         if (date) {
+    //           return super(date);
+    //         }
+      
+    //         return currentDate;
+    //       }
+    //     };
+
+    //     var infoNode = _.extend(newInfoNode, {
+    //         "currentTemp": 25
+    //     });
+
+    //     backend.recalculate(lastInfoNode, infoNode);
+    //     newInfoNode.currentSchedule.day.should.be.equal("Wednesday");
+    //     newInfoNode.currentSchedule.temp.should.be.equal(22);
+    //     newInfoNode.currentSchedule.time.should.be.equal("16:40");
+
+    //     newInfoNode.nextSchedule.day.should.be.equal("Wednesday");
+    //     newInfoNode.nextSchedule.temp.should.be.equal(19);
+    //     newInfoNode.nextSchedule.time.should.be.equal("23:59");
+
+    //     newInfoNode.targetValue.should.be.equal(newInfoNode.currentSchedule.temp);
+    //     done();
+    // });
+    it('Recalculate based on user request', function (done) {
+        var backend = new node({
+            'group': "test",
+            calendar: calendar,
+            thresholdRising: 0.5,
+            thresholdFalling: 0.5
+        }, mockedNode);
+        // "Wednesday": {
+        //     "00:00": 19,
+        //     "06:20": 22,
+        //     "08:00": 19,
+        //     "16:40": 22,
+        //     "23:59": 19
+        // },
+        const currentDate = new Date('2019-05-15T17:01:58.135Z'); //Wednesday
+        realDate = Date;
+        global.Date = class extends Date {
+          constructor(date) {
+            if (date) {
+              return super(date);
+            }
+      
+            return currentDate;
+          }
         };
+        var lastInfoNode = _.extend(_.cloneDeep(defaLastInfoNode), {
+            "currentHeaterStatus": "off",
+            "currentTemp": 22,
+            "userTargetValue": 20
+        });
+        var newInfoNode = _.extend(_.cloneDeep(defaNewInfoNode), {
+            "currentTemp": 22,
+            "userTargetValue": 30,
+            "isUserCustom": true
+        });
 
         backend.recalculate(lastInfoNode, newInfoNode);
-        newInfoNode.targetValue.should.be.equal(newInfoNode.userTargetValue);
+        newInfoNode.currentSchedule.day.should.be.equal("Wednesday");
+        newInfoNode.currentSchedule.temp.should.be.equal(22);
+        newInfoNode.currentSchedule.time.should.be.equal("16:40");
+
+        newInfoNode.nextSchedule.day.should.be.equal("Wednesday");
+        newInfoNode.nextSchedule.temp.should.be.equal(19);
+        newInfoNode.nextSchedule.time.should.be.equal("23:59");
+
+        newInfoNode.targetValue.should.be.equal(newInfoNode.currentSchedule.temp);
         done();
     });
 });
