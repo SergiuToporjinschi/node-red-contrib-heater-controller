@@ -38,7 +38,7 @@ function getFrontModule(config) {
  * @param {object} node an existing node-red node 
  * @param {object} ui node-red-dashboard node
  */
-function createWidget(config, node,  ui) {
+function createWidget(config, node, ui) {
     try {
         var backModule = getBackModule(config, node);
         var frontEnd = getFrontModule(config);
