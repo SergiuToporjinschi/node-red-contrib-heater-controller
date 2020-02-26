@@ -41,7 +41,7 @@ backEndNode.prototype.getScheduleTemp = function (calendar, offset, date) {
     }
 
     var index = times.indexOf(timeNow) + (offset || 0);
-    if (index < 0){
+    if (index < 0) {
         return {
         };
     }
@@ -76,11 +76,7 @@ backEndNode.prototype.getScheduleTemp = function (calendar, offset, date) {
    "_msgid":"28d1c13e.20ae7e"
 }
  */
-
-backEndNode.prototype.recalculate = function (lastInfoNode, newInfoNode) {
-    newInfoNode.currentSchedule = this.getScheduleTemp(this.config.calendar);
-    newInfoNode.nextSchedule = this.getScheduleTemp(this.config.calendar, 1);
-
+backEndNode.prototype.calculateTarget = function (lastInfoNode, newInfoNode) {
     /** is true if the schedule has changed */
     var changedBySchedule = lastInfoNode.currentSchedule.temp !== newInfoNode.currentSchedule.temp || lastInfoNode.currentSchedule.day !== newInfoNode.currentSchedule.day || lastInfoNode.currentSchedule.time !== newInfoNode.currentSchedule.time;
 
@@ -98,12 +94,18 @@ backEndNode.prototype.recalculate = function (lastInfoNode, newInfoNode) {
         newInfoNode.targetValue = newInfoNode.currentSchedule.temp;
         newInfoNode.isUserCustom = false;
     } else {
-        this.error('Invalid state: target temperature and customer locking is active');
-        return undefined;
+        return false;
     }
+    return true;
+}
+
+backEndNode.prototype.recalculate = function (lastInfoNode, newInfoNode) {
+    newInfoNode.currentSchedule = this.getScheduleTemp(this.config.calendar);
+    newInfoNode.nextSchedule = this.getScheduleTemp(this.config.calendar, 1);
+
     //maybe can be removed
-    if (newInfoNode.targetValue === undefined || newInfoNode.currentTemp === undefined) {
-        this.error('Missing: ' + (newInfoNode.currentTemp === undefined ? 'currentTemp ' : ' ') + (newInfoNode.targetValue === undefined ? 'targetValue' : ''));
+    if (!this.calculateTarget(lastInfoNode, newInfoNode)) {
+        this.error('Invalid state: target temperature and customer locking is active');
         return undefined;
     }
 
