@@ -155,6 +155,7 @@ describe("Functions", function () {
             newInfoNode.targetValue.should.be.equal(newInfoNode.userTargetValue, "targetValue should be taken from userTargetValue when user changes the target temperature");
             done();
         });
+
         describe("User changes", () => {
             var lastInfoNode;
             var newInfoNode;
@@ -194,7 +195,7 @@ describe("Functions", function () {
                 done();
             });
 
-            it('user is setting locked', (done) => {
+            it('user changes to locked', (done) => {
                 lastInfoNode = _.cloneDeep(newInfoNode);
                 newInfoNode = _.extend(_.cloneDeep(lastInfoNode), {
                     "isUserCustomLocked": true
@@ -205,16 +206,49 @@ describe("Functions", function () {
                 done();
             });
 
-            it('calendar is changing', (done) => {
+            it('calendar is changing value when is locked custom value', (done) => {
                 helper.setMockedDate('2019-05-15T13:01:58.135Z'); //Wednesday
                 lastInfoNode = _.cloneDeep(newInfoNode);
                 newInfoNode = _.extend(_.cloneDeep(lastInfoNode), {
                     "currentTemp": 25
                 });
                 backend.recalculate(lastInfoNode, newInfoNode);
-                newInfoNode.targetValue.should.be.equal(newInfoNode.userTargetValue);
+                newInfoNode.targetValue.should.be.equal(newInfoNode.userTargetValue, "user value is overwritten even if is locked");
                 done();
             });
+
+            it('user changes to unlocked', (done) => { 
+                lastInfoNode = _.cloneDeep(newInfoNode);
+                newInfoNode = _.extend(_.cloneDeep(lastInfoNode), {
+                    "isUserCustomLocked": false
+                });
+                backend.recalculate(lastInfoNode, newInfoNode);
+                newInfoNode.targetValue.should.be.equal(lastInfoNode.targetValue, "targetValue shuld not be changed");
+                newInfoNode.isUserCustomLocked.should.be.false("isUserCustomLocked should be true");
+                done();
+            });  
+
+            it('unlocked custom value nothing changes when temp is comming', (done) => {
+                helper.setMockedDate('2019-05-15T13:01:58.135Z'); //Wednesday
+                lastInfoNode = _.cloneDeep(newInfoNode);
+                newInfoNode = _.extend(_.cloneDeep(lastInfoNode), {
+                    "currentTemp": 25
+                });
+                backend.recalculate(lastInfoNode, newInfoNode);
+                newInfoNode.targetValue.should.be.equal(newInfoNode.userTargetValue, "user value is overwritten even if calendar did not changed");
+                done();
+            });       
+
+            it('calendar is changing value when is unlocked custom value', (done) => {
+                helper.setMockedDate('2019-05-15T17:01:58.135Z'); //Wednesday
+                lastInfoNode = _.cloneDeep(newInfoNode);
+                newInfoNode = _.extend(_.cloneDeep(lastInfoNode), {
+                    "currentTemp": 25
+                });
+                backend.recalculate(lastInfoNode, newInfoNode);
+                newInfoNode.targetValue.should.be.equal(newInfoNode.currentSchedule.temp, "user value is overwritten even if calendar did not changed");
+                done();
+            });          
         });
     })
 });

@@ -75,47 +75,7 @@ backEndNode.prototype.getScheduleTemp = function (calendar, offset, date) {
    },
    "_msgid":"28d1c13e.20ae7e"
 }
-
-calendar = 10
-
-/**
- * Decides if we should turn on or off the heater;
- * @param {currentSettings} status current information about stauts of controller
- * @param {trashhold} threshold Trashsold to be able to calculate the new status of heater
  */
-backEndNode.prototype.recalculateAndTrigger = function (status) {
-    var currentSchedule = this.getScheduleTemp(this.config.calendar);
-    var lastSchedule = status.currentSchedule;
-    var changedSchedule = !lastSchedule || currentSchedule.temp !== lastSchedule.temp || currentSchedule.day !== lastSchedule.day || currentSchedule.time !== lastSchedule.time;
-    if ((changedSchedule && status.isUserCustom && !status.isUserCustomLocked) || !status.isUserCustom) {
-        status.targetValue = currentSchedule.temp;
-        status.isUserCustom = false;
-    } else if (status.isUserCustom) {
-        status.targetValue = status.userTargetValue;
-    } else if (!status.targetValue) {
-        status.targetValue = status.currentSchedule.temp;
-        status.isUserCustom = false;
-    } else {
-        this.error('Invalid state: target temperature and customer locking is active');
-        return undefined;
-    }
-
-    if (status.targetValue === undefined || status.currentTemp === undefined) {
-        this.error('Missing: ' + (status.currentTemp === undefined ? 'currentTemp ' : ' ') + (status.targetValue === undefined ? 'targetValue' : ''));
-        return undefined;
-    }
-    status.currentSchedule = currentSchedule;
-    status.nextSchedule = this.getScheduleTemp(this.config.calendar, 1);
-
-    var difference = (status.targetValue - status.currentTemp);
-    var newHeaterStatus = (difference < 0 ? "off" : "on");
-    var threshold = (newHeaterStatus === "off" ? config.thresholdRising : config.thresholdFalling);
-    var changeStatus = (Math.abs(difference) >= threshold);
-    if (changeStatus) {
-        status.currentHeaterStatus = newHeaterStatus;
-    }
-    return status;
-};
 
 backEndNode.prototype.recalculate = function (lastInfoNode, newInfoNode) {
     newInfoNode.currentSchedule = this.getScheduleTemp(this.config.calendar);
