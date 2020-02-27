@@ -36,8 +36,6 @@
   },
   "devDependencies": {
     "mocha": "*",
-    "node-red": "file:C:/Users/Sergi/AppData/Roaming/npm/node_modules/node-red",
-    "node-red-dashboard": "file:C:/Users/Sergi/.node-red/node_modules/node-red-dashboard",
     "node-red-node-test-helper": "^0.2.3",
     "should": "^8.4.0",
     "should-sinon": "*",
