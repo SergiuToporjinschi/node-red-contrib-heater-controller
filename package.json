@@ -30,7 +30,7 @@
     "thermostat"
   ],
   "author": "Sergiu Toporjinschi",
-  "license": "GPL 3.0",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/issues"
   },
