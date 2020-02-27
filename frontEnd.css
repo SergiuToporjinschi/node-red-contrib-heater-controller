@@ -1,0 +1,89 @@
+.iconFalse {
+    color: gray;
+}
+
+.iconTrue {
+    color: #ff4d4d;
+}
+
+.icon {
+    margin: 0;
+    margin-left: 10px;
+    font-size: 1em;
+}
+
+.userSettingsIcon {
+    margin-right: 20px;
+}
+
+.targetTemp {
+    color: #0094ce;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.heaterContr {
+    margin-left: 10px;
+}
+
+.wrapper {
+    margin-left: 14px;
+    margin-right: 14px;
+}
+
+.temp {
+    color: #0094ce;
+    font-size: 4em;
+    font-weight: bold;
+}
+
+.warning-icon i {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.link-pointer {
+    cursor: pointer;
+}
+
+.no-select:focus {
+    outline: none;
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+}
+
+.user-mode {
+    color: rgb(63, 81, 181) !important;
+}
+
+.info {
+    margin-right: 10px;
+}
+
+.btns .info .item {
+    margin-bottom: 7px
+}
+
+.btns .icon-disabled {
+    color: gray;
+}
+
+.btns .icon-enabled {
+    color: #0094ce;
+}
+
+.btns .temp {
+    color: #0094ce;
+    font-size: 3em;
+    font-weight: bold;
+    text-align: center;
+}

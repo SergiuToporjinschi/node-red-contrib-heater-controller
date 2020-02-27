@@ -1,0 +1,33 @@
+<div class='wrapper' layout="column" flex layout-align="center stretch" ng-init='init(${confString})'>
+    <p ng-if="config.title" class="nr-dashboard-cardtitle">{{config.title}}</p>
+    <div layout="row" layout-align="end center" class="warning-icon">
+        <span class="info" title="Current calendar temp" ng-show="msg.currentSchedule != undefined"><i class="fa fa-calendar-o" aria-hidden="true"></i>{{msg.currentSchedule.temp}}&deg;{{config.unit}}
+            ({{msg.currentSchedule.time}})</span>
+        <span class="info" title="Next calendar temp" ng-show="msg.nextSchedule != undefined"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i>{{msg.nextSchedule.temp}}&deg;{{config.unit}}
+            ({{msg.nextSchedule.time}})</span>
+        <span class="info" title="Logs" ng-show="msg.logs.length > 0" ng-click="showLogs()"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
+        <div flex></div>
+        <i title="Calendar is missing" class="fa fa-calendar" style="color:red" aria-hidden="true" ng-if="!config.calendar"></i>
+        <i title="Current temperature is missing" class="fa fa-thermometer-empty" style="color:red" aria-hidden="true" ng-if="!msg.currentTemp"></i>
+    </div>
+    <div layout="row" layout-align="center center" class="container">
+        <div layout-align="start center" flex="20"><i ng-click='lockCustom()' ng-class="msg.isUserCustomLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select link-pointer" style="font-size: 2em; color:#0094ce"></i>
+        </div>
+        <div layout="row" layout-align="center center" flex>
+            <div layout-align="end center" layout="column">
+                <div title="Current target (user value or calendar). Double-click for reset." ng-class="{'user-mode': msg.isUserCustom}" class="temp no-select link-pointer" md-swipe-left="toSchedule()"
+                    md-swipe-right="toSchedule()" ng-dblclick="toSchedule()">{{msg.targetValue | number:1}}&deg;{{config.unit}}</div>
+            </div>
+            <div class='heaterContr' layout-align="center center" layout="column">
+                <div class="targetTemp" flex="50">{{msg.currentTemp | number:1}}</div>
+                <div layout-align="space-between" layout="row" flex="50">
+                    <i title="Heater status" class="fa fa-fire icon" ng-class="msg.currentHeaterStatus == 'on' ? 'iconTrue' : 'iconFalse'" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div layout-align="center stretch" layout="column">
+        <md-slider md-discrete ng-disabled='!msg || !msg.targetValue || !msg.currentTemp' ng-change="sendVal()" class="md-primary" ng-model="msg.userTargetValue" step="{{config.sliderStep}}"
+            min="{{config.sliderMinValue}}" max="{{config.sliderMaxValue}}">
+    </div>
+</div>
