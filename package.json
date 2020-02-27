@@ -10,7 +10,8 @@
   "homepage": "https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller#readme",
   "scripts": {
     "start": "nodemon --inspect=127.0.0.1:9229 C:/Users/Sergi/AppData/Roaming/npm/node_modules/node-red/red.js --config .vscode/nodemon.json",
-    "test": "nodemon  --ext js --exec \"mocha \"spec/**/*.spec.js\"\""
+    "test": "mocha \"spec/**/*.spec.js\"",
+    "test-dev": "nodemon  --ext js --exec \"mocha \"spec/**/*.spec.js\"\""
   },
   "node-red": {
     "nodes": {
