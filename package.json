@@ -39,6 +39,7 @@
     "node-red-node-test-helper": "^0.2.3",
     "should": "^8.4.0",
     "should-sinon": "*",
-    "lodash": "*"
+    "lodash": "*",
+    "nodemon": "*"
   }
 }
