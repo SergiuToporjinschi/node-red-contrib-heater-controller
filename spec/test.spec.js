@@ -155,7 +155,37 @@ describe("Functions", function () {
             newInfoNode.targetValue.should.be.equal(newInfoNode.userTargetValue, "targetValue should be taken from userTargetValue when user changes the target temperature");
             done();
         });
+        describe("Authomatic changes", () => {
+            var lastInfoNode;
+            var newInfoNode;
 
+            before(() => {
+                lastInfoNode = _.extend(_.cloneDeep(helper.defaLastInfoNode), {
+                    "currentSchedule": backend.getScheduleTemp(helper.calendar),
+                    "nextSchedule": backend.getScheduleTemp(helper.calendar, 1),
+                    "currentHeaterStatus": "off",
+                    "currentTemp": 22,
+                    "isUserCustom": false
+                });
+                newInfoNode = _.extend(_.cloneDeep(helper.defaNewInfoNode), {
+                    "currentSchedule": backend.getScheduleTemp(helper.calendar),
+                    "nextSchedule": backend.getScheduleTemp(helper.calendar, 1),
+                    "currentTemp": 25,
+                    "isUserCustom": false
+                });
+            });
+            it('increase temperature by senzor', (done) => {
+                lastInfoNode = _.cloneDeep(newInfoNode);
+                newInfoNode = _.extend(_.cloneDeep(lastInfoNode), {
+                    "userTargetValue": lastInfoNode.currentTemp + 10
+                });
+                backend.recalculate(lastInfoNode, newInfoNode);
+                newInfoNode.targetValue.should.be.equal(newInfoNode.targetValue, "targetValue should be taken from userTargetValue");
+                // newInfoNode.currentHeaterStatus.should.be.equal("on", "heater should be started if user increases it");
+                // newInfoNode.isUserCustom.should.be.true("isUserCustom should be true");
+                done();
+            });
+        });
         describe("User changes", () => {
             var lastInfoNode;
             var newInfoNode;
@@ -205,6 +235,7 @@ describe("Functions", function () {
                 backend.recalculate(lastInfoNode, newInfoNode);
                 newInfoNode.targetValue.should.be.equal(lastInfoNode.targetValue, "targetValue shuld not be changed");
                 newInfoNode.isUserCustomLocked.should.be.true("isUserCustomLocked should be true");
+                newInfoNode.currentHeaterStatus.should.be.equal("off", "heater should be stopped if user locked mode");
                 newInfoNode.isUserCustom.should.be.true("isUserCustom should be true");
                 done();
             });
