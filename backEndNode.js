@@ -87,6 +87,7 @@ backEndNode.prototype.calculateTarget = function (lastInfoNode, newInfoNode) {
     ) {
         this.log("ResetToCalendar || changedByCalendar");
         newInfoNode.targetValue = newInfoNode.currentSchedule.temp;
+        newInfoNode.isUserCustom = false;
     } else if (newInfoNode.isUserCustom) {
         this.log("ChangedByUser");
         newInfoNode.targetValue = newInfoNode.userTargetValue;

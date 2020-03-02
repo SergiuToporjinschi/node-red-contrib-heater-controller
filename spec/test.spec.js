@@ -181,6 +181,7 @@ describe("Functions", function () {
                 backend.recalculate(lastInfoNode, newInfoNode);
                 newInfoNode.targetValue.should.be.equal(newInfoNode.userTargetValue, "targetValue should be taken from userTargetValue");
                 newInfoNode.currentHeaterStatus.should.be.equal("on", "heater should be started if user increases it");
+                newInfoNode.isUserCustom.should.be.true("isUserCustom should be true");
                 done();
             });
 
@@ -192,6 +193,7 @@ describe("Functions", function () {
                 backend.recalculate(lastInfoNode, newInfoNode);
                 newInfoNode.targetValue.should.be.equal(newInfoNode.userTargetValue, "targetValue should be taken from userTargetValue");
                 newInfoNode.currentHeaterStatus.should.be.equal("off", "heater should be stopped if user decresses it");
+                newInfoNode.isUserCustom.should.be.true("isUserCustom should be true");
                 done();
             });
 
@@ -203,6 +205,7 @@ describe("Functions", function () {
                 backend.recalculate(lastInfoNode, newInfoNode);
                 newInfoNode.targetValue.should.be.equal(lastInfoNode.targetValue, "targetValue shuld not be changed");
                 newInfoNode.isUserCustomLocked.should.be.true("isUserCustomLocked should be true");
+                newInfoNode.isUserCustom.should.be.true("isUserCustom should be true");
                 done();
             });
 
@@ -214,10 +217,11 @@ describe("Functions", function () {
                 });
                 backend.recalculate(lastInfoNode, newInfoNode);
                 newInfoNode.targetValue.should.be.equal(newInfoNode.userTargetValue, "user value is overwritten even if is locked");
+                newInfoNode.isUserCustom.should.be.true("isUserCustom should be true");
                 done();
             });
 
-            it('user changes to unlocked', (done) => { 
+            it('user changes to unlocked', (done) => {
                 lastInfoNode = _.cloneDeep(newInfoNode);
                 newInfoNode = _.extend(_.cloneDeep(lastInfoNode), {
                     "isUserCustomLocked": false
@@ -225,30 +229,33 @@ describe("Functions", function () {
                 backend.recalculate(lastInfoNode, newInfoNode);
                 newInfoNode.targetValue.should.be.equal(lastInfoNode.targetValue, "targetValue shuld not be changed");
                 newInfoNode.isUserCustomLocked.should.be.false("isUserCustomLocked should be true");
+                newInfoNode.isUserCustom.should.be.true("isUserCustom should be true");
                 done();
-            });  
+            });
 
             it('unlocked custom value nothing changes when temp is comming', (done) => {
-                helper.setMockedDate('2019-05-15T13:01:58.135Z'); //Wednesday
+                helper.setMockedDate('2019-05-15T13:01:58.135Z'); //Wednesday 19g
                 lastInfoNode = _.cloneDeep(newInfoNode);
                 newInfoNode = _.extend(_.cloneDeep(lastInfoNode), {
                     "currentTemp": 25
                 });
                 backend.recalculate(lastInfoNode, newInfoNode);
                 newInfoNode.targetValue.should.be.equal(newInfoNode.userTargetValue, "user value is overwritten even if calendar did not changed");
+                newInfoNode.isUserCustom.should.be.true("isUserCustom should be true");
                 done();
-            });       
+            });
 
             it('calendar is changing value when is unlocked custom value', (done) => {
-                helper.setMockedDate('2019-05-15T17:01:58.135Z'); //Wednesday
+                helper.setMockedDate('2019-05-15T17:01:58.135Z'); //Wednesday 22g
                 lastInfoNode = _.cloneDeep(newInfoNode);
                 newInfoNode = _.extend(_.cloneDeep(lastInfoNode), {
                     "currentTemp": 25
                 });
                 backend.recalculate(lastInfoNode, newInfoNode);
                 newInfoNode.targetValue.should.be.equal(newInfoNode.currentSchedule.temp, "user value is overwritten even if calendar did not changed");
+                newInfoNode.isUserCustom.should.be.false("isUserCustom should be false");
                 done();
-            });          
+            });
         });
     })
 });

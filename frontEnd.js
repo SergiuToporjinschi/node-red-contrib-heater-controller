@@ -52,6 +52,7 @@ function getController($scope, events) {
             $scope.sendVal();
         }
     };
+
     $scope.changeTemp = function (direction) {
         if (!$scope.msg.userTargetValue) {
             $scope.msg.userTargetValue = $scope.msg.currentTemp;
