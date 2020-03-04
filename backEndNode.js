@@ -1,56 +1,6 @@
 'use strict';
-var _ = require('lodash');
-function backEndNode(config, nodeFn) {
-    if (!config || !config.hasOwnProperty("group")) {
-        throw 'heater_controller.error.no-group';
-    }
-    this.allowedTopics = ['currentTemp', 'userTargetValue', 'setCalendar', "isUserCustomLocked", "userConfig"];
-    this.config = config;
-    this.context = nodeFn.context;
-    this.send = nodeFn.send;
-    this.error = nodeFn.error;
-    this.log = nodeFn.log;
-    this.warn = nodeFn.warn;
 
-    var info = _.extend(this.defaultInfoNode, this.context.get('infoNode') || {});
-    this.context.set('infoNode', info);
-}
-
-/** make it gone */
-backEndNode.prototype.override = function (target, source) {
-    return Object.assign(target, source);
-}
-
-/**
- * Returns an scheduled event from calendar
- * @param {Calendar} calendar the calendar configuration
- * @param {int} offset a negative or positive offset, if is -1 will return the value of the previouse sechedule event if is +1 will return the next schedule event
- */
-backEndNode.prototype.getScheduleTemp = function (calendar, offset, date) {
-    var timeNow = ("0" + new Date().getHours()).slice(-2) + ":" + ("0" + new Date().getMinutes()).slice(-2);
-    var weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    var weekDay = weekDays[new Date().getDay()];
-    var calDay = calendar[weekDay];
-    var times = Object.keys(calDay);
-    if (!calDay[timeNow]) {
-        times.push(timeNow);
-        times.sort();
-        if (!offset) {
-            offset = -1;
-        }
-    }
-
-    var index = times.indexOf(timeNow) + (offset || 0);
-    if (index < 0) {
-        return {
-        };
-    }
-    return {
-        temp: calDay[times[index]],
-        day: weekDay,
-        time: times[index]
-    };
-};
+//#region node-example
 /*
 {
    "topic":"",
@@ -76,6 +26,68 @@ backEndNode.prototype.getScheduleTemp = function (calendar, offset, date) {
    "_msgid":"28d1c13e.20ae7e"
 }
  */
+//#endregion
+
+var _ = require('lodash');
+
+/**
+ *
+ * @param {Object} config
+ * @param {Object} nodeFn
+ */
+function backEndNode(config, nodeFn) {
+    if (!config || !config.hasOwnProperty("group")) {
+        throw 'heater_controller.error.no-group';
+    }
+    this.allowedTopics = ['currentTemp', 'userTargetValue', 'setCalendar', "isUserCustomLocked", "userConfig"];
+    this.config = config;
+    this.context = nodeFn.context;
+    this.send = nodeFn.send;
+    this.error = nodeFn.error;
+    this.log = nodeFn.log;
+    this.warn = nodeFn.warn;
+
+    var info = _.extend(this.defaultInfoNode, this.context.get('infoNode') || {});
+    this.context.set('infoNode', info);
+}
+
+/**
+ * Returns an scheduled event from calendar
+ * @param {Object} calendar the calendar configuration
+ * @param {number} offset a negative or positive offset, if is -1 will return the value of the previouse sechedule event if is +1 will return the next schedule event
+ */
+backEndNode.prototype.getScheduleTemp = function (calendar, offset) {
+    var timeNow = ("0" + new Date().getHours()).slice(-2) + ":" + ("0" + new Date().getMinutes()).slice(-2);
+    var weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    var weekDay = weekDays[new Date().getDay()];
+    var calDay = calendar[weekDay];
+    var times = Object.keys(calDay);
+    if (!calDay[timeNow]) {
+        times.push(timeNow);
+        times.sort();
+        if (!offset) {
+            offset = -1;
+        }
+    }
+
+    var index = times.indexOf(timeNow) + (offset || 0);
+    if (index < 0) {
+        return {
+        };
+    }
+    return {
+        temp: calDay[times[index]],
+        day: weekDay,
+        time: times[index]
+    };
+};
+
+/**
+ * Calculates the new status based on latest information
+ * @param {Object} lastInfoNode last node status
+ * @param {Object} newInfoNode latest node status
+ * @returns {boolean} true in case a change has been made, false otherwise
+ */
 backEndNode.prototype.calculateTarget = function (lastInfoNode, newInfoNode) {
     /** is true if the schedule has changed */
     var changedBySchedule = lastInfoNode.currentSchedule.temp !== newInfoNode.currentSchedule.temp || lastInfoNode.currentSchedule.day !== newInfoNode.currentSchedule.day || lastInfoNode.currentSchedule.time !== newInfoNode.currentSchedule.time;
@@ -91,15 +103,18 @@ backEndNode.prototype.calculateTarget = function (lastInfoNode, newInfoNode) {
     } else if (newInfoNode.isUserCustom) {
         this.log("ChangedByUser");
         newInfoNode.targetValue = newInfoNode.userTargetValue;
-    } else if (!newInfoNode.targetValue) {
-        newInfoNode.targetValue = newInfoNode.currentSchedule.temp;
-        newInfoNode.isUserCustom = false;
     } else {
         return false;
     }
     return true;
 }
 
+/**
+ * Calculates the new status based on latest information and changes the status if is the case
+ * @param {Object} lastInfoNode last node status
+ * @param {Object} newInfoNode latest node status
+ * @returns {Object} returns newInfoNode changed
+ */
 backEndNode.prototype.recalculate = function (lastInfoNode, newInfoNode) {
     newInfoNode.currentSchedule = this.getScheduleTemp(this.config.calendar);
     newInfoNode.nextSchedule = this.getScheduleTemp(this.config.calendar, 1);
@@ -120,8 +135,10 @@ backEndNode.prototype.recalculate = function (lastInfoNode, newInfoNode) {
     return newInfoNode;
 }
 
-
-
+/**
+ * Logs the cahanges if the logging future is activated
+ * @param {Object} newInfoNode latest node status
+ */
 backEndNode.prototype.logChanges = function (newValues) {
     if (this.config.logLength > 0) {
         var logs = this.context.get("logs") || [];
@@ -129,17 +146,6 @@ backEndNode.prototype.logChanges = function (newValues) {
         logs.push(JSON.parse(JSON.stringify(newValues)));
         this.context.set("logs", logs);
     }
-};
-
-
-
-backEndNode.prototype.getAdaptedConfig = function () {
-    try {
-        this.config.calendar = JSON.parse(this.config.calendar);
-    } catch (err) {
-        this.config.calendar = this.config.calendar;
-    }
-    return this.config;
 };
 
 backEndNode.prototype.defaultInfoNode = {
@@ -162,7 +168,8 @@ backEndNode.prototype.defaultInfoNode = {
     "time": new Date().toLocaleString()
 };
 
-//BACK toFront
+
+//#region BACK toFront
 backEndNode.prototype.beforeEmit = function (msg, value) {
     // var context = this.node.context();
     var infoNode = this.context.get("infoNode");
@@ -201,8 +208,9 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
     });
     return { msg: newInfoNode };
 };
+//#endregion
 
-//BACK frontToBack
+//#region frontToBack
 backEndNode.prototype.beforeSend = function (msg, orig) {
     if (orig) {
         if (orig.msg.action === 'showLogs') {
@@ -242,5 +250,5 @@ backEndNode.prototype.beforeSend = function (msg, orig) {
         }
     }
 };
-
+//#endregion
 module.exports = backEndNode;
