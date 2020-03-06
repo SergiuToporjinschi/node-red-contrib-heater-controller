@@ -105,8 +105,7 @@ backEndNode.prototype.getWidget = function () {
         forwardInputMessages: false,
         storeFrontEndInputAsState: true,
         initController: frontEnd.getController,
-        convertBack: function(value) {
-            debugger
+        convertBack: function (value) {
             return value
         },
         beforeEmit: function () { return me.beforeEmit.apply(me, arguments); },
@@ -170,7 +169,9 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
     }
     returnValues = recalculateAndTrigger(returnValues, this.config, this.node);
     context.set("values", returnValues);
-    returnValues.logs = this.node.context().get('logs');
+    if (this.config.logLength > 0) {
+        returnValues.logs = this.node.context().get('logs');
+    }
     this.node.send({
         topic: this.config.topic,
         payload: returnValues
@@ -186,8 +187,10 @@ backEndNode.prototype.beforeSend = function (msg, orig) {
             var newValues = override(this.node.context().get("values") || {}, result); //merge user changes and store them in context
             this.node.context().set("values", newValues); //Store in conetext
             newValues.time = new Date().toLocaleString();
-            logs.push(JSON.parse(JSON.stringify(newValues)));
-            this.node.context().set("logs", logs);
+            if (this.config.logLength > 0) {
+                logs.push(JSON.parse(JSON.stringify(newValues)));
+                this.node.context().set("logs", logs);
+            }
             return {
                 payload: newValues,
                 topic: this.config.topic

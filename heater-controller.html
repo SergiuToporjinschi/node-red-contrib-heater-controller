@@ -30,6 +30,22 @@
         </select>
     </div>
     <div class="form-row">
+        <label style="width:95%; border-bottom: 1px solid #eee;"><span data-i18n="heater_controller.label.logTitle"> </span></label>
+    </div>
+    <div class="ident">
+        <div class="form-row">
+            <label for="node-input-logLength"><i class="fa fa-file-text-o" aria-hidden="true"></i> <span data-i18n="heater_controller.label.logLength"></span></label>
+            <input type="number" id="node-input-logLength" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
+        </div>
+        <div class="form-row">
+            <label for="node-input-logLengthType"><i class="fa fa-file-text-o"></i> <span data-i18n="heater_controller.label.logLengthType"></span></label>
+            <select id="node-input-logLengthType">
+                <option value="days" id="daysType" selected="selected"><span data-i18n="heater_controller.label.daysType"></span>x</option>
+                <option value="changes" id="changesType"><span data-i18n="heater_controller.label.changesType"></span>x</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-row">
         <label style="width:95%; border-bottom: 1px solid #eee;"><span data-i18n="heater_controller.label.slider"> </span></label>
     </div>
     <div class="ident">
@@ -99,7 +115,8 @@
         defaults: {
             name: { value: 'heater' },
             group: {
-                type: 'ui_group', required: true,
+                type: 'ui_group',
+                required: true,
                 validate: function (v) {
                     return v && RED.nodes.node(v) && RED.nodes.node(v).type === 'ui_group';
                 }
@@ -125,6 +142,18 @@
             height: { value: 3 },
             topic: { value: '' },
             title: {value: ''},
+            logLengthType: {
+                value: 'days',
+                required: true,
+                validate: function (value) {
+                    return  ['days', 'changes'].indexOf(value) >= 0;
+                }
+            },
+            logLength: {
+                value: 1,
+                required: true,
+                validate: RED.validators.number()
+            },
             sliderMinValue: {
                 value: 10,
                 required: true,
@@ -256,6 +285,9 @@
             $('#cUnit').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.celsiusUnit"));
             $('#fUnit').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.fahrenheitUnit"));
             $('#kUnit').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.kelvinUnit"));
+            $('#daysType').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.daysType"));
+            $('#changesType').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.changesType"));
+
             $("#node-input-size").elementSizer({
                 width: "#node-input-width",
                 height: "#node-input-height",

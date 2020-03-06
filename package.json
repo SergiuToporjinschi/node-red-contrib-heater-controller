@@ -1,13 +1,17 @@
 {
   "name": "node-red-contrib-heater-controller",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "contributors": [],
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "~4.17.15"
+  },
   "deprecated": false,
   "description": "A dashboard ui interface node for controlling a heater.",
   "homepage": "https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller#readme",
   "scripts": {
-    "start": "node heater-controller.js"
+    "start": "nodemon --inspect=127.0.0.1:9229 C:/Users/Sergi/AppData/Roaming/npm/node_modules/node-red/red.js --config .vscode/nodemon.json",
+    "test": "mocha \"spec/**/*.spec.js\"",
+    "test-dev": "nodemon  --ext js --exec \"mocha \"spec/**/*.spec.js\"\""
   },
   "node-red": {
     "nodes": {
@@ -27,8 +31,16 @@
     "thermostat"
   ],
   "author": "Sergiu Toporjinschi",
-  "license": "GPL 3.0",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/issues"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "node-red-node-test-helper": "^0.2.3",
+    "should": "^8.4.0",
+    "should-sinon": "*",
+    "lodash": "*",
+    "nodemon": "*"
   }
 }
