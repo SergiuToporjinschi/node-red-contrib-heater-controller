@@ -13,11 +13,8 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
-        run: |
-          npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
-          npm config set scope "<@OWNER>"
-          npm config list
-          npm publish --access public
+      - run: npm ci
+      - run: npm publish
         env:
-          CI: true
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          NPM_REGISTRY_URL: registry.npmjs.org
