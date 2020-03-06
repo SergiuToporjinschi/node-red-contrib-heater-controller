@@ -14,7 +14,4 @@ jobs:
           node-version: 12
           registry-url: https://registry.npmjs.org/
       - run: npm publish
-      env:
-        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-        NPM_TOKEN: ${{secrets.NPM_TOKEN}}
-        NPM_REGISTRY_URL: registry.npmjs.org
+      env: NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
