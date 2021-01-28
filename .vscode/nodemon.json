@@ -12,6 +12,6 @@
     "env": {
       "NODE_ENV": "development"
     },
-    "nodeArgs": "--inspect",
+    "nodeArgs": "",
     "ext": "js json md html"
   }

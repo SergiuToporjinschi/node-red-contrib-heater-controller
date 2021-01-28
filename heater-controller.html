@@ -17,12 +17,10 @@
         <label for="node-input-topic"><i class="fa fa-tasks"></i> <span data-i18n="heater_controller.label.topic"></span></label>
         <input type="text" id="node-input-topic">
     </div>
-
     <div class="form-row">
         <label for="node-input-title"><i class="fa fa-tasks"></i> <span data-i18n="heater_controller.label.title"></span></label>
         <input type="text" id="node-input-title">
     </div>
-
     <div class="form-row">
         <label for="node-input-displayMode"><i class="fa fa-thermometer-empty"></i> <span data-i18n="heater_controller.label.displayMode"></span></label>
         <select id="node-input-displayMode">
@@ -125,7 +123,7 @@
         defaults: {
             name: { value: 'heater' },
             group: {
-                type: 'ui_group', 
+                type: 'ui_group',
                 required: true,
                 validate: function (v) {
                     return v && RED.nodes.node(v) && RED.nodes.node(v).type === 'ui_group';

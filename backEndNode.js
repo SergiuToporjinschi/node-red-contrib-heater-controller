@@ -51,6 +51,15 @@ function backEndNode(config, nodeFn) {
     this.context.set('infoNode', info);
 }
 
+backEndNode.prototype.getAdaptedConfig = function () {
+    try {
+        this.config.calendar = JSON.parse(this.config.calendar);
+    } catch (err) {
+        this.config.calendar = this.config.calendar;
+    }
+    return this.config;
+};
+
 /**
  * Returns an scheduled event from calendar
  * @param {Object} calendar the calendar configuration
