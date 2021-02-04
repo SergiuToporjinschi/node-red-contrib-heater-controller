@@ -108,7 +108,9 @@ var exp = {
 
     },
     getMockedHeaterControllerFaked: function (hc) {
-        return this.getMockedHeaterController(hc, sinon.fake(), sinon.fake(), sinon.fake(), sinon.fake(), sinon.fake());
+        hc = this.getMockedHeaterController(hc, sinon.fake(), sinon.fake(), sinon.fake(), sinon.fake(), sinon.fake());
+        hc.prototype.context = sinon.fake.returns({ set: sinon.fake() });
+        return hc;
     },
     getMockedHeaterController: function (hc, onFunc, contextFunc, debugFunc, logFunc, errorFunc) {
         hc.prototype.on = onFunc || function (params) { };

@@ -18,61 +18,18 @@ class Heater extends UINode {
         this.addEvent('setCalendar', this.onSetCalendar); //this topic can be used to change current calendar
     }
     initCurrentState() {
-        var node = this;
         this.status = {
             "currentTemp": undefined, //Current room temperature
             "targetValue": undefined, //Target temperature for the room
-            "isUserCustom": false, //Is targetValue a user custom value?
-            "isLocked": false, //Is targetValue locked (locker is true)
+            "isUserCustom": undefined, //Is targetValue a user custom value?
+            "isLocked": undefined, //Is targetValue locked (locker is true)
             "userTargetValue": undefined, //Target temperature set by user
             "currentSchedule": undefined, //Current target temperature from scheduler for this moment
             "nextSchedule": undefined, //Next target temperature from scheduler for next change
             "currentHeaterStatus": undefined, //Is heater running?
-            "time": new Date().toLocaleString(),
-            set _currentTemp(val) {
-                var changed = this.currentTemp != val;
-                this.currentTemp = val;
-                this.time = new Date().toLocaleString();
-                if (changed) { node.context().set('status', this); }
-            },
-            set _targetValue(val) {
-                var changed = this.targetValue != val;
-                this.targetValue = val;
-                this.time = new Date().toLocaleString();
-                if (changed) { node.context().set('status', this); }
-            },
-            set _isUserCustom(val) {
-                this.isUserCustom = val;
-                this.time = new Date().toLocaleString();
-                node.context().set('status', this);
-            },
-            set _isUserCustomLocked(val) {
-                this.isUserCustomLocked = val;
-                this.time = new Date().toLocaleString();
-                node.context().set('status', this);
-            },
-            set _userTargetValue(val) {
-                this.targetValue = val;
-                this.time = new Date().toLocaleString();
-                node.context().set('status', this);
-            },
-            set _currentSchedule(val) {
-                this.currentSchedule = val;
-                this.time = new Date().toLocaleString();
-                node.context().set('status', this);
-            },
-            set _nextSchedule(val) {
-                this.nextSchedule = val;
-                this.time = new Date().toLocaleString();
-                node.context().set('status', this);
-            },
-            set _currentHeaterStatus(val) {
-                this.currentHeaterStatus = val;
-                this.time = new Date().toLocaleString();
-                this.time = new Date().toLocaleString();
-                node.context().set('status', this);
-            }
+            "time": new Date().toLocaleString()
         }
+        this.context().set('status', this.status);
         this.status.currentSchedule = this.getScheduleOffSet();
         this.status.nextSchedule = this.getScheduleOffSet(1);
     }
@@ -84,7 +41,7 @@ class Heater extends UINode {
             throw new Error('Invalid payload');
         }
 
-        this.status._currentTemp = msg.payload;
+        this.status.currentTemp = msg.payload;
 
         //update schedulers
         this.status.currentSchedule = this.getScheduleOffSet();
