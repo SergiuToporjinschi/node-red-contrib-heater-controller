@@ -145,7 +145,7 @@ backEndNode.prototype.recalculate = function (lastInfoNode, newInfoNode) {
 }
 
 /**
- * Logs the cahanges if the logging future is activated
+ * Logs the changes if the logging future is activated
  * @param {Object} newInfoNode latest node status
  */
 backEndNode.prototype.logChanges = function (newValues) {

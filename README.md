@@ -23,7 +23,7 @@ A dashboard ui interface node for controlling a heater;
  * 7 - warning that current temperature is missing so the controller is not active
  * 8 - if is locked, will keep the target temperature until user intervention; If is unlocked, will keep the target temperature until next calendar change;
 
-Once a custom value has been set will keep that value untill the user is resetting it by double clicking the tarvet value or by sliding it left or right, when the current calendar target value is taken from calendar.
+Once a custom value has been set will keep that value until the user is resetting it by double clicking the target value or by sliding it left or right, when the current calendar target value is taken from calendar.
 
 ## Properties
   * **Title** (string)
@@ -46,7 +46,7 @@ Once a custom value has been set will keep that value untill the user is resetti
     The calendar which will be apply in automatic mode. Needs to be a
     valid JSON with float values for temperature.
     Is important to cover the entire interval of 24/7, otherwise will
-    keep the temperature untill next sice or next week day
+    keep the temperature until next since or next week day
     For example:
 
 ### Inputs
@@ -65,9 +65,9 @@ Message example:
 }
 ```
 * **userConfig** - To set user configuration value other than through the UI (eg. Voice command), the optional topic "userConfig" can be used.
-  * `isUserCustomLocked` - will enable/disable the lock on the deashboard;
-  * `userTargetValue` - will set a user target temperature on the deashboard, and will set `isUserCustom` as true if is not set in the message;
-  * `isUserCustom` - will set a user target temperature on the deashboard according to current target or to current `userTargetValue`, if is received on false without `userTargetValue` then the will change only the slider;
+  * `isUserCustomLocked` - will enable/disable the lock on the dashboard;
+  * `userTargetValue` - will set a user target temperature on the dashboard, and will set `isUserCustom` as true if is not set in the message;
+  * `isUserCustom` - will set a user target temperature on the dashboard according to current target or to current `userTargetValue`, if is received on false without `userTargetValue` then the will change only the slider;
 ```json
 {
     "topic" : "userConfig",
@@ -83,7 +83,7 @@ Message example:
 }
 ```
 
-* **isUserCustomLocked** - To set userCustomLocked value other than through the UI (eg. Voice command), the optional topic `isUuserCustomLocked` can be used.
+* **isUserCustomLocked** - To set userCustomLocked value other than through the UI (eg. Voice command), the optional topic `isUserCustomLocked` can be used.
 **<span style="color:orange">DEPRECATED</span>**<span style="color:orange">: This feature will be remove on next release, use userConfig instead</span>
 ```json
 {
@@ -91,7 +91,7 @@ Message example:
     "payload" : true
 }
 ```
-* **setCalendar** - To set the calendar by imput message.
+* **setCalendar** - To set the calendar by input message.
 **<span style="color:red">NOTE</span>**<span style="color:red">: payload needs to be JSON Type</span>
 
 ```json
@@ -150,7 +150,7 @@ Message example:
 ```
 ## Output
 
-A message is emited when the status is recalculated (when the user is
+A message is emitted when the status is recalculated (when the user is
 changing the target temperature or a new input message is received)
 
 For example:
@@ -177,11 +177,11 @@ For example:
   * **currentTemp** (float)
     The last current temperature received
   * **targetValue** (float)
-    Target temperature displyed in front-end. Coul be user custom value, if is changed by the user, or calendar current temperature value set by calendar
+    Target temperature displayed in front-end. Could be user custom value, if is changed by the user, or calendar current temperature value set by calendar
   * **currentSchedule** (float)
-    Current calendar schedule. The value which would be set if the controller is set on calendar and some aditional information like day of the week and time
+    Current calendar schedule. The value which would be set if the controller is set on calendar and some additional information like day of the week and time
   * **nextSchedule** (float)
-    Next calendar schedule. The value which will be set if the controller is set on calendar and some aditional information when this will like happen like day of the week and time
+    Next calendar schedule. The value which will be set if the controller is set on calendar and some additional information when this will like happen like day of the week and time
   * **currentHeaterStatus** (string (on|off))
     Calculated the heater status based on the difference between target value and current temperature
   * **userTargetValue** (float)

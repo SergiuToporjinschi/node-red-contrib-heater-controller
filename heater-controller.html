@@ -84,12 +84,8 @@
     </div>
     <div class="ident">
         <div class="form-row" style="display: block;">
-            <label style="width: 140px !important" for="node-input-thresholdRising"><i class="fa fa-level-up"></i> <span data-i18n="heater_controller.label.upThreshold"></label>
-            <input type="number" min="-100" max="100" step="0.1" list="defaultNumbers" id="node-input-thresholdRising" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
-        </div>
-        <div class="form-row" style="display: block;">
-            <label style="width: 140px !important" for="node-input-thresholdFalling"><i class="fa fa-level-down"></i> <span data-i18n="heater_controller.label.lowerThreshold"></label>
-            <input type="number" min="-100" max="100" step="0.1" list="defaultNumbers" id="node-input-thresholdFalling"  data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
+            <label style="width: 140px !important" for="node-input-threshold"><i class="fa fa-level-up"></i> <span data-i18n="heater_controller.label.Threshold"></label>
+            <input type="number" min="-100" max="100" step="0.1" list="defaultNumbers" id="node-input-threshold" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
         </div>
         <datalist id="defaultNumbers">
                 <option value="0">
@@ -195,13 +191,7 @@
                     return RED.validators.number(v)(v) && v > 0;
                 }
             },
-            thresholdRising: {
-                value: 0.5,
-                validate: function (v) {
-                    return RED.validators.number(v)(v) && v >= -100 && v <= 100;
-                }
-            },
-            thresholdFalling: {
+            threshold: {
                 value: 0.5,
                 validate: function (v) {
                     return RED.validators.number(v)(v) && v >= -100 && v <= 100;
@@ -300,26 +290,28 @@
         label: function () { return this.name || "heater"; },
         oneditprepare: function () {
             $('#node-input-topic').val(this.topic);
-            $('#cUnit').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.celsiusUnit"));
-            $('#fUnit').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.fahrenheitUnit"));
-            $('#kUnit').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.kelvinUnit"));
+            $('#cUnit').text(RED._("node-red-contrib-heater-controller1/ui_heater_controller:heater_controller.label.celsiusUnit"));
+            $('#fUnit').text(RED._("node-red-contrib-heater-controller1/ui_heater_controller:heater_controller.label.fahrenheitUnit"));
+            $('#kUnit').text(RED._("node-red-contrib-heater-controller1/ui_heater_controller:heater_controller.label.kelvinUnit"));
 
-            $('#btns').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.dmButtons"));
-            $('#slide').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.dmSlider"));
+            $('#btns').text(RED._("node-red-contrib-heater-controller1/ui_heater_controller:heater_controller.label.dmButtons"));
+            $('#slide').text(RED._("node-red-contrib-heater-controller1/ui_heater_controller:heater_controller.label.dmSlider"));
 
-            $('#daysType').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.daysType"));
-            $('#changesType').text(RED._("node-red-contrib-heater-controller/ui_heater_controller:heater_controller.label.changesType"));
+            $('#daysType').text(RED._("node-red-contrib-heater-controller1/ui_heater_controller:heater_controller.label.daysType"));
+            $('#changesType').text(RED._("node-red-contrib-heater-controller1/ui_heater_controller:heater_controller.label.changesType"));
 
             $("#node-input-size").elementSizer({
                 width: "#node-input-width",
                 height: "#node-input-height",
                 group: "#node-input-group"
             });
+
             this.editor = RED.editor.createEditor({
                 id: 'node-input-calendarEditor',
                 mode: 'ace/mode/json',
                 value: $("#node-input-calendar").val()
             });
+
             var editor = this.editor;
             $("#node-input-json-format").on('click', function (e) {
                 e.preventDefault();
@@ -333,6 +325,7 @@
             // $('#displayMode').val(this.displayMode || "buttons");
             this.editor.focus();
         },
+
         oneditsave: function () {
             var calendarVal = this.editor.getValue();
             this.editor.destroy();
@@ -342,8 +335,7 @@
             this.sliderMaxValue = Number.parseFloat(this.sliderMaxValue);
             this.sliderMinValue = Number.parseFloat(this.sliderMinValue);
             this.sliderStep = Number.parseFloat(this.sliderStep)
-            this.thresholdFalling = Number.parseFloat(this.thresholdFalling);
-            this.thresholdRising = Number.parseFloat(this.thresholdRising);
+            this.threshold = Number.parseFloat(this.threshold);
             // this.unit = $('#unit').val();
             // this.displayMode = $('#displayMode').val();
             $("#node-input-calendar").val(calendarVal);
@@ -386,16 +378,12 @@
     </dl>
     <dl class="message-properties">
         <dt>Upper threshold<span class="property-type">float</span></dt>
-        <dd>Hysteresis upper threshold limit. This value is added to the target temperature to determinate the point of setting the heater to off</dd>
-    </dl>
-    <dl class="message-properties">
-        <dt>Lower threshold<span class="property-type">float</span></dt>
-        <dd>Hysteresis Lower threshold limit. This value is added to the target temperature to determinate the point of setting the heater to on</dd>
+        <dd>Hysteresis/threshold limit. This value is added or subtracted from the target temperature to determinate the point of setting heater on or off</dd>
     </dl>
     <dl class="message-properties">
         <dt>Calendar<span class="property-type">json</span></dt>
         <dd>The calendar which will be apply in automatic mode. Needs to be a valid JSON with float values for temperature.<br>
-            Is important to cover the entire interval of 24/7, otherwise will keep the temperature untill next sice or next week day</dd>
+            Is important to cover the entire interval of 24/7, otherwise will keep the temperature until next since or next week day</dd>
         <dd>For example:</dd>
         <pre>
 {
@@ -459,7 +447,7 @@
 
     <dl class="message-properties">
         <dt>isUserCustomLocked</dt>
-        <dd>To set userCustomLocked value other than through the UI (eg. Voice command), the optional topic <b>isUuserCustomLocked</b> can be used.
+        <dd>To set userCustomLocked value other than through the UI (eg. Voice command), the optional topic <b>isUserCustomLocked</b> can be used.
         <p style="color: #AD1625;">DEPRECATED This feature will be remove on next release, use userConfig instead</p>
 <pre>{
         "topic" : "isUserCustomLocked",
@@ -470,7 +458,7 @@
 
 
     <h3>Output</h3>
-    <p>A message is emited when the status is recalculated (when the user is changing the target temperature or a new input message is received)</p>
+    <p>A message is emitted when the status is recalculated (when the user is changing the target temperature or a new input message is received)</p>
 
     <dd>For example:</dd>
     <pre>
@@ -498,15 +486,15 @@
     </dl>
     <dl class="message-properties">
         <dt>targetValue<span class="property-type">float</span></dt>
-        <dd>Target temperature displyed in front-end. Coul be user custom value, if is changed by the user, or calendar current temperature value set by calendar</dd>
+        <dd>Target temperature displayed in front-end. Could be user custom value, if is changed by the user, or calendar current temperature value set by calendar</dd>
     </dl>
     <dl class="message-properties">
         <dt>currentSchedule<span class="property-type">float</span></dt>
-        <dd>Current calendar schedule. The value which would be set if the controller is set on calendar and some aditional information like day of the week and time</dd>
+        <dd>Current calendar schedule. The value which would be set if the controller is set on calendar and some additional information like day of the week and time</dd>
     </dl>
     <dl class="message-properties">
         <dt>nextSchedule<span class="property-type">float</span></dt>
-        <dd>Next calendar schedule. The value which will be set if the controller is set on calendar and some aditional information when this will like happen like day of the week and time</dd>
+        <dd>Next calendar schedule. The value which will be set if the controller is set on calendar and some additional information when this will like happen like day of the week and time</dd>
     </dl>
     <dl class="message-properties">
         <dt>currentHeaterStatus<span class="property-type">string (on|off)</span></dt>

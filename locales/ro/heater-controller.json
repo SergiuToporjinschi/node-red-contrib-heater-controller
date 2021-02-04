@@ -23,8 +23,7 @@
             "fahrenheitUnit": "Fahrenheit",
             "kelvinUnit": "Kelvin",
             "hysteresis": "Hystereza",
-            "upThreshold": "Limita superioara",
-            "lowerThreshold": "Limita inferioara",
+            "threshold": "Limita histereza",
             "calendar": "Calendar"
         },
         "placeholder": {

@@ -1,17 +1,18 @@
 {
-  "name": "node-red-contrib-heater-controller",
+  "name": "node-red-contrib-heater_controller",
   "version": "2.0.2",
   "contributors": [],
   "dependencies": {
-    "lodash": "~4.17.15"
+    "lodash": "~4.17.20"
   },
   "deprecated": false,
   "description": "A dashboard ui interface node for controlling a heater.",
   "homepage": "https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller#readme",
   "scripts": {
     "start": "nodemon --inspect=127.0.0.1:9229 C:/Users/Sergi/AppData/Roaming/npm/node_modules/node-red/red.js --config .vscode/nodemon.json",
-    "test": "mocha \"spec/**/*.spec.js\"",
-    "test-dev": "nodemon  --ext js --exec \"mocha \"spec/**/*.spec.js\"\""
+    "test": "mocha",
+    "test-cov": "nyc npm run test",
+    "test-dev": "nodemon --ext js --exec \"nyc npm run test-cov\""
   },
   "node-red": {
     "nodes": {
@@ -35,12 +36,36 @@
   "bugs": {
     "url": "https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/issues"
   },
+  "nyc": {
+    "exclude": [
+      "spec/**"
+    ],
+    "reporter": [
+      "lcov",
+      "html"
+    ]
+  },
+  "mocha": {
+    "diff": true,
+    "extension": [
+      "js"
+    ],
+    "slow": 1500,
+    "timeout": 20000,
+    "recursive": true,
+    "spec": [
+      "spec/*.spec.js"
+    ]
+  },
   "devDependencies": {
-    "mocha": "*",
-    "node-red-node-test-helper": "^0.2.3",
+    "coveralls": "^3.1.0",
+    "lodash": "~4.17.20",
+    "mocha": "^8.2.1",
+    "mocha-param": "^2.0.1",
+    "nodemon": "*",
+    "nyc": "^15.1.0",
     "should": "^8.4.0",
     "should-sinon": "*",
-    "lodash": "*",
-    "nodemon": "*"
+    "sinon": "^9.2.4"
   }
 }

@@ -23,8 +23,7 @@
          "fahrenheitUnit": "Fahrenheit",
          "kelvinUnit": "Kelvin",
          "hysteresis": "Hysterese",
-         "upThreshold": "Oberer Schwellwert",
-         "lowerThreshold": "Unterer Schwellwert",
+         "threshold": "Schwellwert",
          "calendar": "Kalender"
       },
       "placeholder": {

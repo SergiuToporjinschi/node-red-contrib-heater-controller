@@ -23,8 +23,7 @@
             "fahrenheitUnit": "Fahrenheit",
             "kelvinUnit": "Kelvin",
             "hysteresis": "Hysteresis",
-            "upThreshold": "Upper threshold",
-            "lowerThreshold": "Lower threshold",
+            "upThreshold": "Hysteresis limit",
             "calendar": "Calendar"
         },
         "placeholder": {

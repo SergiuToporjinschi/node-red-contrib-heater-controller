@@ -13,6 +13,7 @@ function getController($scope, events) {
     $scope.init = function (config) {
         $scope.config = config;
         $scope.$watch("msg", function (a, b, c) {
+            if (typeof (a) === 'undefined') return;
             debugger;
         });
     };
