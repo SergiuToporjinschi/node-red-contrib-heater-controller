@@ -5,9 +5,9 @@ name: Tests
 
 on:
   push:
-    branches: [ master ]
+    branches: [ Refactoring ]
   pull_request:
-    branches: [ master ]
+    branches: [ Refactoring ]
 
 jobs:
   build:
@@ -29,7 +29,7 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: npm run test-cov
-    
+
     #- name: commit report
     #  uses: actions/checkout@v2
     #  with:
