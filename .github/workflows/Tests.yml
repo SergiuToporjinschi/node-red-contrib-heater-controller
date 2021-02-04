@@ -28,8 +28,12 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
     - run: npm run build --if-present
-    - run: npm run test-cov
-
+    #- run: npm run test
+    - run: npm test coverage-report-lcov
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
     #- name: commit report
     #  uses: actions/checkout@v2
     #  with:
