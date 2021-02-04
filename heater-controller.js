@@ -1,9 +1,11 @@
 /**
  * Creates the back-end module
- * @param {object} config object from back-end 
+ * @param {object} config object from back-end
  * @param {object} node an existing node-red node
  */
 function getBackModule(config, node) {
+    this.on
+
     var BackEndNode = require('./backEndNode.js');
     // var backModule = new BackEndNode(config, node);
     var backModule = new BackEndNode(config, {
@@ -33,9 +35,9 @@ function getFrontModule(config) {
 }
 
 /**
- * @returns {function} done function for undeploying the node
- * @param {object} config object from back-end 
- * @param {object} node an existing node-red node 
+ * @returns {function} done function for un-deploying the node
+ * @param {object} config object from back-end
+ * @param {object} node an existing node-red node
  * @param {object} ui node-red-dashboard node
  */
 function createWidget(config, node, ui) {
@@ -78,6 +80,10 @@ module.exports = function (RED) {
             }
             RED.nodes.createNode(this, config);
             var done = createWidget(config, node, ui);
+            this.on("input", function(msg, send, donecb){
+                console.log(msg);
+                donecb();
+            });
         } catch (e) {
             console.log(e);
         }

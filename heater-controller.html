@@ -395,7 +395,7 @@
     <dl class="message-properties">
         <dt>Calendar<span class="property-type">json</span></dt>
         <dd>The calendar which will be apply in automatic mode. Needs to be a valid JSON with float values for temperature.<br>
-            Is important to cover the entire interval of 24/7, otherwise will keep the temperature untill next sice or next week day</dd>
+            Is important to cover the entire interval of 24/7, otherwise will keep the temperature until next since or next week day</dd>
         <dd>For example:</dd>
         <pre>
 {
@@ -434,9 +434,9 @@
         <dt>userConfig</dt>
         <dd>To set user configuration value other than through the UI (eg. Voice command), the optional topic <b>userConfig</b> can be used.
             <ul>
-                <li><b>isUserCustomLocked</b> - will enable/disable the lock on the deashboard;</li>
-                <li><b>userTargetValue</b> - will set a user target temperature on the deashboard, and will set `isUserCustom` as true if is not set in the message; </li>
-                <li><b>isUserCustom</b> - will set a user target temperature on the deashboard according to current target or to current `userTargetValue`, if is received on false without `userTargetValue` then the will change only the slider;</li>
+                <li><b>isUserCustomLocked</b> - will enable/disable the lock on the dashboard;</li>
+                <li><b>userTargetValue</b> - will set a user target temperature on the dashboard, and will set `isUserCustom` as true if is not set in the message; </li>
+                <li><b>isUserCustom</b> - will set a user target temperature on the dashboard according to current target or to current `userTargetValue`, if is received on false without `userTargetValue` then the will change only the slider;</li>
             </ul>
 <pre>{
     "topic" : "userConfig",
@@ -459,7 +459,7 @@
 
     <dl class="message-properties">
         <dt>isUserCustomLocked</dt>
-        <dd>To set userCustomLocked value other than through the UI (eg. Voice command), the optional topic <b>isUuserCustomLocked</b> can be used.
+        <dd>To set userCustomLocked value other than through the UI (eg. Voice command), the optional topic <b>isUserCustomLocked</b> can be used.
         <p style="color: #AD1625;">DEPRECATED This feature will be remove on next release, use userConfig instead</p>
 <pre>{
         "topic" : "isUserCustomLocked",
@@ -470,7 +470,7 @@
 
 
     <h3>Output</h3>
-    <p>A message is emited when the status is recalculated (when the user is changing the target temperature or a new input message is received)</p>
+    <p>A message is emitted when the status is recalculated (when the user is changing the target temperature or a new input message is received)</p>
 
     <dd>For example:</dd>
     <pre>
@@ -498,15 +498,15 @@
     </dl>
     <dl class="message-properties">
         <dt>targetValue<span class="property-type">float</span></dt>
-        <dd>Target temperature displyed in front-end. Coul be user custom value, if is changed by the user, or calendar current temperature value set by calendar</dd>
+        <dd>Target temperature displayed in front-end. Could be user custom value, if is changed by the user, or calendar current temperature value set by calendar</dd>
     </dl>
     <dl class="message-properties">
         <dt>currentSchedule<span class="property-type">float</span></dt>
-        <dd>Current calendar schedule. The value which would be set if the controller is set on calendar and some aditional information like day of the week and time</dd>
+        <dd>Current calendar schedule. The value which would be set if the controller is set on calendar and some additional information like day of the week and time</dd>
     </dl>
     <dl class="message-properties">
         <dt>nextSchedule<span class="property-type">float</span></dt>
-        <dd>Next calendar schedule. The value which will be set if the controller is set on calendar and some aditional information when this will like happen like day of the week and time</dd>
+        <dd>Next calendar schedule. The value which will be set if the controller is set on calendar and some additional information when this will like happen like day of the week and time</dd>
     </dl>
     <dl class="message-properties">
         <dt>currentHeaterStatus<span class="property-type">string (on|off)</span></dt>
