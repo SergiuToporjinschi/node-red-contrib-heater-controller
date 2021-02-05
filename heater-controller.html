@@ -422,13 +422,13 @@
         <dt>userConfig</dt>
         <dd>To set user configuration value other than through the UI (eg. Voice command), the optional topic <b>userConfig</b> can be used.
             <ul>
-                <li><b>isUserCustomLocked</b> - will enable/disable the lock on the deashboard;</li>
-                <li><b>userTargetValue</b> - will set a user target temperature on the deashboard, and will set `isUserCustom` as true if is not set in the message; </li>
-                <li><b>isUserCustom</b> - will set a user target temperature on the deashboard according to current target or to current `userTargetValue`, if is received on false without `userTargetValue` then the will change only the slider;</li>
+                <li><b>isLocked</b> - will enable/disable the lock on the dashboard;</li>
+                <li><b>userTargetValue</b> - will set a user target temperature on the dashboard, and will set `isUserCustom` as true if is not set in the message; </li>
+                <li><b>isUserCustom</b> - will set a user target temperature on the dashboard according to current target or to current `userTargetValue`, if is received on false without `userTargetValue` then the will change only the slider;</li>
             </ul>
 <pre>{
     "topic" : "userConfig",
-    "payload" : {"isUserCustomLocked": true, "userTargetValue": 25.5, "isUserCustom": false}
+    "payload" : {"isLocked": true, "userTargetValue": 25.5, "isUserCustom": false}
 }</pre>
         </dd>
     </dl>
@@ -446,11 +446,11 @@
     </dl>
 
     <dl class="message-properties">
-        <dt>isUserCustomLocked</dt>
-        <dd>To set userCustomLocked value other than through the UI (eg. Voice command), the optional topic <b>isUserCustomLocked</b> can be used.
+        <dt>isLocked</dt>
+        <dd>To set userCustomLocked value other than through the UI (eg. Voice command), the optional topic <b>isLocked</b> can be used.
         <p style="color: #AD1625;">DEPRECATED This feature will be remove on next release, use userConfig instead</p>
 <pre>{
-        "topic" : "isUserCustomLocked",
+        "topic" : "isLocked",
         "payload" : true
 }</pre>
         </dd>
@@ -502,14 +502,14 @@
     </dl>
     <dl class="message-properties">
         <dt>userTargetValue<span class="property-type">float</span></dt>
-        <dd>The current target temperature set by user. This value will be the target until the next schedule if the isUserCustomLocked is false.</dd>
+        <dd>The current target temperature set by user. This value will be the target until the next schedule if the isLocked is false.</dd>
     </dl>
     <dl class="message-properties">
         <dt>isUserCustom<span class="property-type">boolean</span></dt>
         <dd>True if current target temperature is set by the user</dd>
     </dl>
     <dl class="message-properties">
-        <dt>isUserCustomLocked<span class="property-type">boolean</span></dt>
+        <dt>isLocked<span class="property-type">boolean</span></dt>
         <dd>True if current target temperature is locked; if is true, the calendar value will not become targetValue, if is false and the user has set a custom value that value will be available until next schedule change</dd>
     </dl>
 </script>

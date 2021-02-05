@@ -49,7 +49,7 @@ function getController($scope, events) {
     //front->back
     $scope.lockCustom = function () {
         if ($scope.msg) {
-            $scope.msg.isUserCustomLocked = !$scope.msg.isUserCustomLocked;
+            $scope.msg.isLocked = !$scope.msg.isLocked;
             $scope.sendVal();
         }
     };

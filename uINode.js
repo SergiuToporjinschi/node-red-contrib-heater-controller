@@ -88,7 +88,6 @@ class UINode {
                 doneCB(err);
             }
         }
-
     }
 
     /**

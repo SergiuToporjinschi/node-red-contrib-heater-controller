@@ -2,48 +2,48 @@ var _ = require("lodash");
 var sinon = require('sinon');
 var exp = {
     calendar: {
-        "Monday": {
+        "Monday": { //2021-01-35
             "00:00": 19,
             "06:20": 22,
             "08:00": 19,
             "16:40": 22,
             "23:59": 19
         },
-        "Tuesday": {
+        "Tuesday": { //2021-01-26
             "00:00": 19,
             "06:20": 22,
             "08:00": 19,
             "16:40": 23,
             "23:59": 19
         },
-        "Wednesday": {
+        "Wednesday": { //2021-01-27
             "00:00": 19,
             "06:20": 22,
             "08:00": 19,
             "16:40": 22,
             "23:59": 19
         },
-        "Thursday": {
+        "Thursday": { //2021-01-28
             "00:00": 19,
             "06:20": 10,
             "08:00": 19,
             "16:40": 22,
             "23:59": 19
         },
-        "Friday": {
+        "Friday": { //2021-01-29
             "00:00": 19,
             "06:20": 23,
             "08:00": 19,
             "16:40": 22,
             "23:59": 19
         },
-        "Saturday": {
+        "Saturday": { //2021-01-30
             "00:00": 19,
             "08:00": 20,
             "20:00": 22,
             "23:59": 19
         },
-        "Sunday": {
+        "Sunday": { //2021-01-31
             "00:00": 19,
             "08:00": 20,
             "20:00": 22,
@@ -54,7 +54,7 @@ var exp = {
         "currentTemp": 20, //B -> value calculated input from sensor
         "targetValue": 20, //CALC -> Value calculated based on calendar or usr input
         "isUserCustom": false, //-> IB
-        "isUserCustomLocked": false, // -> IB
+        "isLocked": false, // -> IB
         "userTargetValue": 20, //-> IB
         "currentSchedule": { //-> calendar
             "temp": 20,

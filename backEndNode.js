@@ -8,7 +8,7 @@
       "currentTemp":23, B -> value calculated input from sensor
       "targetValue":22, CALC -> Value calculated based on calendar or usr input
       "isUserCustom":false, -> IB
-	  "isUserCustomLocked" : true, ->IB
+	  "isLocked" : true, ->IB
 	  "userTargetValue": 23.5 -> IB
       "currentSchedule":{ -> calendar
          "temp":22,
@@ -39,7 +39,7 @@ function backEndNode(config, nodeFn) {
     if (!config || !config.hasOwnProperty("group")) {
         throw 'heater_controller.error.no-group';
     }
-    this.allowedTopics = ['currentTemp', 'userTargetValue', 'setCalendar', "isUserCustomLocked", "userConfig"];
+    this.allowedTopics = ['currentTemp', 'userTargetValue', 'setCalendar', "isLocked", "userConfig"];
     this.config = config;
     this.context = nodeFn.context;
     this.send = nodeFn.send;
@@ -103,7 +103,7 @@ backEndNode.prototype.calculateTarget = function (lastInfoNode, newInfoNode) {
 
     //changed by schedule and it was not locked by user
     if (
-        (changedBySchedule && !lastInfoNode.isUserCustomLocked) || //changed by calendar
+        (changedBySchedule && !lastInfoNode.isLocked) || //changed by calendar
         (!changedBySchedule && lastInfoNode.isUserCustom && !newInfoNode.isUserCustom)
     ) {
         this.log("ResetToCalendar || changedByCalendar");
@@ -161,7 +161,7 @@ backEndNode.prototype.defaultInfoNode = {
     "currentTemp": 20,
     "targetValue": 20,
     "isUserCustom": false,
-    "isUserCustomLocked": false,
+    "isLocked": false,
     "userTargetValue": 20,
     "currentSchedule": {
         "temp": 20,
@@ -193,15 +193,15 @@ backEndNode.prototype.beforeEmit = function (msg, value) {
         value = { 'userTargetValue': value };
         msg.topic = "userConfig";
     }
-    if (msg.topic === 'isUserCustomLocked') {
-        value = { 'isUserCustomLocked': value };
+    if (msg.topic === 'isLocked') {
+        value = { 'isLocked': value };
         msg.topic = "userConfig";
     }
 
 
     if (msg.topic === 'userConfig') {
         //filter incomming properties to allow only those that can be changed by message
-        var changedProp = _.pick(value, ['isUserCustom', 'isUserCustomLocked', 'userTargetValue', 'currentTemp']);
+        var changedProp = _.pick(value, ['isUserCustom', 'isLocked', 'userTargetValue', 'currentTemp']);
         newInfoNode = _.extend(newInfoNode, changedProp);
         this.recalculate(infoNode, newInfoNode);
     }
@@ -232,7 +232,7 @@ backEndNode.prototype.beforeSend = function (msg, orig) {
         } else {
             var oldStatus = orig.msg.currentHeaterStatus;
             var oldInfoNode = this.context.get("infoNode");
-            // var changedProp = _.pick(value, ['isUserCustom', 'isUserCustomLocked', 'userTargetValue', 'currentTemp']);
+            // var changedProp = _.pick(value, ['isUserCustom', 'isLocked', 'userTargetValue', 'currentTemp']);
             var newInfoNode = _.extend(JSON.parse(JSON.stringify(oldInfoNode)), orig.msg);
             this.recalculate(oldInfoNode, newInfoNode);
             this.context.set("infoNode", newInfoNode);

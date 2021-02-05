@@ -14,7 +14,7 @@ class Heater extends UINode {
 
     initTopics() {
         this.addEvent('currentTemp', this.onTempChange); //this topic changes currentTemperature (WE MUST RECEIVE THIS MESSAGE)
-        this.addEvent('userConfig', this.onUserConfig);//this topic can be used to change user settings, isUserCustomLocked, userTargetValue
+        this.addEvent('userConfig', this.onUserConfig);//this topic can be used to change user settings, isLocked, userTargetValue
         this.addEvent('setCalendar', this.onSetCalendar); //this topic can be used to change current calendar
     }
     initCurrentState() {
@@ -36,7 +36,7 @@ class Heater extends UINode {
 
     onTempChange(msg) {
         //console.log('currentTemp');
-        if (typeof (msg) !== 'object' || typeof (msg.payload) !== 'number') {
+        if (typeof (msg.payload) !== 'number') {
             this.error("onTempChange->Invalid payload [" + JSON.stringify(msg) + "]");
             throw new Error('Invalid payload');
         }
@@ -54,12 +54,37 @@ class Heater extends UINode {
         return [{ 'topic': 'status', 'payload:': this.status }];
     }
 
+    /**
+     *
+     * @param {object} msg
+     * @todo Meeds refactoring of attribute check!!!
+     */
     onUserConfig(msg) {
-        if (msg.hasOwnProperty('isUserCustomLocked') || msg.hasOwnProperty('userTargetValue')) {
-            //TODO check msg option and take only isUserCustomLocked, isUserCustom, and userTargetValue
-            //TODO change this.status with msg.isUserCustomLocked and msg.userTargetValue
-            //TODO if message contain isUserCustomLocked = false then forget about the others and locked the temperature until next change
+        if (typeof (msg.payload) !== 'object' ||
+            !(msg.payload.hasOwnProperty('isLocked') || msg.payload.hasOwnProperty('userTargetValue') || msg.payload.hasOwnProperty('isUserCustom')) ||
+            !(['undefined', 'boolean'].includes(typeof (msg.payload.isLocked)) &&
+                ['undefined', 'number'].includes(typeof (msg.payload.userTargetValue)) &&
+                ['undefined', 'boolean'].includes(typeof (msg.payload.isUserCustom)))) {
+            this.error("onUserConfig->Invalid payload [" + JSON.stringify(msg) + "]");
+            throw new Error('Invalid payload');
         }
+
+        if (msg.payload.isUserCustom === true) {
+            this.status.isUserCustom === true;
+            this.status.userTargetValue = this.status.targetValue;
+        } else if (msg.payload.isUserCustom === false) {
+            this.status.isUserCustom === false;
+            this.status.targetValue = this.currentSchedule.temp;
+        }
+
+        this.status.isLocked = typeof (msg.payload.isLocked) !== 'undefined' ? msg.payload.isLocked : this.status.isLocked;
+        this.status.userTargetValue = typeof (msg.payload.userTargetValue) !== 'undefined' ? msg.payload.userTargetValue : this.status.userTargetValue;
+
+        if (this.oldStatus.isLocked !== this.status.isLocked || this.oldStatus.userTargetValue != this.status.userTargetValue) {
+            this.status.isUserCustom = true;
+        }
+
+        this.recalculate();
     }
 
     onSetCalendar(msg) {

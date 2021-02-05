@@ -12,7 +12,7 @@
             <i ng-show="msg.currentTemp" title="Heater status" class="fa fa-fire icon" ng-class="msg.currentHeaterStatus == 'on' ? 'iconTrue' : 'iconFalse'" aria-hidden="true"></i>
         </div>
         <div flex layout="row" ng-show="msg.currentTemp">
-            <div class="item"><i ng-click='lockCustom()' ng-class="msg.isUserCustomLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select link-pointer" style="font-size: 2.2em; color:#0094ce"></i></div>
+            <div class="item"><i ng-click='lockCustom()' ng-class="msg. ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select link-pointer" style="font-size: 2.2em; color:#0094ce"></i></div>
             <div class="item"><i ng-click='toSchedule()' ng-class="{'icon-enabled link-pointer' : msg.isUserCustom, 'icon-disabled' : !msg.isUserCustom}" class="fa fa-calendar-check-o no-select"
                     style="font-size: 2em"></i></div>
             <div class="item"><i ng-click="showLogs()" title="Logs" ng-class="{'icon-enabled ':msg.logs.length > 0, 'icon-disabled' : !msg.logs || msg.logs.length <= 0 }" class="fa fa-file-text-o no-select"
