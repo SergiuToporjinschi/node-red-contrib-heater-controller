@@ -74,7 +74,7 @@ describe("Functions", function () {
                     day: 'Sunday',
                     temp: 19
                 }
-            }, {
+            }, {//go bottom
                 currentTime: '2021-01-31T16:22:00.000',
                 offSet: -4,
                 expected: {
@@ -98,7 +98,16 @@ describe("Functions", function () {
                     day: 'Sunday',
                     temp: 22
                 }
+            }, { //go to start
+                currentTime: '2021-01-30T10:00:00.000',
+                offSet: 5,
+                expected: {
+                    time: '20:00',
+                    day: 'Sunday',
+                    temp: 22
+                }
             }
+
         ];
         itParam("Testing getScheduleOffSet", offSetData, (testSetting) => {
             // console.log(JSON.stringify(testSetting))

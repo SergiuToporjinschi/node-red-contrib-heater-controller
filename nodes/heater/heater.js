@@ -122,23 +122,9 @@ class Heater extends UINode {
         }
         currentPoz = currentPoz + offSet;
 
-        if (currentPoz < 0) currentPoz = intervalList.length - Math.abs(currentPoz);
+        if (currentPoz < 0) currentPoz = intervalList.length - Math.abs(currentPoz); //if end of list then start from begging
+        if (currentPoz > intervalList.length - 1)  currentPoz = currentPoz - (intervalList.length);
         return intervalList[currentPoz];
-
-
-
-        //if the current time is not matching with one that is set in calendar, off set si adjusted because I have also my position there
-        // if (!isInInterval && offSet === -1) offSet--;
-
-        // //if you reached to the bottom and you have to search from the top
-        // if (offSet > intervalList.length - 1) offSet = offSet - (intervalList.length - 1);
-        // var poz = currentPoz + (offSet || -1);
-
-        // //if is starting of the list and you have to search it from the bottom
-        // if (poz < 0) {
-        //     poz = intervalList.length - 1 - Math.abs(poz);
-        // }
-        // return intervalList[poz]
     }
 
     /**

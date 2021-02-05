@@ -12,10 +12,10 @@
   "description": "A dashboard ui interface node for controlling a heater.",
   "homepage": "https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller#readme",
   "scripts": {
-    "start": "nodemon --inspect=127.0.0.1:9229 C:/Users/Sergi/AppData/Roaming/npm/node_modules/node-red/red.js --config .vscode/nodemon.json",
+    "start": "nodemon C:/Users/Sergi/AppData/Roaming/npm/node_modules/node-red/red.js",
     "test": "mocha",
     "test-cov": "nyc npm run test",
-    "test-dev": "nodemon --ext js --exec \"nyc npm run test-cov\""
+    "test-dev": "nodemon --exec \"npm run test\""
   },
   "node-red": {
     "nodes": {
@@ -43,6 +43,35 @@
     "nodes/**/*.*"
   ],
 
+  "devDependencies": {
+    "coveralls": "^3.1.0",
+    "lodash": "~4.17.20",
+    "mocha": "^8.2.1",
+    "mocha-param": "^2.0.1",
+    "nodemon": "*",
+    "nyc": "^15.1.0",
+    "should": "^8.4.0",
+    "should-sinon": "*",
+    "sinon": "^9.2.4"
+  },
+
+
+
+  "nodemonConfig": {
+    "restartable": "rs",
+    "ignore": [
+      ".git",
+      ".vscode"
+    ],
+    "verbose": true,
+    "watch": [
+      "./nodes",
+      "./spec",
+      "package.json"
+    ],
+    "nodeArgs": "",
+    "ext": "js json md html"
+  },
 
   "nyc": {
     "exclude": [
@@ -64,16 +93,5 @@
     "spec": [
       "spec/*.spec.js"
     ]
-  },
-  "devDependencies": {
-    "coveralls": "^3.1.0",
-    "lodash": "~4.17.20",
-    "mocha": "^8.2.1",
-    "mocha-param": "^2.0.1",
-    "nodemon": "*",
-    "nyc": "^15.1.0",
-    "should": "^8.4.0",
-    "should-sinon": "*",
-    "sinon": "^9.2.4"
   }
 }

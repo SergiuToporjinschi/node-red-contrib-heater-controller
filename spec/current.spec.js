@@ -22,89 +22,28 @@ describe("Functions", function () {
     });
     describe('Other', () => {
         beforeEach(() => {
-            RE = helper.getMockedRED();
-            delete require.cache[require.resolve('../nodes/heater/heater')];
-            var heat = helper.getMockedHeaterControllerFaked(require('../nodes/heater/heater'))
-            hc = new heat(RED, {
+            helper.setMockedDate('2021-01-31T08:00:00.000');//Sunday
+            hc = new HeaterController(RED, {
                 group: 'someGroup',
                 calendar: JSON.stringify(helper.calendar),
-                threshold: 0.5,
-                topic: 'heaterStatus'
+                threshold: 0.5
             });
-            hc.status.currentSchedule = {}; //not null
-            sandbox.restore()
         });
-        var testData = [
-            //User changes temp and locks it
-            {
-                input: {
-                    isUserCustom: false,
-                    isLocked: true,
-                    userTargetValue: 25
-                },
-                output: {
-                    isUserCustom: true,
-                    isLocked: true,
-                    userTargetValue: 25,
-                    targetValue: 10 //It will be change on computation
-                }
-            },
-            //user changes only the userTargetValue
-            {
-                input: {
-                    isUserCustom: false,
-                    isLocked: false,
-                    userTargetValue: 25
-                },
-                output: {
-                    isUserCustom: true,
-                    isLocked: false,
-                    userTargetValue: 25,
-                    targetValue: 10 //It will be change on computation
-                }
-            },
-            //user changes only the locking
-            {
-                input: {
-                    isLocked: true,
-                },
-                output: {
-                    isUserCustom: true,
-                    isLocked: true,
-                    userTargetValue: undefined,
-                    targetValue: 3 //It will be change on computation
-                }
-            },
-            //user changes only the userTargetValue
-            {
-                input: {
-                    userTargetValue: 50,
-                },
-                output: {
-                    isUserCustom: true,
-                    isLocked: false,
-                    userTargetValue: 50
-                }
-            }
-        ]
+        var offSetData = [
+        ];
+        itParam("Testing getScheduleOffSet", offSetData, (testSetting) => {
+            // console.log(JSON.stringify(testSetting))
+            helper.setMockedDate(testSetting.currentTime);//Sunday
+            var ret = hc.getScheduleOffSet(testSetting.offSet);
+            ret.time.length.should.be.equal(5);
+            ret.time.should.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/, "Incorrect time format: " + JSON.stringify(testSetting));
 
-        itParam("Check: onUserConfig", testData, (val) => {
-            hc.oldStatus = {};
-            hc.recalculate = sinon.fake();
-            hc.status = { currentSchedule: { temp: 10 }, isLocked: false, userTargetValue: 5, isUserCustom: false, targetValue: 3 };
-            hc.onUserConfig({
-                payload: val.input
-            });
-            if (typeof (val.output.isUserCustom) !== 'undefined')
-                should(hc.status.isUserCustom).be.equal(val.output.isUserCustom, 'incorrect isUserCustom: ' + JSON.stringify(val));
-            if (typeof (val.output.isLocked) !== 'undefined')
-                should(hc.status.isLocked).be.equal(val.output.isLocked, 'incorrect isLocked: ' + JSON.stringify(val));
-            if (typeof (val.output.userTargetValue) !== 'undefined')
-                should(hc.status.userTargetValue).be.equal(val.output.userTargetValue, 'incorrect userTargetValue: ' + JSON.stringify(val));
-            if (typeof (val.output.targetValue) !== 'undefined')
-                should(hc.status.targetValue).be.equal(val.output.targetValue, 'incorrect targetValue: ' + JSON.stringify(val));
+            ret.should.have.property("day").which.is.type("string", "day attribute is not a string: " + JSON.stringify(testSetting));
+            ret.should.have.property("temp").which.is.type("number", "temp attribute is not number: " + JSON.stringify(testSetting));
+            ret.should.have.property("time").which.is.type("string", "time attribute is not a string: " + JSON.stringify(testSetting));;
 
-            should(hc.recalculate.callCount).be.equal(1, 'Recalculate is not triggered when receiving a new configuration');
+            ret.should.have.keys("day", "time", "temp");
+            ret.should.be.deepEqual(testSetting.expected, 'Not expected object: ' + JSON.stringify(testSetting));
         });
     });
 });
