@@ -80,7 +80,7 @@ class Heater extends UINode {
         this.status.isLocked = typeof (msg.payload.isLocked) !== 'undefined' ? msg.payload.isLocked : this.status.isLocked;
         this.status.userTargetValue = typeof (msg.payload.userTargetValue) !== 'undefined' ? msg.payload.userTargetValue : this.status.userTargetValue;
 
-        if (this.oldStatus.isLocked !== this.status.isLocked || this.oldStatus.userTargetValue != this.status.userTargetValue) {
+        if (this.status.isLocked === true || this.oldStatus.userTargetValue != this.status.userTargetValue) {
             this.status.isUserCustom = true;
         }
 
@@ -225,7 +225,7 @@ class Heater extends UINode {
             this.status.targetValue = this.status.userTargetValue;
             return this.calculateStatus(this.status.targetValue);
         }
-
+        //TODO trigger status change if is the case
         return 'ShouldNotReceiveThis'; //should never return this value;
 
         //reset to schedule: !isLocked and isUserCustom and scheduleChanged
