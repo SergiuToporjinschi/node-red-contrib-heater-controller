@@ -21,152 +21,152 @@ describe("Functions", function () {
         sandbox.restore();
     });
 
-    // /**
-    //  * Test offSet calculation
-    //  */
-    // describe("Test calculating schedule with offset", () => {
-    //     beforeEach(() => {
-    //         helper.setMockedDate('2021-01-31T08:00:00.000');//Sunday
-    //         hc = new HeaterController(RED, {
-    //             group: 'someGroup',
-    //             calendar: JSON.stringify(helper.calendar),
-    //             threshold: 0.5
-    //         });
-    //     });
-    //     var offSetData = [
-    //         {
-    //             currentTime: '2021-01-31T08:00:00.000',
-    //             offSet: 0,
-    //             expected: {
-    //                 time: '08:00',
-    //                 day: 'Sunday',
-    //                 temp: 20
-    //             }
-    //         }, {
-    //             currentTime: '2021-01-31T16:22:00.000',
-    //             offSet: 2,
-    //             expected: {
-    //                 time: '23:59',
-    //                 day: 'Sunday',
-    //                 temp: 19
-    //             }
-    //         }, {
-    //             currentTime: '2021-01-31T16:22:00.000',
-    //             //Without Offset
-    //             expected: {
-    //                 time: '08:00',
-    //                 day: 'Sunday',
-    //                 temp: 20
-    //             }
-    //         }, {
-    //             currentTime: '2021-01-31T16:22:00.000',
-    //             offSet: 0,
-    //             expected: {
-    //                 time: '08:00',
-    //                 day: 'Sunday',
-    //                 temp: 20
-    //             }
-    //         }, {
-    //             currentTime: '2021-01-31T16:22:00.000',
-    //             offSet: -1,
-    //             expected: {
-    //                 time: '00:00',
-    //                 day: 'Sunday',
-    //                 temp: 19
-    //             }
-    //         }, {
-    //             currentTime: '2021-01-31T16:22:00.000',
-    //             offSet: -4,
-    //             expected: {
-    //                 time: '08:00',
-    //                 day: 'Saturday',
-    //                 temp: 20
-    //             }
-    //         }, {
-    //             currentTime: '2021-01-31T16:22:00.000',
-    //             offSet: 3,
-    //             expected: {
-    //                 time: '00:00',
-    //                 day: 'Monday',
-    //                 temp: 19
-    //             }
-    //         }, {
-    //             currentTime: '2021-01-31T16:22:00.000',
-    //             offSet: 1,
-    //             expected: {
-    //                 time: '20:00',
-    //                 day: 'Sunday',
-    //                 temp: 22
-    //             }
-    //         }
-    //     ];
-    //     itParam("Testing getScheduleOffSet", offSetData, (testSetting) => {
-    //         // console.log(JSON.stringify(testSetting))
-    //         helper.setMockedDate(testSetting.currentTime);//Sunday
-    //         var ret = hc.getScheduleOffSet(testSetting.offSet);
-    //         ret.time.length.should.be.equal(5);
-    //         ret.time.should.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/, "Incorrect time format: " + JSON.stringify(testSetting));
+    /**
+     * Test offSet calculation
+     */
+    describe("Test calculating schedule with offset", () => {
+        beforeEach(() => {
+            helper.setMockedDate('2021-01-31T08:00:00.000');//Sunday
+            hc = new HeaterController(RED, {
+                group: 'someGroup',
+                calendar: JSON.stringify(helper.calendar),
+                threshold: 0.5
+            });
+        });
+        var offSetData = [
+            {
+                currentTime: '2021-01-31T08:00:00.000',
+                offSet: 0,
+                expected: {
+                    time: '08:00',
+                    day: 'Sunday',
+                    temp: 20
+                }
+            }, {
+                currentTime: '2021-01-31T16:22:00.000',
+                offSet: 2,
+                expected: {
+                    time: '23:59',
+                    day: 'Sunday',
+                    temp: 19
+                }
+            }, {
+                currentTime: '2021-01-31T16:22:00.000',
+                //Without Offset
+                expected: {
+                    time: '08:00',
+                    day: 'Sunday',
+                    temp: 20
+                }
+            }, {
+                currentTime: '2021-01-31T16:22:00.000',
+                offSet: 0,
+                expected: {
+                    time: '08:00',
+                    day: 'Sunday',
+                    temp: 20
+                }
+            }, {
+                currentTime: '2021-01-31T16:22:00.000',
+                offSet: -1,
+                expected: {
+                    time: '00:00',
+                    day: 'Sunday',
+                    temp: 19
+                }
+            }, {
+                currentTime: '2021-01-31T16:22:00.000',
+                offSet: -4,
+                expected: {
+                    time: '08:00',
+                    day: 'Saturday',
+                    temp: 20
+                }
+            }, {
+                currentTime: '2021-01-31T16:22:00.000',
+                offSet: 3,
+                expected: {
+                    time: '00:00',
+                    day: 'Monday',
+                    temp: 19
+                }
+            }, {
+                currentTime: '2021-01-31T16:22:00.000',
+                offSet: 1,
+                expected: {
+                    time: '20:00',
+                    day: 'Sunday',
+                    temp: 22
+                }
+            }
+        ];
+        itParam("Testing getScheduleOffSet", offSetData, (testSetting) => {
+            // console.log(JSON.stringify(testSetting))
+            helper.setMockedDate(testSetting.currentTime);//Sunday
+            var ret = hc.getScheduleOffSet(testSetting.offSet);
+            ret.time.length.should.be.equal(5);
+            ret.time.should.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/, "Incorrect time format: " + JSON.stringify(testSetting));
 
-    //         ret.should.have.property("day").which.is.type("string", "day attribute is not a string: " + JSON.stringify(testSetting));
-    //         ret.should.have.property("temp").which.is.type("number", "temp attribute is not number: " + JSON.stringify(testSetting));
-    //         ret.should.have.property("time").which.is.type("string", "time attribute is not a string: " + JSON.stringify(testSetting));;
+            ret.should.have.property("day").which.is.type("string", "day attribute is not a string: " + JSON.stringify(testSetting));
+            ret.should.have.property("temp").which.is.type("number", "temp attribute is not number: " + JSON.stringify(testSetting));
+            ret.should.have.property("time").which.is.type("string", "time attribute is not a string: " + JSON.stringify(testSetting));;
 
-    //         ret.should.have.keys("day", "time", "temp");
-    //         ret.should.be.deepEqual(testSetting.expected, 'Not expected object: ' + JSON.stringify(testSetting));
-    //     });
-    // });
+            ret.should.have.keys("day", "time", "temp");
+            ret.should.be.deepEqual(testSetting.expected, 'Not expected object: ' + JSON.stringify(testSetting));
+        });
+    });
 
-    // /**
-    //  * Test recalculate method
-    //  */
-    // describe('Test recalculate isLocked = true', () => {
-    //     var data_rising = [];
-    //     var data_falling = [];
-    //     for (var i = -5; i < 10; i = i + 0.5) {
-    //         data_rising.push({
-    //             currentTemp: i,
-    //             exp: i >= 5.5 ? 'off' : 'on'
-    //         });
-    //     }
+    /**
+     * Test recalculate method
+     */
+    describe('Test recalculate isLocked = true', () => {
+        var data_rising = [];
+        var data_falling = [];
+        for (var i = -5; i < 10; i = i + 0.5) {
+            data_rising.push({
+                currentTemp: i,
+                exp: i >= 5.5 ? 'off' : 'on'
+            });
+        }
 
-    //     for (var i = 10; i > -5; i = i - 0.5) {
-    //         data_falling.push({
-    //             currentTemp: i,
-    //             exp: i <= 4.5 ? 'on' : 'off'
-    //         });
-    //     }
+        for (var i = 10; i > -5; i = i - 0.5) {
+            data_falling.push({
+                currentTemp: i,
+                exp: i <= 4.5 ? 'on' : 'off'
+            });
+        }
 
-    //     beforeEach(() => {
-    //         RE = helper.getMockedRED();
-    //         delete require.cache[require.resolve('../heaterLoader')];
-    //         hc = new HeaterController(RED, {
-    //             group: 'someGroup',
-    //             calendar: JSON.stringify(helper.calendar),
-    //             threshold: 0.5,
-    //             topic: 'heaterStatus'
-    //         });
-    //         hc.status.currentSchedule = {}; //not null
-    //     });
+        beforeEach(() => {
+            RE = helper.getMockedRED();
+            delete require.cache[require.resolve('../heaterLoader')];
+            hc = new HeaterController(RED, {
+                group: 'someGroup',
+                calendar: JSON.stringify(helper.calendar),
+                threshold: 0.5,
+                topic: 'heaterStatus'
+            });
+            hc.status.currentSchedule = {}; //not null
+        });
 
-    //     var testData = [data_rising, data_falling];
-    //     var savedStatus;
-    //     for (var i in testData) {
-    //         itParam("Test recalculate currentTemp falling and rising currentTemp", testData[i], (tstSet) => {
-    //             hc.status.currentHeaterStatus = savedStatus; // the previous status needs to be carried to the next test
-    //             hc.status.isLocked = true;
-    //             hc.status.currentSchedule = hc.getScheduleOffSet();
-    //             hc.status.nextSchedule = hc.getScheduleOffSet(1);
-    //             hc.status.userTargetValue = 5;
-    //             hc.oldStatus = hc.status;
-    //             hc.status.currentTemp = tstSet.currentTemp;
-    //             var ret = hc.recalculate();
-    //             should.exist(ret, "Returned undefined: " + JSON.stringify(tstSet));
-    //             ret.should.be.a.String();
-    //             ret.should.equal(tstSet.exp, 'Unexpected value: ' + JSON.stringify(tstSet));
-    //             savedStatus = hc.status.currentHeaterStatus;
-    //         });
-    //     }
-    // });
+        var testData = [data_rising, data_falling];
+        var savedStatus;
+        for (var i in testData) {
+            itParam("Test recalculate currentTemp falling and rising currentTemp", testData[i], (tstSet) => {
+                hc.status.currentHeaterStatus = savedStatus; // the previous status needs to be carried to the next test
+                hc.status.isLocked = true;
+                hc.status.currentSchedule = hc.getScheduleOffSet();
+                hc.status.nextSchedule = hc.getScheduleOffSet(1);
+                hc.status.userTargetValue = 5;
+                hc.oldStatus = hc.status;
+                hc.status.currentTemp = tstSet.currentTemp;
+                var ret = hc.recalculate();
+                should.exist(ret, "Returned undefined: " + JSON.stringify(tstSet));
+                ret.should.be.a.String();
+                ret.should.equal(tstSet.exp, 'Unexpected value: ' + JSON.stringify(tstSet));
+                savedStatus = hc.status.currentHeaterStatus;
+            });
+        }
+    });
 
     describe('Test recalculate currentTemp falling', () => {
         const data_20C = [{
@@ -200,26 +200,26 @@ describe("Functions", function () {
 
         });
 
-        // itParam("Test recalculate if !isLocked, schedule changed, turning it on/off, currentTemp static ", data_20C, (val) => {
-        //     hc.status.isLocked = false;
-        //     var fakeSend = sinon.fake();
-        //     hc.send = fakeSend;
-        //     hc.messageIn({//dummy value
-        //         topic: 'currentTemp',
-        //         payload: 20
-        //     });
-        //     helper.setMockedDate('2021-01-31T' + val.time + ':00.000');//Sunday
-        //     fakeSend = sinon.fake();
-        //     hc.send = fakeSend;
-        //     var ret = hc.messageIn({
-        //         topic: 'currentTemp',
-        //         payload: 20
-        //     });
-        //     should.equal(fakeSend.callCount, 1, "this.send method has been called more then once: " + JSON.stringify(val));
-        //     should.type(fakeSend.lastCall.firstArg, 'object', 'this.send first parameter is not a msg object: ' + JSON.stringify(val));
-        //     should.deepEqual(fakeSend.lastCall.firstArg, { topic: 'heaterStatus', payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
-        //     ret.should.be.an.Object();
-        // });
+        itParam("Test recalculate if !isLocked, schedule changed, turning it on/off, currentTemp static ", data_20C, (val) => {
+            hc.status.isLocked = false;
+            var fakeSend = sinon.fake();
+            hc.send = fakeSend;
+            hc.messageIn({//dummy value
+                topic: 'currentTemp',
+                payload: 20
+            });
+            helper.setMockedDate('2021-01-31T' + val.time + ':00.000');//Sunday
+            fakeSend = sinon.fake();
+            hc.send = fakeSend;
+            var ret = hc.messageIn({
+                topic: 'currentTemp',
+                payload: 20
+            });
+            should.equal(fakeSend.callCount, 1, "this.send method has been called more then once: " + JSON.stringify(val));
+            should.type(fakeSend.lastCall.firstArg, 'object', 'this.send first parameter is not a msg object: ' + JSON.stringify(val));
+            should.deepEqual(fakeSend.lastCall.firstArg, { topic: 'heaterStatus', payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
+            ret.should.be.an.Object();
+        });
 
         var data_rising = [];
         // var data_falling = [];
