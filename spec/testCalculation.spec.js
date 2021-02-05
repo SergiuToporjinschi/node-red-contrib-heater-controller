@@ -169,19 +169,6 @@ describe("Functions", function () {
     });
 
     describe('Test recalculate currentTemp falling', () => {
-        const data_20C = [{
-            time: '00:00',
-            state: 'off'
-        }, {
-            time: '08:00',
-            state: 'off'
-        }, {
-            time: '20:00',
-            state: 'on'
-        }, {
-            time: '23:59',
-            state: 'off'
-        }];
         // "Sunday": { calendar
         //     "00:00": 19,
         //     "08:00": 20,
@@ -197,8 +184,21 @@ describe("Functions", function () {
                 threshold: 0.5,
                 topic: 'heaterStatus'
             });
-
         });
+
+        const data_20C = [{
+            time: '00:00',
+            state: 'off'
+        }, {
+            time: '08:00',
+            state: 'off'
+        }, {
+            time: '20:00',
+            state: 'on'
+        }, {
+            time: '23:59',
+            state: 'off'
+        }];
 
         itParam("Test recalculate if !isLocked, schedule changed, turning it on/off, currentTemp static ", data_20C, (val) => {
             hc.status.isLocked = false;
@@ -221,40 +221,8 @@ describe("Functions", function () {
             ret.should.be.an.Object();
         });
 
-        var data_rising = [];
-        // var data_falling = [];
-        for (var i = -1; i < 11; i = i + 0.5) {
-            data_rising.push({
-                currentTemp: i,
-                exp: i >= 10.5 ? 'off' : 'on'
-            });
-        }
-
-        // for (var i = 23; i > -1; i = i - 0.5) {
-        //     data_falling.push({
-        //         currentTemp: i,
-        //         exp: i <= 20.5 ? 'on' : 'off'
-        //     });
-        // }
-        // itParam("Test recalculate if !isLocked, schedule fixed, turning it on/off, currentTemp variates ", data_rising, (val) => {
-        //     hc.status.isLocked = false;
-        //     helper.setMockedDate('2021-01-28T06:00:00.000');//Thursday 06:20 tempTarget 10 C
-        //     fakeSend = sinon.fake();
-        //     hc.send = fakeSend;
-        //     var ret = hc.messageIn({
-        //         topic: 'currentTemp',
-        //         payload: -5
-        //     });
-        //     var ret = hc.messageIn({
-        //         topic: 'currentTemp',
-        //         payload: val.currentTemp
-        //     });
-        //     should.equal(fakeSend.callCount, 1, "this.send method has been called more then once: " + JSON.stringify(val));
-        //     should.type(fakeSend.lastCall.firstArg, 'object', 'this.send first parameter is not a msg object: ' + JSON.stringify(val));
-        //     should.deepEqual(fakeSend.lastCall.firstArg, { topic: 'heaterStatus', payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
-        //     ret.should.be.an.Object();
-        // });
     });
+
     describe('Other', () => {
         beforeEach(() => {
             RE = helper.getMockedRED();
@@ -303,16 +271,9 @@ describe("Functions", function () {
             }).throw('Missing configuration or group');
         });
 
-        // itParam("Should throw exception: onUserConfig", [undefined, {}, { payload: true }, { payload: '' }, { payload: function () { } },
-        //     { payload: { isLocked: 1 } }, { payload: {} }, { payload: { isLocked: '' } }, { payload: { isLocked: 'boolean' } },
-        //     { payload: { userTargetValue: 1 } }, { payload: {} }, { payload: { isLocked: '' } }, { payload: { isLocked: 'boolean' } }
-        // ], (val) => {
-        //     should(function () {
-        //         hc.onUserConfig(val);
-        //     }).throw('Invalid payload');
-        //     should(hc.error.callCount).be.aboveOrEqual(1, "Exception not logged!!!: " + JSON.stringify(val));
-        // });
+    });
 
+    describe('Test onUserConfig', () => {
         itParam("Should throw exception for invalid payload: onUserConfig", [{}, true, '', function () { }, 1,
         { isLocked: 1 }, { isLocked: '1' }, { userTargetValue: '' }, { userTargetValue: true }, { isUserCustom: 1 }, { isUserCustom: 's' },
         ], (val) => {
@@ -323,6 +284,38 @@ describe("Functions", function () {
             }).throw('Invalid payload');
             should(hc.error.callCount).be.aboveOrEqual(1, "Exception not logged!!!: " + JSON.stringify(val));
         });
-
+        itParam("Check: onUserConfig.isUserCustom", [true, false], (val) => {
+            hc.recalculate = sinon.fake();
+            hc.oldStatus = {};
+            hc.status = {
+                targetValue: 15,
+                currentSchedule: {
+                    temp: 17
+                }
+            };
+            hc.onUserConfig({
+                payload: {
+                    isUserCustom: val
+                }
+            });
+            if (val) {
+                should(hc.status.userTargetValue).be.equal(hc.status.targetValue, 'isCustom = true is not changing userTargetValue');
+            } else {
+                should(hc.status.targetValue).be.equal(hc.status.currentSchedule.temp, ' isCustom = false is not setting targetValue with status.currentSchedule.temp');
+            }
+            should(hc.recalculate.callCount).be.equal(1, 'Recalculate is not triggered when receiving a new configuration');
+        });
+        itParam("Check: onUserConfig.isLocked", [true, false], (val) => {
+            hc.oldStatus = {};
+            hc.recalculate = sinon.fake();
+            hc.status = { isLocked: !val };
+            hc.onUserConfig({
+                payload: {
+                    isLocked: val
+                }
+            });
+            should(hc.status.isLocked).be.equal(val, ' isLocked is not setting status.isLocked');
+            should(hc.recalculate.callCount).be.equal(1, 'Recalculate is not triggered when receiving a new configuration');
+        });
     });
 });

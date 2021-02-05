@@ -74,7 +74,7 @@ class Heater extends UINode {
             this.status.userTargetValue = this.status.targetValue;
         } else if (msg.payload.isUserCustom === false) {
             this.status.isUserCustom === false;
-            this.status.targetValue = this.currentSchedule.temp;
+            this.status.targetValue = this.status.currentSchedule.temp;
         }
 
         this.status.isLocked = typeof (msg.payload.isLocked) !== 'undefined' ? msg.payload.isLocked : this.status.isLocked;
