@@ -2,7 +2,7 @@ var sinon = require('sinon');
 var should = require("should");
 var itParam = require('mocha-param');
 var helper = require("./testHelper.js");
-var HeaterController = require('../heaterLoader');
+var HeaterController = require('../nodes/heater/heater');
 var tempRising = [];
 for (var i = 10.5; i < 30; i = i + 0.5) {
     tempRising.push(i);
@@ -14,7 +14,7 @@ describe("Functions", function () {
 
     beforeEach(() => {
         sandbox.spy(RED);
-        var HeaterController = helper.getMockedHeaterController(require('../heaterLoader'));
+        var HeaterController = helper.getMockedHeaterController(require('../nodes/heater/heater'));
         sandbox.spy(HeaterController);
     })
     afterEach(function () {
@@ -23,8 +23,8 @@ describe("Functions", function () {
     describe('Other', () => {
         beforeEach(() => {
             RE = helper.getMockedRED();
-            delete require.cache[require.resolve('../heaterLoader')];
-            var heat = helper.getMockedHeaterControllerFaked(require('../heaterLoader'))
+            delete require.cache[require.resolve('../nodes/heater/heater')];
+            var heat = helper.getMockedHeaterControllerFaked(require('../nodes/heater/heater'))
             hc = new heat(RED, {
                 group: 'someGroup',
                 calendar: JSON.stringify(helper.calendar),

@@ -19,7 +19,7 @@
   },
   "node-red": {
     "nodes": {
-      "ui_heater_controller": "heater-controller.js"
+      "ui_heater_controller": "nodes/heater/heater-controller.js"
     }
   },
   "main": "heater-controller.js",
@@ -40,13 +40,10 @@
     "url": "https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/issues"
   },
   "files": [
-    "*.js",
-    "*.html",
-    "*.css",
-    "icons/**/*.*",
-    "images/**/*.*",
-    "locales/**/*.*"
+    "nodes/**/*.*"
   ],
+
+
   "nyc": {
     "exclude": [
       "spec/**"

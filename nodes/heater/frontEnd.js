@@ -1,12 +1,13 @@
 'use strict';
-
+const path = require("path");
 function getHTML(config) {
     var fs = require('fs');
     var htmlFile = 'frontEndButtons.html';
     if (config.displayMode !== 'buttons') {
         htmlFile = 'frontEndSlider.html';
     }
-    return '<style>' + fs.readFileSync('frontEnd.css', 'utf8') + '</style>' + fs.readFileSync(htmlFile, 'utf8').replace('\${confString}', JSON.stringify(config));
+    htmlFile = path.resolve(__dirname, './', htmlFile);
+    return '<style>' + fs.readFileSync(path.resolve(__dirname, './frontEnd.css'), 'utf8') + '</style>' + fs.readFileSync(htmlFile, 'utf8').replace('\${confString}', JSON.stringify(config));
 }
 
 function getController($scope, events) {
