@@ -36,9 +36,10 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: CodeClimate
-    - run: npm install -g yarn
-    - run: yarn install
-    - run: yarn build
+    - run: |
+        npm install -g yarn
+        yarn install
+        yarn build
     - uses: paambaati/codeclimate-action@v2.7.2
       env:
          CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TOKEN }}
