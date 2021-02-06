@@ -21,29 +21,57 @@ describe("Functions", function () {
         sandbox.restore();
     });
     describe('Other', () => {
+        // "Sunday": { calendar
+        //     "00:00": 19,
+        //     "08:00": 20,
+        //     "20:00": 22,
+        //     "23:59": 19
+        // }
         beforeEach(() => {
-            helper.setMockedDate('2021-01-31T08:00:00.000');//Sunday
+            RED = helper.getMockedRED();
+            delete require.cache[require.resolve('../nodes/heater/heater')];
             hc = new HeaterController(RED, {
                 group: 'someGroup',
                 calendar: JSON.stringify(helper.calendar),
-                threshold: 0.5
+                threshold: 0.5,
+                topic: 'heaterStatus'
             });
         });
-        var offSetData = [
-        ];
-        itParam("Testing getScheduleOffSet", offSetData, (testSetting) => {
-            // console.log(JSON.stringify(testSetting))
-            helper.setMockedDate(testSetting.currentTime);//Sunday
-            var ret = hc.getScheduleOffSet(testSetting.offSet);
-            ret.time.length.should.be.equal(5);
-            ret.time.should.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/, "Incorrect time format: " + JSON.stringify(testSetting));
 
-            ret.should.have.property("day").which.is.type("string", "day attribute is not a string: " + JSON.stringify(testSetting));
-            ret.should.have.property("temp").which.is.type("number", "temp attribute is not number: " + JSON.stringify(testSetting));
-            ret.should.have.property("time").which.is.type("string", "time attribute is not a string: " + JSON.stringify(testSetting));;
-
-            ret.should.have.keys("day", "time", "temp");
-            ret.should.be.deepEqual(testSetting.expected, 'Not expected object: ' + JSON.stringify(testSetting));
+        var executionNo = 1;
+        itParam("Test recalculate userCustomTemp ", [
+            { isUserCustom: true, isLocked: true, currentTemp: 15, userCurrentTemp: 20, state: 'on' }, { isUserCustom: true, isLocked: true, currentTemp: 20, userCurrentTemp: 18, state: 'off' },
+            { isUserCustom: true, isLocked: true, currentTemp: 19, userCurrentTemp: 18, state: 'off' }, { isUserCustom: true, isLocked: true, currentTemp: 15, userCurrentTemp: 18, state: 'on' },
+            //isUserCustom,isLocked false
+            { isUserCustom: false, isLocked: false, currentTemp: 15, userCurrentTemp: 20, state: 'on' }, { isUserCustom: false, isLocked: false, currentTemp: 20, userCurrentTemp: 18, state: 'off' },
+            { isUserCustom: false, isLocked: false, currentTemp: 19, userCurrentTemp: 18, state: 'off' }, { isUserCustom: false, isLocked: false, currentTemp: 15, userCurrentTemp: 18, state: 'on' },
+            //undefined
+            { isUserCustom: undefined, isLocked: false, currentTemp: 15, userCurrentTemp: 20, state: 'on' }, { isUserCustom: undefined, isLocked: false, currentTemp: 20, userCurrentTemp: 18, state: 'off' },
+            { isUserCustom: undefined, isLocked: false, currentTemp: 19, userCurrentTemp: 18, state: 'off' }, { isUserCustom: undefined, isLocked: false, currentTemp: 15, userCurrentTemp: 18, state: 'on' }
+        ], (val) => {
+            helper.setMockedDate('2021-01-31T08:00:00.000');
+            hc.status.isLocked = false;
+            var fakeSend = sinon.fake();
+            hc.send = fakeSend;
+            hc.messageIn({//dummy value to make forced_ByScheduler = false
+                topic: 'currentTemp',
+                payload: val.currentTemp
+            });
+            // hc.onUserConfig
+            fakeSend = sinon.fake();
+            hc.send = fakeSend;
+            var ret = hc.messageIn({//dummy value to make forced_ByScheduler = false
+                topic: 'userConfig',
+                payload: {
+                    isUserCustom: val.isUserCustom,
+                    isLocked: val.isLocked,
+                    userTargetValue: val.userCurrentTemp
+                }
+            });
+            should.equal(fakeSend.callCount, 1, "this.send method has been called: " + JSON.stringify(val));
+            should.type(fakeSend.lastCall.firstArg, 'object', 'this.send first parameter is not a msg object: ' + JSON.stringify(val));
+            should.deepEqual(fakeSend.lastCall.firstArg, { topic: 'heaterStatus', payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
+            executionNo++;
         });
     });
 });

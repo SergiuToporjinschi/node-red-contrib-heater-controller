@@ -84,7 +84,11 @@ class Heater extends UINode {
             this.status.isUserCustom = true;
         }
 
-        this.recalculate();
+        //recalculate status
+        var calculatedStatus = this.recalculate();
+        // TODO return messages;
+        this.send({ topic: this.config.topic, payload: calculatedStatus });
+        return [{ 'topic': 'status', 'payload:': this.status }];
     }
 
     onSetCalendar(msg) {
@@ -123,7 +127,7 @@ class Heater extends UINode {
         currentPoz = currentPoz + offSet;
 
         if (currentPoz < 0) currentPoz = intervalList.length - Math.abs(currentPoz); //if end of list then start from begging
-        if (currentPoz > intervalList.length - 1)  currentPoz = currentPoz - (intervalList.length);
+        if (currentPoz > intervalList.length - 1) currentPoz = currentPoz - (intervalList.length);
         return intervalList[currentPoz];
     }
 
