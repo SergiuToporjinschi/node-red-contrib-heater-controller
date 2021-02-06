@@ -69,8 +69,10 @@ describe("Functions", function () {
                 }
             });
             should.equal(fakeSend.callCount, 1, "this.send method has been called: " + JSON.stringify(val));
-            should.type(fakeSend.lastCall.firstArg, 'object', 'this.send first parameter is not a msg object: ' + JSON.stringify(val));
-            should.deepEqual(fakeSend.lastCall.firstArg, { topic: 'heaterStatus', payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
+            // should.type(fakeSend.lastCall.firstArg, 'object', 'this.send first parameter is not a msg object: ' + JSON.stringify(val));
+            should.deepEqual(fakeSend.lastCall.firstArg[0], { topic: hc.config.topic, payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
+            should.deepEqual(fakeSend.lastCall.firstArg[1], { topic: 'status', payload: hc.status }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
+
             executionNo++;
         });
     });

@@ -50,7 +50,7 @@ class Heater extends UINode {
         //recalculate status
         var calculatedStatus = this.recalculate();
         // TODO return messages;
-        this.send({ topic: this.config.topic, payload: calculatedStatus });
+        this.send([{ topic: this.config.topic, payload: calculatedStatus }, { topic: 'status', payload: this.status }]);
         return [{ 'topic': 'status', 'payload:': this.status }];
     }
 
@@ -87,7 +87,7 @@ class Heater extends UINode {
         //recalculate status
         var calculatedStatus = this.recalculate();
         // TODO return messages;
-        this.send({ topic: this.config.topic, payload: calculatedStatus });
+        this.send([{ topic: this.config.topic, payload: calculatedStatus }, { topic: 'status', payload: this.status }]);
         return [{ 'topic': 'status', 'payload:': this.status }];
     }
 
@@ -217,7 +217,7 @@ class Heater extends UINode {
         }
 
         return 'ShouldNotReceiveThis'; //should never return this value;
-   }
+    }
 }
 
 module.exports = Heater
