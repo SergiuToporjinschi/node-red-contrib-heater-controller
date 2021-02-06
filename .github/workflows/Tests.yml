@@ -10,7 +10,7 @@ on:
     branches: [ Refactoring ]
 
 jobs:
-  test:
+  build:
 
     runs-on: ${{ matrix.os }}
 
@@ -28,36 +28,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
     - run: npm run build --if-present
-    #- run: npm run test
     - run: npm run test-cov
-  coveralls:
-    name: Coveralls
-    needs: [ test ]
-    runs-on: ubuntu-latest
-    steps:
-     - uses: coverallsapp/github-action@master
-       with:
-         github-token: ${{ secrets.GITHUB_TOKEN }}
-        
-  codeclimate:
-    name: CodeClimate
-    needs: [ test ]
-    runs-on: ubuntu-latest
-    steps:
-     - run: npm install -g yarn
-     - run: yarn install
-     - run: yarn build
-     - uses: paambaati/codeclimate-action@v2.7.2
-       env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TOKEN }}
-       with:
-          coverageCommand: yarn run coverage
-        
-    #- name: commit report
-    #  uses: actions/checkout@v2
-    #  with:
-    #    repository: SergiuToporjinschi/node-red-contrib-heater-controller1
-    #    token: ${{ secrets.GitHub_PAT }} # `GitHub_PAT` is a secret that contains your PAT
-    #    run: |
-    #      git commit -m report
-    #      git push
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
