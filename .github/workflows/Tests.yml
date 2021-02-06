@@ -35,8 +35,8 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: CodeClimate
-    - run: |
+    - name: Install CodeClimate
+      run: |
         npm install -g yarn
         yarn install
         yarn build
