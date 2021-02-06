@@ -288,8 +288,33 @@ describe("Functions", function () {
             should(hc.error.callCount).be.aboveOrEqual(1, "Exception not logged!!!: " + JSON.stringify(val));
         });
 
-        var exceptions = [
-            undefined, 1, { currentTemp: '' }, { currentTemp: true }, { currentTemp: 1 },
+        itParam("Current temp remains static from call to call: onTempChange", [-10, 0, 10, 25], (val) => {
+            helper.setMockedDate('2021-01-31T08:00:00.000'); // 20 C
+            var fakeSend = sinon.fake();
+            hc.send = fakeSend;
+
+            var ret = hc.messageIn({
+                topic: 'currentTemp',
+                payload: val
+            });
+
+            var initialStatus = hc.status;
+
+            fakeSend = sinon.fake();
+            hc.send = fakeSend;
+            ret = hc.messageIn({
+                topic: 'currentTemp',
+                payload: val
+            });
+
+            should.equal(fakeSend.callCount, 1, "this.send method has been called: " + JSON.stringify(val));
+            should.type(fakeSend.lastCall.firstArg, 'object', 'this.send first parameter is not a msg object: ' + JSON.stringify(val));
+            should.deepEqual(fakeSend.lastCall.firstArg[0], { topic: 'heaterStatus', payload: val < 20 ? 'on' : 'off' }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
+            should.deepEqual(fakeSend.lastCall.firstArg[1], { topic: 'status', payload: initialStatus }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
+        });
+
+        var exceptions = [undefined, 1,
+            { currentTemp: '' }, { currentTemp: true }, { currentTemp: 1 },
             { currentTemp: 1, currentSchedule: 1 },
             { currentTemp: 1, currentSchedule: '' },
             { currentTemp: 1, currentSchedule: true }

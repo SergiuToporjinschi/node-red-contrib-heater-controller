@@ -215,8 +215,8 @@ class Heater extends UINode {
             this.status.targetValue = this.status.userTargetValue;
             return this.calculateStatus(this.status.targetValue);
         }
-
-        return 'ShouldNotReceiveThis'; //should never return this value;
+        //if nothing changed
+        return this.status.currentHeaterStatus; //should return an unchanged status ;
     }
 }
 

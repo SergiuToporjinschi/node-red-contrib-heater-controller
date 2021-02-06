@@ -37,43 +37,5 @@ describe("Functions", function () {
                 topic: 'heaterStatus'
             });
         });
-
-        var executionNo = 1;
-        itParam("Test recalculate userCustomTemp ", [
-            { isUserCustom: true, isLocked: true, currentTemp: 15, userCurrentTemp: 20, state: 'on' }, { isUserCustom: true, isLocked: true, currentTemp: 20, userCurrentTemp: 18, state: 'off' },
-            { isUserCustom: true, isLocked: true, currentTemp: 19, userCurrentTemp: 18, state: 'off' }, { isUserCustom: true, isLocked: true, currentTemp: 15, userCurrentTemp: 18, state: 'on' },
-            //isUserCustom,isLocked false
-            { isUserCustom: false, isLocked: false, currentTemp: 15, userCurrentTemp: 20, state: 'on' }, { isUserCustom: false, isLocked: false, currentTemp: 20, userCurrentTemp: 18, state: 'off' },
-            { isUserCustom: false, isLocked: false, currentTemp: 19, userCurrentTemp: 18, state: 'off' }, { isUserCustom: false, isLocked: false, currentTemp: 15, userCurrentTemp: 18, state: 'on' },
-            //undefined
-            { isUserCustom: undefined, isLocked: false, currentTemp: 15, userCurrentTemp: 20, state: 'on' }, { isUserCustom: undefined, isLocked: false, currentTemp: 20, userCurrentTemp: 18, state: 'off' },
-            { isUserCustom: undefined, isLocked: false, currentTemp: 19, userCurrentTemp: 18, state: 'off' }, { isUserCustom: undefined, isLocked: false, currentTemp: 15, userCurrentTemp: 18, state: 'on' }
-        ], (val) => {
-            helper.setMockedDate('2021-01-31T08:00:00.000');
-            hc.status.isLocked = false;
-            var fakeSend = sinon.fake();
-            hc.send = fakeSend;
-            hc.messageIn({//dummy value to make forced_ByScheduler = false
-                topic: 'currentTemp',
-                payload: val.currentTemp
-            });
-            // hc.onUserConfig
-            fakeSend = sinon.fake();
-            hc.send = fakeSend;
-            var ret = hc.messageIn({//dummy value to make forced_ByScheduler = false
-                topic: 'userConfig',
-                payload: {
-                    isUserCustom: val.isUserCustom,
-                    isLocked: val.isLocked,
-                    userTargetValue: val.userCurrentTemp
-                }
-            });
-            should.equal(fakeSend.callCount, 1, "this.send method has been called: " + JSON.stringify(val));
-            // should.type(fakeSend.lastCall.firstArg, 'object', 'this.send first parameter is not a msg object: ' + JSON.stringify(val));
-            should.deepEqual(fakeSend.lastCall.firstArg[0], { topic: hc.config.topic, payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
-            should.deepEqual(fakeSend.lastCall.firstArg[1], { topic: 'status', payload: hc.status }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
-
-            executionNo++;
-        });
     });
 });
