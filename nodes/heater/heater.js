@@ -210,41 +210,14 @@ class Heater extends UINode {
             return heaterNewStatus;
         }
 
-        //Scheduler is not changing the temp but is user custom
+        //if no other chases are reached the it will be user custom value else scenario should not exits
         if (this.status.isUserCustom) {
             this.status.targetValue = this.status.userTargetValue;
             return this.calculateStatus(this.status.targetValue);
         }
-        //TODO trigger status change if is the case
+
         return 'ShouldNotReceiveThis'; //should never return this value;
-
-        //reset to schedule: !isLocked and isUserCustom and scheduleChanged
-        //is need it?!?!?
-        // var restToSchedule = scheduleChanged && !this.status.isLocked && this.status.isUserCustom;
-
-
-        // if (this.status.isUserCustom) {
-        //     this.status.targetValue = this.status.userTargetValue;
-        // }
-
-        // this.status.currentSchedule;
-        // this.oldStatus.currentSchedule;
-
-        // //maybe can be removed
-        // if (!this.calculateTarget(lastInfoNode, newInfoNode)) {
-        //     this.error('Invalid state: target temperature and customer locking is active');
-        //     return undefined;
-        // }
-
-        // var difference = (newInfoNode.targetValue - newInfoNode.currentTemp);
-        // var newHeaterStatus = (difference < 0 ? "off" : "on");
-        // var threshold = (newHeaterStatus === "off" ? this.config.threshold : this.config.threshold);
-        // var changeStatus = (Math.abs(difference) >= threshold);
-        // if (changeStatus) {
-        //     newInfoNode.currentHeaterStatus = newHeaterStatus;
-        // }
-        // return newInfoNode;
-    }
+   }
 }
 
 module.exports = Heater
