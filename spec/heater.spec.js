@@ -14,7 +14,7 @@ describe("Functions", function () {
 
     beforeEach(() => {
         sandbox.spy(RED);
-        var HeaterController = helper.getMockedHeaterController(require('../nodes/heater/heater'));
+        var HeaterController = helper.getMockedHeaterControllerFaked(require('../nodes/heater/heater'));
         sandbox.spy(HeaterController);
     })
     afterEach(function () {

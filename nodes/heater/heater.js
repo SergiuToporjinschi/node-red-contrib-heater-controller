@@ -1,5 +1,14 @@
 var UINode = require('./uINode')
 class Heater extends UINode {
+    #weekDays = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+    ];
     constructor(RED, config) {
         super(RED, config)
         this.log('Heater Constructor')
@@ -95,8 +104,16 @@ class Heater extends UINode {
     }
 
     onSetCalendar(msg) {
-        //TODO check if calendar is valid;
-        //TODO replace this.config.calendar with msg;
+        if (typeof (msg.payload) !== 'object') {
+            this.error("onSetCalendar->Invalid payload [" + JSON.stringify(msg) + "]");
+            throw new Error('Invalid payload');
+        }
+        try {
+            this.config.calendar = require('./calendarValidation').check(msg.payload);
+        } catch (error) {
+            this.error("Invalid calendar", error.details);
+            throw error;
+        }
     }
 
     onInput() {
@@ -108,10 +125,10 @@ class Heater extends UINode {
      * @param {Number} offSet the number of days as offset, can be undefined == 0
      * @param {Array} weekDays an array with all the week days names
      */
-    getSearchedInterval(offSet, weekDays) {
+    getSearchedInterval(offSet) {
         var intervalList = [];
         for (var i in this.config.calendar) {
-            var dayId = weekDays.indexOf(i);;
+            var dayId = this.#weekDays.indexOf(i);;
             for (var j in this.config.calendar[i]) {
                 intervalList.push(dayId + j.replace(":", ""));
             }
@@ -144,23 +161,14 @@ class Heater extends UINode {
      * }
      */
     getScheduleOffSet(userOffset) {
-        var weekDays = [
-            "Sunday",
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday"
-        ];
-        var intervalCode = this.getSearchedInterval(userOffset || 0, weekDays);
+        var intervalCode = this.getSearchedInterval(userOffset || 0);
         var weekDay = intervalCode[0];
         var time = intervalCode.substr(1).substr(0, 2) + ":" + intervalCode.substr(1).substr(2);
 
         var retObj = {
             time: time
         }
-        retObj.day = weekDays[weekDay];
+        retObj.day = this.#weekDays[weekDay];
         retObj.temp = this.config.calendar[retObj.day][time];
         return retObj;
     }
