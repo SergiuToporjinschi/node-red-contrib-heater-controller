@@ -67,7 +67,7 @@ describe("Testing onSetCalendar", function () {
                 "00:00": true,
             },
             "Saturday": { //2021-01-30 [6]
-                "00:00": {},
+                "00:70": {},
                 "23:59": 19
             },
             "Sunday": { //2021-01-31 [0]
