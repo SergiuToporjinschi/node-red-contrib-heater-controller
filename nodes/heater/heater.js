@@ -87,7 +87,10 @@ class Heater extends UINode {
         //recalculate status
         var calculatedStatus = this.recalculate();
         // TODO return messages;
-        this.send([{ topic: this.config.topic, payload: calculatedStatus }, { topic: 'status', payload: this.status }]);
+        this.send([
+            typeof (calculatedStatus) !== 'undefined' ? { topic: this.config.topic, payload: calculatedStatus } : undefined,
+            { topic: 'status', payload: this.status }
+        ]);
         return [{ 'topic': 'status', 'payload:': this.status }];
     }
 
