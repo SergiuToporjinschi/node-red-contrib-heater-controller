@@ -30,25 +30,28 @@ jobs:
     - run: npm run build --if-present
     #- run: npm run test
     - run: npm run test-cov
-  coverage:
-    runs-on: ubuntu-latest
+  coveralls:
+    name: Coveralls
     needs: [ test ]
+    runs-on: ubuntu-latest
     steps:
-    
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+     - uses: coverallsapp/github-action@master
+       with:
+         github-token: ${{ secrets.GITHUB_TOKEN }}
         
-    - name: CodeClimate
-    - run: npm install -g yarn
-    - run: yarn install
-    - run: yarn build
-    - uses: paambaati/codeclimate-action@v2.7.2
-      env:
-        CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TOKEN }}
-      with:
-        coverageCommand: yarn run coverage
+  codeclimate:
+    name: CodeClimate
+    needs: [ test ]
+    runs-on: ubuntu-latest
+    steps:
+     - run: npm install -g yarn
+     - run: yarn install
+     - run: yarn build
+     - uses: paambaati/codeclimate-action@v2.7.2
+       env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TOKEN }}
+       with:
+          coverageCommand: yarn run coverage
         
     #- name: commit report
     #  uses: actions/checkout@v2
