@@ -9,7 +9,7 @@
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/dc1e814f47a134beef43/maintainability?service=github)](https://codeclimate.com/github/SergiuToporjinschi/node-red-contrib-heater-controller/maintainability)
 [![Package Quality](http://npm.packagequality.com/shield/node-red-contrib-heater-controller.svg?service=github)](http://packagequality.com/#?package=node-red-contrib-heater-controller)
-![Tests](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/workflows/Tests/badge.svg)
+[![Tests](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/workflows/Tests/badge.svg)](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/actions)
 [![Coverage Status](https://coveralls.io/repos/github/SergiuToporjinschi/node-red-contrib-heater-controller/badge.svg?branch=Refactoring&service=github)](https://coveralls.io/github/SergiuToporjinschi/node-red-contrib-heater-controller?branch=Refactoring&service=github)
 # node-red-contrib-heater-controller
 A dashboard ui interface node for controlling a heater;
