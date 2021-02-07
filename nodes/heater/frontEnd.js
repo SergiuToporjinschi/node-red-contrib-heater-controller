@@ -14,7 +14,7 @@ class FrontEnd {
         this.#config = config;
         this.isDark = isDark;
     }
-    getHTML() {
+    getHTML(isDark) {
         //TODO take in consideration isDark theme;
         var fs = require('fs');
         var htmlFile = 'frontEndButtons.html';
@@ -37,6 +37,11 @@ class FrontEnd {
         return eval('(function ' + functionBody + ')');
     }
 
+    /**
+     * This method is running in browser/Front-end therefore skipped for code-coverage
+     * @param {$scope} $scope
+     * @param {events} events
+     */
     /* istanbul ignore next */
     _controller($scope, events) {
         debugger;
