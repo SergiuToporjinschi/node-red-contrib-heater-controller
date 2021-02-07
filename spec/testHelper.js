@@ -75,8 +75,8 @@ var exp = {
                 if (params === 'node-red-dashboard') {
                     return function () {
                         return {
-                            addWidget: function name(params) {
-
+                            isDark: function () { return false; },
+                            addWidget: function (params) {
                             }
                         }
                     }
