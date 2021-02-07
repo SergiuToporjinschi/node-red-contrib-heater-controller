@@ -1,7 +1,5 @@
 'use strict';
 const path = require("path");
-const _ = require('lodash');
-
 class FrontEnd {
     #config = undefined;
     #frontConfigOptions = [
@@ -13,7 +11,7 @@ class FrontEnd {
         'sliderStep'
     ]
     constructor(config, isDark) {
-        this.#config = config;
+         this.#config = config;
         this.isDark = isDark;
     }
     getHTML() {
