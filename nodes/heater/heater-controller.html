@@ -299,7 +299,13 @@
 
             $('#daysType').text(RED._("node-red-contrib-heater-controller1/ui_heater_controller:heater_controller.label.daysType"));
             $('#changesType').text(RED._("node-red-contrib-heater-controller1/ui_heater_controller:heater_controller.label.changesType"));
-
+            $('#red-ui-editor-node-label-form-input-0').val('currentTemp | userCofig | setCalendar');
+            $('#red-ui-editor-node-label-form-output-0').val('Heater status');
+            $('#red-ui-editor-node-label-form-output-1').val('Computation status');
+            //??
+            ace.edit($('#node-info-input-info-editor>.ace_editor')[0]).setValue('Description');
+            // var r = ace.edit('node-info-input-info-editor');
+            // r.setValue('text');
             $("#node-input-size").elementSizer({
                 width: "#node-input-width",
                 height: "#node-input-height",

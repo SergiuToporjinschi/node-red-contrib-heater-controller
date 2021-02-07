@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var FrontEnd = require('./frontEnd')
 class UINode {
     #events = {};
     #ui = undefined;
@@ -6,12 +7,11 @@ class UINode {
     #RED = undefined;
     status = undefined;
     config = undefined;
-
+    #frontEnd = undefined;
     constructor(RED, config) {
-        // this.ui = undefined;
         this.config = config;
         this.#RED = RED;
-
+        this.#frontEnd = new FrontEnd(this.config);
         try {
             if (this.#ui === undefined) {
                 this.#ui = RED.require("node-red-dashboard")(RED);
@@ -98,8 +98,9 @@ class UINode {
     _createWidget() {
         this.debug("createWidget called");
         try {
-            var frontEnd = this.getFrontModule();
-            var html = frontEnd.getHTML();
+            var frontEndHtml = this.#frontEnd.getHTML(this.#ui.isDark());
+            var frontEndController = this.#frontEnd.getController();
+            // eval(frontEndController.toString());
             this.#doneUI = this.#ui.addWidget(Object.assign({
                 node: this,
                 width: parseInt(this.config.width),
@@ -107,12 +108,12 @@ class UINode {
                 group: this.config.group,
                 order: this.config.order || 0
             }, {
-                format: html,
+                format: frontEndHtml,
                 templateScope: "local",
                 emitOnlyNewValues: false,
                 forwardInputMessages: false,
                 storeFrontEndInputAsState: true,
-                initController: frontEnd.getController,
+                initController: frontEndController,
                 beforeEmit: this.messageIn.bind(this),
                 beforeSend: this.messageOut.bind(this)
             }));
@@ -139,25 +140,24 @@ class UINode {
             }
         });
 
-        var msg;
+        var resp;
         var eventItem = this.#events[msg.topic];
         if (eventItem) {
-            msg = eventItem.call(this, msg);
+            resp = eventItem.call(this, msg);
         }
 
         //Forward message to front-end
-        if (msg) {
+        if (resp) {
             return {
-                msg: msg
+                msg: resp
             };
         }
     }
-
     /**
      * Called before sending a message from interface
      * @param {Object} msg
      */
-    messageOut(msg) {
+    messageOut(x, msg) {
         this.debug("messageOut called: ", msg);
     }
 
@@ -165,15 +165,7 @@ class UINode {
      * Called to initialize the front end in dashboard
      */
     getFrontModule() {
-        return require('./frontEnd').init({
-            calendar: this.config.calendar,
-            unit: this.config.unit,
-            title: this.config.title,
-            displayMode: this.config.displayMode,
-            sliderStep: this.config.sliderStep,
-            sliderMinValue: this.config.sliderMinValue,
-            sliderMaxValue: this.config.sliderMaxValue
-        });
+        return require('./frontEnd').init(this.config);
     }
 }
 module.exports = UINode;

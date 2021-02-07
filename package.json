@@ -42,7 +42,6 @@
   "files": [
     "nodes/**/*.*"
   ],
-
   "devDependencies": {
     "coveralls": "^3.1.0",
     "lodash": "~4.17.20",
@@ -54,9 +53,6 @@
     "should-sinon": "*",
     "sinon": "^9.2.4"
   },
-
-
-
   "nodemonConfig": {
     "restartable": "rs",
     "ignore": [
@@ -72,7 +68,6 @@
     "nodeArgs": "",
     "ext": "js json md html"
   },
-
   "nyc": {
     "exclude": [
       "spec/**"
