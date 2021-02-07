@@ -99,6 +99,7 @@ class UINode {
         this.debug("createWidget called");
         try {
             var frontEndHtml = this.#frontEnd.getHTML(this.#ui.isDark());
+            /* istanbul ignore next */
             var frontEndController = this.#frontEnd.getController();
             // eval(frontEndController.toString());
             this.#doneUI = this.#ui.addWidget(Object.assign({

@@ -11,7 +11,7 @@ class FrontEnd {
         'sliderStep'
     ]
     constructor(config, isDark) {
-         this.#config = config;
+        this.#config = config;
         this.isDark = isDark;
     }
     getHTML() {
@@ -31,17 +31,19 @@ class FrontEnd {
         var frontEndConf = {};
         for (var i in this.#frontConfigOptions) {
             var key = this.#frontConfigOptions[i];
-            frontEndConf[key] = this.#config[key];
+            frontEndConf[key] = key === 'calendar' ? JSON.parse(this.#config[key]) : this.#config[key];
         }
-        functionBody = functionBody.replace('//${config}', ' || ' + JSON.stringify(frontEndConf) + ';');
+        functionBody = functionBody.replace('/*$scope.config*/', ' $scope.config = ' + JSON.stringify(frontEndConf) + ';');
         return eval('(function ' + functionBody + ')');
     }
 
+    /* istanbul ignore next */
     _controller($scope, events) {
+        debugger;
         var controller = this;
         var events = {};
         $scope.init = function () {
-            $scope.config = undefined //${config}
+            /*$scope.config*/
             events['status'] = $scope.statusChangedEvent;
             $scope.$watch("msg", $scope.eventDispatcher.bind(controller));
         };
