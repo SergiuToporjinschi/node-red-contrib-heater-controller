@@ -22,8 +22,11 @@ class WebSocketServer {
             this.#server.emit('connection', ws, request);
         }).bind(this));
     }
+
     _onClientConnected(socket, message) {
+
     }
+
     _onReceivedMessage(socket, message) {
         debugger;
         socket.send(["dt", "Response from server"] );

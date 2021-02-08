@@ -28,21 +28,21 @@ class UINode {
     }
 
     addEvent(topic, func) {
-        if (!topic || typeof (topic) !== 'string') {
-            throw new Error("Invalid argument [topic]");
-        }
-        if (!func || typeof (func) !== 'function') {
-            throw new Error("Invalid argument [func]");
+        if (typeof (topic) !== 'string' || typeof (func) !== 'function') {
+            this.error("Invalid arguments [topic:string, func:function]");
+            throw new Error("Invalid arguments [topic:string, func:function]");
         }
         this.#events[topic] = func;
     }
 
     removeEvent(topic) {
-        if (!topic || typeof (topic) !== 'string') {
-            throw new Error("Invalid argument [topic]");
+        if (typeof (topic) !== 'string') {
+            this.error("Invalid argument [topic:string]");
+            throw new Error("Invalid argument [topic:string]");
         }
         delete this.#events[topic];
     }
+
     startSocketIOServer() {
         this.#wsServer = new WsServer(this.#RED, this.id);
         this.#wsServer.start();
@@ -148,6 +148,9 @@ class UINode {
         var eventItem = this.#events[msg.topic];
         if (eventItem) {
             resp = eventItem.call(this, msg);
+        } else {
+            this.error('Calling unregistered event: ' + msg.topic);
+            throw new Error('Calling unregistered event: ' + msg.topic);
         }
 
         //Forward message to front-end
@@ -166,13 +169,6 @@ class UINode {
         // this.#io.sockets.adapter.rooms
         // var uiObj = require(this.#RED.settings.userDir + "/node_modules/node-red-dashboard/ui.js")(this.#RED);
         // uiObj.emitSocket('test', 'test');
-    }
-
-    /**
-     * Called to initialize the front end in dashboard
-     */
-    getFrontModule() {
-        return require('./frontEnd').init(this.config);
     }
 }
 module.exports = UINode;
