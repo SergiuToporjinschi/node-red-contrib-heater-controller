@@ -13,7 +13,7 @@ describe("Functions", function () {
     const sandbox = sinon.createSandbox();
 
     beforeEach(() => {
-        sandbox.spy(RED);
+        // sandbox.spy(RED);
         var HeaterController = helper.getMockedHeaterController(require('../nodes/heater/heater'));
         sandbox.spy(HeaterController);
     })

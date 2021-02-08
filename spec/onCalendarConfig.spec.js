@@ -13,10 +13,10 @@ describe("Testing onSetCalendar", function () {
     const sandbox = sinon.createSandbox();
 
     beforeEach(() => {
-        sandbox.spy(RED);
+        // sandbox.spy(RED);
         var HeaterController = helper.getMockedHeaterControllerFaked(require('../nodes/heater/heater'));
         sandbox.spy(HeaterController);
-        RED = helper.getMockedRED();
+        // RED = helper.getMockedRED();
         delete require.cache[require.resolve('../nodes/heater/heater')];
         hc = new HeaterController(RED, {
             group: 'someGroup',

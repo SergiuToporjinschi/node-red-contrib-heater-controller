@@ -13,7 +13,7 @@ describe("Functions", function () {
     const sandbox = sinon.createSandbox();
 
     beforeEach(() => {
-        sandbox.spy(RED);
+        // sandbox.spy(RED);
         var HeaterController = helper.getMockedHeaterControllerFaked(require('../nodes/heater/heater'));
         sandbox.spy(HeaterController);
     })
@@ -27,6 +27,8 @@ describe("Functions", function () {
     describe("Test calculating schedule with offset", () => {
         beforeEach(() => {
             helper.setMockedDate('2021-01-31T08:00:00.000');//Sunday
+            // RED.require.withArgs('node-red-dashboard').returns(sinon.fake());
+
             hc = new HeaterController(RED, {
                 group: 'someGroup',
                 calendar: JSON.stringify(helper.calendar),

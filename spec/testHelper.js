@@ -1,4 +1,5 @@
 var _ = require("lodash");
+const { fake } = require("sinon");
 var sinon = require('sinon');
 var exp = {
     calendar: {
@@ -70,23 +71,24 @@ var exp = {
         "time": new Date().toLocaleString()
     },
     getMockedRED: function (params) {
-        return {
-            require: function (params) {
-                if (params === 'node-red-dashboard') {
-                    return function () {
-                        return {
-                            isDark: function () { return false; },
-                            addWidget: function (params) {
-                            }
-                        }
-                    }
-                }
+        var Red = {
+            server: {
+                on: function () { }
+            },
+            settings: {
+                httpNodeRoot: '/'
             },
             nodes: {
-                createNode: function (params) {
-                }
+                createNode: sinon.fake()
             }
-        }
+        };
+        Red.require = sinon.stub();
+        var addWidgetStub = sinon.stub();
+        var constrUI = sinon.stub();
+        addWidgetStub.returns(sinon.fake());
+        constrUI.returns({ addWidget: addWidgetStub });
+        Red.require.withArgs('node-red-dashboard').returns(constrUI);
+        return Red;
     },
     mockedNode: {
         'context': {

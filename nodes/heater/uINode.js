@@ -1,22 +1,23 @@
 var _ = require('lodash');
 var FrontEnd = require('./frontEnd')
+const WsServer = require('./webSocketServer')
 class UINode {
+    status = undefined;
+    config = undefined;
     #events = {};
     #ui = undefined;
     #doneUI = undefined;
     #RED = undefined;
-    status = undefined;
-    config = undefined;
-    #frontEnd = undefined;
+    #wsServer = undefined;
     constructor(RED, config) {
         this.config = config;
         this.#RED = RED;
-        this.#frontEnd = new FrontEnd(this.config);
         try {
             if (this.#ui === undefined) {
                 this.#ui = RED.require("node-red-dashboard")(RED);
             }
             RED.nodes.createNode(this, this.config);
+            this.startSocketIOServer();
             this._createWidget();
             this.on("input", this.input.bind(this));
         } catch (error) {
@@ -42,7 +43,10 @@ class UINode {
         }
         delete this.#events[topic];
     }
-
+    startSocketIOServer() {
+        this.#wsServer = new WsServer(this.#RED, this.id);
+        this.#wsServer.start();
+    }
     /**
      * @private
      *
@@ -98,10 +102,9 @@ class UINode {
     _createWidget() {
         this.debug("createWidget called");
         try {
-            var frontEndHtml = this.#frontEnd.getHTML(this.#ui.isDark());
-            /* istanbul ignore next */
-            var frontEndController = this.#frontEnd.getController();
-            // eval(frontEndController.toString());
+            var frontEnd = new FrontEnd(this.config, this.#wsServer.getURL());
+            var frontEndHtml = frontEnd.getHTML();
+            var frontEndController = frontEnd.getController();
             this.#doneUI = this.#ui.addWidget(Object.assign({
                 node: this,
                 width: parseInt(this.config.width),
@@ -160,6 +163,9 @@ class UINode {
      */
     messageOut(x, msg) {
         this.debug("messageOut called: ", msg);
+        // this.#io.sockets.adapter.rooms
+        // var uiObj = require(this.#RED.settings.userDir + "/node_modules/node-red-dashboard/ui.js")(this.#RED);
+        // uiObj.emitSocket('test', 'test');
     }
 
     /**
