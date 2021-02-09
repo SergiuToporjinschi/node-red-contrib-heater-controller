@@ -1,28 +1,15 @@
 'use strict';
+const { debug } = require("console");
 const path = require("path");
 class FrontEnd {
-    #config = undefined;
-    #serverURL = undefined;
-    #frontConfigOptions = [
-        'id',
-        'title',
-        'calendar',
-        'unit',
-        'sliderMaxValue',
-        'sliderMinValue',
-        'sliderStep'
-    ]
-
-    constructor(config, serverURL) {
-        this.#config = config;
-        this.#serverURL = serverURL;
+    constructor() {
     }
 
-    getHTML(isDark) {
+    getHTML(displayMode, isDark) {
         //TODO take in consideration isDark theme;
         var fs = require('fs');
         var htmlFile = 'frontEndButtons.html';
-        if (this.#config.displayMode !== 'buttons') {
+        if (displayMode !== 'buttons') {
             htmlFile = 'frontEndSlider.html';
         }
         var cssContent = fs.readFileSync(path.resolve(__dirname, './', 'frontEnd.css'), 'utf8');
@@ -30,15 +17,9 @@ class FrontEnd {
         return '<style>' + cssContent + '</style>' + htmlContent;
     }
 
-    getController() {
+    getController(serverURL) {
         var functionBody = this._controller.toString();
-        var frontEndConf = {};
-        for (var i in this.#frontConfigOptions) {
-            var key = this.#frontConfigOptions[i];
-            frontEndConf[key] = key === 'calendar' ? JSON.parse(this.#config[key]) : this.#config[key];
-        }
-        frontEndConf['wsURL'] = this.#serverURL;
-        functionBody = functionBody.replace('/*$scope.config*/', ' $scope.config = ' + JSON.stringify(frontEndConf) + ';');
+        functionBody = functionBody.replace('/*$scope.serverURL*/', ' $scope.serverURL = "' + serverURL + '";');
         return eval('(function ' + functionBody + ')');
     }
 
@@ -49,49 +30,70 @@ class FrontEnd {
      */
     /* istanbul ignore next */
     _controller($scope, events) {
+        debugger;
         $scope.connectToWS = function (url) {
-            var url = new URL($scope.config.wsURL, window.location.href);
+            var url = new URL($scope.serverURL, window.location.href);
             url.protocol = 'ws:';
-            const socket = new WebSocket(url.href);
+            $scope.socket = new WebSocket(url.href);
+            $scope.socketEvents = {
+                config: $scope.configReceived,
+                status: $scope.statusReceived,
+            };
 
             // Connection opened
-            socket.addEventListener('open', function (event) {
-                $scope.socket = socket;
-                // socket.send('connection');
+            $scope.socket.addEventListener('open', function (event) {
+                console.debug('Connected');
             });
 
             // Listen for messages
-            socket.addEventListener('message', function (event) {
-                //TOOD Add am massage based event listener;
-                console.log(event.data);
+            $scope.socket.addEventListener('message', function (event) {
+                console.debug('MessageReceived ');
+                if (typeof (event.data) !== 'string') {
+                    console.error('Invalid messaged received!!!', event.data);
+                    return;
+                }
+                var msg;
+                try {
+                    msg = JSON.parse(event.data);
+                } catch (error) {
+                    console.error('Cannot parse incoming message', error);
+                    return;
+                }
+                var func = undefined;
+                if (typeof (msg.topic) !== 'string' || typeof (func = $scope.socketEvents[msg.topic]) !== 'function') {
+                    console.error('Invalid topic received', event.data);
+                    return;
+                }
+                func.call($scope, msg.payload);
             });
         }
 
-        var controller = this;
-        var triggers = {};
+        $scope.configReceived = function (payload) {
+            console.debug('Config received', payload);
+            $scope.config = payload; //TODO maybe we should copy only attributes for not messing-up the links
+        }
+
+        $scope.statusReceived = function (payload) {
+            console.debug('Status received', payload);
+            $scope.status = payload; //TODO maybe we should copy only attributes for not messing-up the links
+        }
+
         $scope.init = function () {
-            /*$scope.config*/
+            /*$scope.serverURL*/
             $scope.connectToWS();
-            // triggers['status'] = $scope.statusChangedEvent;
-            // $scope.$watch("msg", $scope.eventDispatcher.bind(controller));
         };
-        // $scope.eventDispatcher = function (msgs, b, $scope, d, e) {
-        //     if (typeof (msgs) === 'undefined') return;
-        //     for (var i in msgs) {
-        //         if (typeof (msgs[i].topic) !== 'string') {
-        //             console.debug('Topic is not a string: ', msgs[i]);
-        //         }
-        //         triggers[msgs[i].topic](msgs[i].payload);
-        //     }
-        // }
 
         $scope.statusChangedEvent = function (payload) {
             // $scope.status = payload;
-            debugger;
+            // debugger;
         }
 
         $scope.changeTemp = function () {
-            $scope.socket.send('messageByThe button');
+            console.log($scope.config);
+            $scope.socket.send(JSON.stringify({
+                topic: 'msg',
+                payload: 'content!?!?'
+            }));
         }
     }
 

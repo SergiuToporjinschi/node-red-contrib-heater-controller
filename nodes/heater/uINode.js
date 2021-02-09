@@ -8,7 +8,16 @@ class UINode {
     #ui = undefined;
     #doneUI = undefined;
     #RED = undefined;
+    #wsServerURL = undefined;
     #wsServer = undefined;
+    #frontConfigOptions = [
+        'title',
+        'calendar',
+        'unit',
+        'sliderMaxValue',
+        'sliderMinValue',
+        'sliderStep'
+    ]
     constructor(RED, config) {
         this.config = config;
         this.#RED = RED;
@@ -45,8 +54,28 @@ class UINode {
 
     startSocketIOServer() {
         this.#wsServer = new WsServer(this.#RED, this.id);
-        this.#wsServer.start();
+        this.#wsServerURL = this.#wsServer.start();
+        this.#wsServer.registerIncomingEvents('connection', this._newClientConnected, this);
+        this.#wsServer.registerIncomingEvents('msg', this._onMsg, this);
     }
+
+    _createClientConfig() {
+        var frontEndConf = {};
+        for (var i in this.#frontConfigOptions) {
+            var key = this.#frontConfigOptions[i];
+            frontEndConf[key] = this.config[key];
+        }
+        return frontEndConf;
+    }
+
+    _newClientConnected(ws) {
+        this.#wsServer.send('config', this._createClientConfig(), ws);
+    }
+
+    _onMsg(message, socket) {
+        //this.#wsServer.broadcast('status', this.status);
+    }
+
     /**
      * @private
      *
@@ -102,9 +131,9 @@ class UINode {
     _createWidget() {
         this.debug("createWidget called");
         try {
-            var frontEnd = new FrontEnd(this.config, this.#wsServer.getURL());
-            var frontEndHtml = frontEnd.getHTML();
-            var frontEndController = frontEnd.getController();
+            var frontEnd = new FrontEnd();
+            var frontEndHtml = frontEnd.getHTML(this.config.displayMode, false);
+            var frontEndController = frontEnd.getController(this.#wsServerURL);
             this.#doneUI = this.#ui.addWidget(Object.assign({
                 node: this,
                 width: parseInt(this.config.width),
@@ -118,8 +147,8 @@ class UINode {
                 forwardInputMessages: false,
                 storeFrontEndInputAsState: true,
                 initController: frontEndController,
-                beforeEmit: this.messageIn.bind(this),
-                beforeSend: this.messageOut.bind(this)
+                // beforeEmit: this.messageIn.bind(this),
+                // beforeSend: this.messageOut.bind(this)
             }));
         } catch (error) {
             this.error(error);
