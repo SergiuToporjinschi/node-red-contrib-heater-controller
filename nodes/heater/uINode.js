@@ -103,12 +103,18 @@ class UINode {
     input(msg, send, doneCB) {
         this.debug("input:", msg);
         try {
-            var retMsg = this.messageIn(msg)
-            if (typeof (retMsg[0]) != undefined && retMsg[0].topic === 'heaterStatus') {
-                retMsg[0].topic = this.config.topic;
-            }
-
-            send(retMsg);
+            var retMsg = this._messageIn(msg);
+            if (typeof (retMsg) === 'undefined') return;
+            var statusIndex = _.findIndex(retMsg, o => {
+                return typeof (o) !== 'undefined' && o.topic === 'status';
+            });
+            var heaterStatusIndex = _.findIndex(retMsg, o => {
+                return typeof (o) !== 'undefined' && o.topic === 'heaterStatus';
+            });
+            send([
+                retMsg[heaterStatusIndex],
+                retMsg[statusIndex]
+            ]);
 
             if (doneCB) {
                 doneCB();
@@ -146,9 +152,7 @@ class UINode {
                 emitOnlyNewValues: false,
                 forwardInputMessages: false,
                 storeFrontEndInputAsState: true,
-                initController: frontEndController,
-                // beforeEmit: this.messageIn.bind(this),
-                // beforeSend: this.messageOut.bind(this)
+                initController: frontEndController
             }));
         } catch (error) {
             this.error(error);
@@ -161,8 +165,9 @@ class UINode {
      * Called before a new message arrives
      * @param {Object} msg the message
      */
-    messageIn(msg) {
-        if (!msg || typeof (msg) !== 'object' || !msg.topic || typeof (msg.topic) !== 'string') {
+    _messageIn(msg) {
+        if (typeof (msg) !== 'object' || typeof (msg.topic) !== 'string') {
+            this.error('Invalid Topic!!! ', msg);
             throw new Error('Invalid Topic!!!');
         }
         //clones initial status
@@ -191,20 +196,9 @@ class UINode {
     _sendToFrontEnd(ret) {
         for (var i in ret) {
             var msg = ret[i];
-            if (typeof (msg.topic) !== undefined && ['status', 'config'].includes(msg.topic))
+            if (typeof (msg) !== 'undefined' && ['status', 'config'].includes(msg.topic))
                 this.#wsServer.broadcast(msg.topic, msg.payload);
         }
-    }
-
-    /**
-     * Called before sending a message from interface
-     * @param {Object} msg
-     */
-    messageOut(x, msg) {
-        this.debug("messageOut called: ", msg);
-        // this.#io.sockets.adapter.rooms
-        // var uiObj = require(this.#RED.settings.userDir + "/node_modules/node-red-dashboard/ui.js")(this.#RED);
-        // uiObj.emitSocket('test', 'test');
     }
 }
 module.exports = UINode;

@@ -213,12 +213,12 @@ describe("Functions", function () {
 
         itParam("Test recalculate if !isLocked, schedule changed, turning it on/off, currentTemp static ", data_20C, (val) => {
             hc.status.isLocked = false;
-            hc.messageIn({//dummy value
+            hc._messageIn({//dummy value
                 topic: 'currentTemp',
                 payload: 20
             });
             helper.setMockedDate('2021-01-31T' + val.time + ':00.000');//Sunday
-            var ret = hc.messageIn({
+            var ret = hc._messageIn({
                 topic: 'currentTemp',
                 payload: 20
             });
@@ -239,12 +239,12 @@ describe("Functions", function () {
         ], (val) => {
             helper.setMockedDate('2021-01-31T08:00:00.000');
             hc.status.isLocked = false;
-            hc.messageIn({//dummy value to make forced_ByScheduler = false
+            hc._messageIn({//dummy value to make forced_ByScheduler = false
                 topic: 'currentTemp',
                 payload: val.currentTemp
             });
             // hc.onUserConfig
-            var ret = hc.messageIn({//dummy value to make forced_ByScheduler = false
+            var ret = hc._messageIn({//dummy value to make forced_ByScheduler = false
                 topic: 'userConfig',
                 payload: {
                     isUserCustom: val.isUserCustom,
@@ -285,7 +285,7 @@ describe("Functions", function () {
             var fakeSend = sinon.fake();
             hc.send = fakeSend;
 
-            var ret = hc.messageIn({
+            var ret = hc._messageIn({
                 topic: 'currentTemp',
                 payload: val
             });
@@ -294,7 +294,7 @@ describe("Functions", function () {
 
             fakeSend = sinon.fake();
             hc.send = fakeSend;
-            ret = hc.messageIn({
+            ret = hc._messageIn({
                 topic: 'currentTemp',
                 payload: val
             });
