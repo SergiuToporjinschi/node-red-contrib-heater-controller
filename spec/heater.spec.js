@@ -213,23 +213,18 @@ describe("Functions", function () {
 
         itParam("Test recalculate if !isLocked, schedule changed, turning it on/off, currentTemp static ", data_20C, (val) => {
             hc.status.isLocked = false;
-            var fakeSend = sinon.fake();
-            hc.send = fakeSend;
             hc.messageIn({//dummy value
                 topic: 'currentTemp',
                 payload: 20
             });
             helper.setMockedDate('2021-01-31T' + val.time + ':00.000');//Sunday
-            fakeSend = sinon.fake();
-            hc.send = fakeSend;
             var ret = hc.messageIn({
                 topic: 'currentTemp',
                 payload: 20
             });
-            should.equal(fakeSend.callCount, 1, "this.send method has been called: " + JSON.stringify(val));
-            should.type(fakeSend.lastCall.firstArg, 'object', 'this.send first parameter is not a msg object: ' + JSON.stringify(val));
-            should.deepEqual(fakeSend.lastCall.firstArg[0], { topic: 'heaterStatus', payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
-            should.deepEqual(fakeSend.lastCall.firstArg[1], { topic: 'status', payload: hc.status }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
+            should(ret).be.Array('Is not returning an array:' + JSON.stringify(val));
+            should.deepEqual(ret[0], { topic: 'heaterStatus', payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
+            should.deepEqual(ret[1], { topic: 'status', payload: hc.status }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
             ret.should.be.an.Object();
         });
         itParam("Test recalculate userCustomTemp ", [
@@ -244,15 +239,11 @@ describe("Functions", function () {
         ], (val) => {
             helper.setMockedDate('2021-01-31T08:00:00.000');
             hc.status.isLocked = false;
-            var fakeSend = sinon.fake();
-            hc.send = fakeSend;
             hc.messageIn({//dummy value to make forced_ByScheduler = false
                 topic: 'currentTemp',
                 payload: val.currentTemp
             });
             // hc.onUserConfig
-            fakeSend = sinon.fake();
-            hc.send = fakeSend;
             var ret = hc.messageIn({//dummy value to make forced_ByScheduler = false
                 topic: 'userConfig',
                 payload: {
@@ -261,10 +252,9 @@ describe("Functions", function () {
                     userTargetValue: val.userCurrentTemp
                 }
             });
-            should.equal(fakeSend.callCount, 1, "this.send method has been called: " + JSON.stringify(val));
-            should.type(fakeSend.lastCall.firstArg, 'object', 'this.send first parameter is not a msg object: ' + JSON.stringify(val));
-            should.deepEqual(fakeSend.lastCall.firstArg[0], { topic: 'heaterStatus', payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
-            should.deepEqual(fakeSend.lastCall.firstArg[1], { topic: 'status', payload: hc.status }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
+            should(ret).be.Array('Is not returning an array:' + JSON.stringify(val));
+            should.deepEqual(ret[0], { topic: 'heaterStatus', payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
+            should.deepEqual(ret[1], { topic: 'status', payload: hc.status }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
         });
     });
 
@@ -308,11 +298,9 @@ describe("Functions", function () {
                 topic: 'currentTemp',
                 payload: val
             });
-
-            should.equal(fakeSend.callCount, 1, "this.send method has been called: " + JSON.stringify(val));
-            should.type(fakeSend.lastCall.firstArg, 'object', 'this.send first parameter is not a msg object: ' + JSON.stringify(val));
-            should.deepEqual(fakeSend.lastCall.firstArg[0], { topic: 'heaterStatus', payload: val < 20 ? 'on' : 'off' }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
-            should.deepEqual(fakeSend.lastCall.firstArg[1], { topic: 'status', payload: initialStatus }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
+            should(ret).be.Array('Is not returning an array:' + JSON.stringify(val));
+            should.deepEqual(ret[0], { topic: 'heaterStatus', payload: val < 20 ? 'on' : 'off' }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
+            should.deepEqual(ret[1], { topic: 'status', payload: initialStatus }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
         });
 
         var exceptions = [undefined, 1,

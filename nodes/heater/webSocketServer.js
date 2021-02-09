@@ -1,12 +1,10 @@
-const { type } = require("os");
-const path = require("path");
-const url = require("url");
 const ws = require('ws');
 class WebSocketServer {
     #path = 'heaterController/io/';
     #socketURL = '';
     #server = undefined;
     #incomingEvents = {};
+    #upgradeRegistered = false;
     constructor(RED, id) {
         var base = RED.settings.httpNodeRoot.endsWith('/') ? RED.settings.httpNodeRoot : RED.settings.httpNodeRoot + '/';
         this.#socketURL = base + this.#path + id;
@@ -18,6 +16,10 @@ class WebSocketServer {
         this.#server.setMaxListeners(0);
         this.#server.on('connection', this._onClientConnected.bind(this));
         return this.#socketURL;
+    }
+
+    shutdownServer() {
+        this.#server.close();
     }
 
     getURL() {
@@ -44,7 +46,8 @@ class WebSocketServer {
     }
 
     _handleServerUpgrade(request, socket, head) {
-        if (this.#socketURL !== request.url) return;
+        if (this.#socketURL !== request.url || this.#upgradeRegistered) return;
+        this.#upgradeRegistered = true;
         this.#server.handleUpgrade(request, socket, head, ((ws) => {
             this.#server.emit('connection', ws, request);
             ws.on('message', this._onReceivedMessage.bind(this, ws));

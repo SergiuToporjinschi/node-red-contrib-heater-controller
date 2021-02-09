@@ -56,7 +56,6 @@ class UINode {
         this.#wsServer = new WsServer(this.#RED, this.id);
         this.#wsServerURL = this.#wsServer.start();
         this.#wsServer.registerIncomingEvents('connection', this._newClientConnected, this);
-        this.#wsServer.registerIncomingEvents('msg', this._onMsg, this);
     }
 
     _createClientConfig() {
@@ -72,10 +71,6 @@ class UINode {
         this.#wsServer.send('config', this._createClientConfig(), ws);
     }
 
-    _onMsg(message, socket) {
-        //this.#wsServer.broadcast('status', this.status);
-    }
-
     /**
      * @private
      *
@@ -84,7 +79,8 @@ class UINode {
      * - call dashboard remove node if any;
      */
     _close() {
-        this.debug("close called");
+        this.debug("Close called");
+        this.#wsServer.shutdownServer();
         if (this.onOnClose) {
             this.onClose();
         }
@@ -107,9 +103,13 @@ class UINode {
     input(msg, send, doneCB) {
         this.debug("input:", msg);
         try {
-            if (this.onInput) {
-                this.onInput(msg, send);
+            var retMsg = this.messageIn(msg)
+            if (typeof (retMsg[0]) != undefined && retMsg[0].topic === 'heaterStatus') {
+                retMsg[0].topic = this.config.topic;
             }
+
+            send(retMsg);
+
             if (doneCB) {
                 doneCB();
             }
@@ -160,9 +160,8 @@ class UINode {
      * back to front
      * Called before a new message arrives
      * @param {Object} msg the message
-     * @param {Object} fullDataset fullDataset ????? god knows why
      */
-    messageIn(msg, fullDataset) {
+    messageIn(msg) {
         if (!msg || typeof (msg) !== 'object' || !msg.topic || typeof (msg.topic) !== 'string') {
             throw new Error('Invalid Topic!!!');
         }
@@ -181,14 +180,22 @@ class UINode {
             this.error('Calling unregistered event: ' + msg.topic);
             throw new Error('Calling unregistered event: ' + msg.topic);
         }
+        if (typeof (resp) === 'undefined') return;
+        if (!Array.isArray(resp)) {
+            resp = [resp];
+        }
+        this._sendToFrontEnd(resp);
+        return resp;
+    }
 
-        //Forward message to front-end
-        if (resp) {
-            return {
-                msg: resp
-            };
+    _sendToFrontEnd(ret) {
+        for (var i in ret) {
+            var msg = ret[i];
+            if (typeof (msg.topic) !== undefined && ['status', 'config'].includes(msg.topic))
+                this.#wsServer.broadcast(msg.topic, msg.payload);
         }
     }
+
     /**
      * Called before sending a message from interface
      * @param {Object} msg
