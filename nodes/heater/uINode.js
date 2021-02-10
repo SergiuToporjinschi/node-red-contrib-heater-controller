@@ -161,6 +161,7 @@ class UINode {
         }
         //clones initial status
         this.oldStatus = _.cloneDeepWith(this.status, function (value) {
+            /* istanbul ignore next */
             if (_.isFunction(value)) {
                 return;
             }
