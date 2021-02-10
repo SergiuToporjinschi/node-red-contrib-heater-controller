@@ -26,6 +26,7 @@ class Heater extends UINode {
         this.addEvent('userConfig', this.onUserConfig);//this topic can be used to change user settings, isLocked, userTargetValue
         this.addEvent('setCalendar', this.onSetCalendar); //this topic can be used to change current calendar
     }
+
     initCurrentState() {
         this.status = {
             "currentTemp": undefined, //Current room temperature
@@ -58,11 +59,7 @@ class Heater extends UINode {
 
         //recalculate status
         var calculatedStatus = this.recalculate();
-        return [
-            typeof (calculatedStatus) !== 'undefined' ? { topic: 'heaterStatus', payload: calculatedStatus } : undefined,
-            { topic: 'status', payload: this.status }
-        ];
-        // return [{ 'topic': 'status', 'payload': this.status }];
+        return { heaterStatus: calculatedStatus, status: this.status };
     }
 
     /**
@@ -97,11 +94,7 @@ class Heater extends UINode {
 
         //recalculate status
         var calculatedStatus = this.recalculate();
-        return [
-            typeof (calculatedStatus) !== 'undefined' ? { topic: 'heaterStatus', payload: calculatedStatus } : undefined,
-            { topic: 'status', payload: this.status }
-        ];
-        // [{ 'topic': 'status', 'payload': this.status }];
+        return { heaterStatus: calculatedStatus, status: this.status };
     }
 
     onSetCalendar(msg) {
@@ -115,7 +108,7 @@ class Heater extends UINode {
             this.error("Invalid calendar", error.details);
             throw error;
         }
-        return [undefined, { topic: 'status', payload: this.status }]
+        return { heaterStatus: undefined, status: this.status };
     }
 
     /**

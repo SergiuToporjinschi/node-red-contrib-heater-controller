@@ -95,7 +95,7 @@ describe("Functions", function () {
             done();
         });
 
-        itParam('Test messageIn: throw exception ', [{}, { topic: 2 }], function (val) {
+        itParam('Test input: throw exception ', [{}, { topic: 2 }], function (val) {
             var sendFunc = sinon.fake();
             var doneCB = sinon.fake();
             uiNode.input(val, sendFunc, doneCB);
@@ -106,35 +106,37 @@ describe("Functions", function () {
             should(doneCB.firstCall.args[0]).be.deepEqual(uiNode.error.secondCall.args[0], 'Exception is not forward to callback function');
         });
 
-        it('Test messageIn: event is not returning array', function (done) {
+        it('Test input: event is not returning array', function (done) {
             var fakeFunc = sinon.stub().returns('strTest');
             var sendFunc = sinon.fake();
             var doneCB = sinon.fake();
+            uiNode._sendToFrontEnd = sinon.fake();
             uiNode.addEvent('event1', fakeFunc);
             uiNode.input({ topic: 'event1', payload: 'test' }, sendFunc, doneCB);
             should(fakeFunc.callCount).be.equal(1, 'Event not registered or not called');
             should(fakeFunc.lastCall.args[0].topic).be.equal('event1', 'Event not registered or not called');
-            should(sendFunc.callCount).be.equal(1, 'Send function not called');
+            should(sendFunc.callCount).be.equal(0, 'Send function is called even is not necessary');
             should(doneCB.callCount).be.equal(1, 'Input CallBack is not called');
-            should(Array.isArray(sendFunc.firstCall.args[0])).be.True('Should send an array');
-            should(sendFunc.firstCall.args[0]).be.deepEqual([undefined, undefined], 'An empty array should be thrown when calling event without a proper return message');
+            should(uiNode._sendToFrontEnd.callCount).be.equal(1, 'front end function not called');
             done();
         });
         // [{ topic: 'status', payload: { test: 'somePayload' } }, { topic: 'status', payload: { test: 'somePayload' } }]
 
-        it('Test messageIn: event returns valid topics to be send to output', function (done) {
+        it('Test input: event returns valid topics to be send to output', function (done) {
             var val = [undefined, { topic: 'status', payload: { test: 'somePayload' } }]
             var fakeFunc = sinon.stub().returns(val);
             var sendFunc = sinon.fake();
             var doneCB = sinon.fake();
             uiNode.addEvent('event1', fakeFunc);
+            uiNode._sendToFrontEnd = sinon.fake();
             uiNode.input({ topic: 'event1', payload: 'test' }, sendFunc, doneCB);
             should(fakeFunc.callCount).be.equal(1, 'Event not registered or not called');
             should(fakeFunc.lastCall.args[0].topic).be.equal('event1', 'Event not registered or not called');
             should(sendFunc.callCount).be.equal(1, 'Send function not called');
             should(Array.isArray(sendFunc.firstCall.args[0])).be.True('Should send an array');
-            should(sendFunc.lastCall.args[0]).be.deepEqual(val, 'Output expected is an array of messages');
+            should(sendFunc.lastCall.args[0]).be.deepEqual([undefined, undefined], 'Output expected is an array of undefined');
             should(doneCB.callCount).be.equal(1, 'Input CallBack is not called');
+            should(uiNode._sendToFrontEnd.callCount).be.equal(1, 'front end function not called');
             done();
         });
     });

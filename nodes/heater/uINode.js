@@ -18,6 +18,7 @@ class UINode {
         'sliderMinValue',
         'sliderStep'
     ]
+    #frontEndTopics = ['status', 'config'];
     constructor(RED, config) {
         this.config = config;
         this.#RED = RED;
@@ -103,19 +104,7 @@ class UINode {
     input(msg, send, doneCB) {
         this.debug("input:", msg);
         try {
-            var retMsg = this._messageIn(msg);
-            if (typeof (retMsg) === 'undefined') return;
-            var statusIndex = _.findIndex(retMsg, o => {
-                return typeof (o) !== 'undefined' && o.topic === 'status';
-            });
-            var heaterStatusIndex = _.findIndex(retMsg, o => {
-                return typeof (o) !== 'undefined' && o.topic === 'heaterStatus';
-            });
-            send([
-                retMsg[heaterStatusIndex],
-                retMsg[statusIndex]
-            ]);
-
+            this._messageIn(msg, send);
             if (doneCB) {
                 doneCB();
             }
@@ -165,7 +154,7 @@ class UINode {
      * Called before a new message arrives
      * @param {Object} msg the message
      */
-    _messageIn(msg) {
+    _messageIn(msg, send) {
         if (typeof (msg) !== 'object' || typeof (msg.topic) !== 'string') {
             this.error('Invalid Topic!!! ', msg);
             throw new Error('Invalid Topic!!!');
@@ -177,6 +166,7 @@ class UINode {
             }
         });
 
+        //process message;
         var resp;
         var eventItem = this.#events[msg.topic];
         if (eventItem) {
@@ -185,19 +175,26 @@ class UINode {
             this.error('Calling unregistered event: ' + msg.topic);
             throw new Error('Calling unregistered event: ' + msg.topic);
         }
+
         if (typeof (resp) === 'undefined') return;
-        if (!Array.isArray(resp)) {
-            resp = [resp];
-        }
-        this._sendToFrontEnd(resp);
-        return resp;
+
+        this._sendToFrontEnd(resp); //send messages to front-end if any
+        this._sendOutPut(resp, send); //send message to back-end if any
     }
 
-    _sendToFrontEnd(ret) {
-        for (var i in ret) {
-            var msg = ret[i];
-            if (typeof (msg) !== 'undefined' && ['status', 'config'].includes(msg.topic))
-                this.#wsServer.broadcast(msg.topic, msg.payload);
+    _sendOutPut(msg, send) {
+        if (typeof (msg) !== 'object') return;
+        var heaterStatus = typeof (msg.heaterStatus) !== 'undefined' ? { topic: this.config.topic, payload: msg.heaterStatus } : undefined;
+        var status = typeof (msg.status) !== 'undefined' ? { topic: 'status', payload: msg.status } : undefined;
+        send([heaterStatus, status]);
+    }
+
+    _sendToFrontEnd(obj) {
+        for (var i in this.#frontEndTopics) {
+            var topic = this.#frontEndTopics[i];
+            var payload = obj[topic];
+            if (!['undefined', 'function'].includes(typeof (payload)))
+                this.#wsServer.broadcast(topic, payload);
         }
     }
 }

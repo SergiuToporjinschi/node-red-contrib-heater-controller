@@ -213,19 +213,20 @@ describe("Functions", function () {
 
         itParam("Test recalculate if !isLocked, schedule changed, turning it on/off, currentTemp static ", data_20C, (val) => {
             hc.status.isLocked = false;
+            var fakeSend = sinon.fake();
             hc._messageIn({//dummy value
                 topic: 'currentTemp',
                 payload: 20
-            });
+            }, sinon.fake());
             helper.setMockedDate('2021-01-31T' + val.time + ':00.000');//Sunday
-            var ret = hc._messageIn({
+            hc._messageIn({
                 topic: 'currentTemp',
                 payload: 20
-            });
-            should(ret).be.Array('Is not returning an array:' + JSON.stringify(val));
-            should.deepEqual(ret[0], { topic: 'heaterStatus', payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
-            should.deepEqual(ret[1], { topic: 'status', payload: hc.status }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
-            ret.should.be.an.Object();
+            }, fakeSend);
+            should(fakeSend.callCount).be.equal(1, 'Send function not called :' + JSON.stringify(val))
+            should(fakeSend.lastCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
+            should.deepEqual(fakeSend.lastCall.args[0][0], { topic: 'heaterStatus', payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
+            should.deepEqual(fakeSend.lastCall.args[0][1], { topic: 'status', payload: hc.status }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
         });
         itParam("Test recalculate userCustomTemp ", [
             { isUserCustom: true, isLocked: true, currentTemp: 15, userCurrentTemp: 20, state: 'on' }, { isUserCustom: true, isLocked: true, currentTemp: 20, userCurrentTemp: 18, state: 'off' },
@@ -242,19 +243,20 @@ describe("Functions", function () {
             hc._messageIn({//dummy value to make forced_ByScheduler = false
                 topic: 'currentTemp',
                 payload: val.currentTemp
-            });
-            // hc.onUserConfig
-            var ret = hc._messageIn({//dummy value to make forced_ByScheduler = false
+            }, sinon.fake());
+            var fakeSend = sinon.fake();
+            hc._messageIn({//dummy value to make forced_ByScheduler = false
                 topic: 'userConfig',
                 payload: {
                     isUserCustom: val.isUserCustom,
                     isLocked: val.isLocked,
                     userTargetValue: val.userCurrentTemp
                 }
-            });
-            should(ret).be.Array('Is not returning an array:' + JSON.stringify(val));
-            should.deepEqual(ret[0], { topic: 'heaterStatus', payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
-            should.deepEqual(ret[1], { topic: 'status', payload: hc.status }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
+            }, fakeSend);
+            should(fakeSend.callCount).be.equal(1, 'Send function not called :' + JSON.stringify(val))
+            should(fakeSend.lastCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
+            should.deepEqual(fakeSend.lastCall.args[0][0].payload, val.state, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
+            should.deepEqual(fakeSend.lastCall.args[0][1].payload, hc.status, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
         });
     });
 
@@ -285,10 +287,10 @@ describe("Functions", function () {
             var fakeSend = sinon.fake();
             hc.send = fakeSend;
 
-            var ret = hc._messageIn({
+            hc._messageIn({
                 topic: 'currentTemp',
                 payload: val
-            });
+            }, sinon.fake());
 
             var initialStatus = hc.status;
 
@@ -297,10 +299,11 @@ describe("Functions", function () {
             ret = hc._messageIn({
                 topic: 'currentTemp',
                 payload: val
-            });
-            should(ret).be.Array('Is not returning an array:' + JSON.stringify(val));
-            should.deepEqual(ret[0], { topic: 'heaterStatus', payload: val < 20 ? 'on' : 'off' }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
-            should.deepEqual(ret[1], { topic: 'status', payload: initialStatus }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
+            }, fakeSend);
+            should(fakeSend.callCount).be.equal(1, 'Send function not called :' + JSON.stringify(val))
+            should(fakeSend.lastCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
+            should.deepEqual(fakeSend.lastCall.args[0][0], { topic: 'heaterStatus', payload: val < 20 ? 'on' : 'off' }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
+            should.deepEqual(fakeSend.lastCall.args[0][1], { topic: 'status', payload: initialStatus }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
         });
 
         var exceptions = [undefined, 1,
