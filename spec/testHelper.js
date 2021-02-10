@@ -2,6 +2,35 @@ var _ = require("lodash");
 const { fake } = require("sinon");
 var sinon = require('sinon');
 var exp = {
+    configEx: {
+        calendar:'{\n    "Monday": {\n        "00:00": 19,\n        "06:20": 22,\n        "08:00": 19,\n        "16:40": 22,\n        "23:59": 19\n    },\n    "Tuesday": {\n        "00:00": 19,\n        "06:20": 22,\n        "08:00": 19,\n        "16:40": 22,\n        "23:59": 19\n    },\n    "Wednesday": {\n        "00:00": 19,\n        "06:20": 22,\n        "08:00": 19,\n        "16:40": 22,\n        "23:59": 19\n    },\n    "Thursday": {\n        "00:00": 19,\n        "06:20": 22,\n        "08:00": 19,\n        "16:40": 22,\n        "23:59": 19\n    },\n    "Friday": {\n        "00:00": 19,\n        "06:20": 23,\n        "08:00": 19,\n        "16:40": 22,\n        "23:59": 19\n    },\n    "Saturday": {\n        "00:00": 19,\n        "08:00": 20,\n        "20:00": 22,\n        "23:59": 19\n    },\n    "Sunday": {\n        "00:00": 19,\n        "08:00": 20,\n        "20:00": 22,\n        "23:59": 19\n    }\n}',
+        displayMode:'buttons',
+        g:'d2d20a7c.2b2bc8',
+        group:'add64240.8d8c9',
+        height: 4,
+        testFunction: function () { },
+        id:'cf35eb5f.d228c8',
+        info:'Description',
+        inputLabels: ['currentTemp | userCofig | setCalendar'],
+        logLength:1,
+        logLengthType:'days',
+        name:'Heater setting currentTemp',
+        order:0,
+        outputLabels: ['Heater status', 'Computation status'],
+        sliderMaxValue:35,
+        sliderMinValue:10,
+        sliderStep:0.5,
+        threshold:0.5,
+        title:'Heater',
+        topic:'heaterStatus',
+        type:'ui_heater_controller',
+        unit:'C',
+        width:6,
+        wires: [[1,23,4], '23'],
+        x:520,
+        y:480,
+        z:'869218bd.a018c8'
+    },
     calendar: {
         "Monday": { //2021-01-35 [1]
             "00:00": 19,

@@ -3,6 +3,7 @@ var should = require("should");
 var itParam = require('mocha-param');
 var helper = require("./testHelper.js");
 var UINode = require('../nodes/heater/uINode');
+var _ = require('lodash');
 var tempRising = [];
 for (var i = 10.5; i < 30; i = i + 0.5) {
     tempRising.push(i);
@@ -137,6 +138,15 @@ describe("Functions", function () {
             should(sendFunc.lastCall.args[0]).be.deepEqual([undefined, undefined], 'Output expected is an array of undefined');
             should(doneCB.callCount).be.equal(1, 'Input CallBack is not called');
             should(uiNode._sendToFrontEnd.callCount).be.equal(1, 'front end function not called');
+            done();
+        });
+
+        it('Test _createClientConfig: returns only config accepted by front-end', function (done) {
+            uiNode.config = helper.configEx;
+            var acceptedKeys = ['title', 'calendar', 'unit', 'sliderMaxValue', 'sliderMinValue', 'sliderStep'];
+            var configReturn = uiNode._createClientConfig();
+            should(configReturn).be.Object('Is not returning an object');
+            should(_.keys(configReturn)).be.deepEqual(acceptedKeys,'front-end config is not a valid object');
             done();
         });
     });
