@@ -187,6 +187,43 @@ describe('webSocketServer', function () {
             should(ret).be.deepEqual(JSON.parse(val), 'Decoded message not matching with input message');
         });
 
+        it('Test send: throw exception', function (done) {
+            RED = helper.getMockedRED();
+            RED.server.on = sinon.fake();
+            RED.settings.httpNodeRoot = 'node-red';
+            var ws = new WS(RED, 12345);
+            ws.broadcast = sinon.fake();
+            should(() => {
+                ws.send();
+            }).throw('Invalid topic on send command', 'Should not be able to send message without an valid topic');
+            done();
+        });
+
+        itParam('Test send: messingTopic should broad cast message', [{ topic: 'topic', message: 'test' }, { topic: 'topic' }], function (val) {
+            RED = helper.getMockedRED();
+            RED.server.on = sinon.fake();
+            RED.settings.httpNodeRoot = 'node-red';
+            var ws = new WS(RED, 12345);
+            ws.broadcast = sinon.fake();
+            ws.send(val.topic, val.message, val.webSocket);
+            should(ws.broadcast.callCount).be.equal(1, 'Message should be broadcasted if there is not socket');
+            should(ws.broadcast.lastCall.args[0]).be.equal(val.topic, 'Invalid topic for broadcasted message');
+            should(ws.broadcast.lastCall.args[1]).be.deepEqual(val.message, 'Invalid payload for broadcasted message');
+        });
+
+        it('Test send: should send message', function (done) {
+            RED = helper.getMockedRED();
+            RED.server.on = sinon.fake();
+            RED.settings.httpNodeRoot = 'node-red';
+            var ws = new WS(RED, 12345);
+            ws.broadcast = sinon.fake();
+            var fakeSend = sinon.fake();
+            ws.send('topic', 'message', { send: fakeSend });
+            should(fakeSend.callCount).be.equal(1, 'Message should be broadcasted if there is not socket');
+            should(fakeSend.lastCall.args[0]).be.String('Invalid message to be send');
+            done();
+        });
+
         // it('Test _handleServerUpgrade: event is triggered only once', function (done) {
         //     RED = helper.getMockedRED();
         //     RED.server.on = sinon.fake();

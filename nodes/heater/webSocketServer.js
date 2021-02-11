@@ -62,10 +62,12 @@ class WebSocketServer {
      * @param {webSocket} webSocket if is ws instance of 'ws' the message will be sent using the specified webSocket, if is not ws instance of 'ws' the message will be broadcasted
      */
     send(topic, message, webSocket) {
-        if (typeof (webSocket) === 'undefined' || !(webSocket instanceof require('ws'))) {
+        if (typeof (topic) !== 'string') { throw new Error('Invalid topic on send command'); }
+        if (typeof (webSocket) === 'undefined' ) { //TODO check if webSocket is a webSocket
             this.broadcast(topic, message);
+        } else {
+            webSocket.send(this._encodedMessage(topic, message));
         }
-        webSocket.send(this._encodedMessage(topic, message));
     };
 
     /**
