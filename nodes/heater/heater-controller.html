@@ -304,7 +304,7 @@
             $('#red-ui-editor-node-label-form-output-0').val('Heater status');
             $('#red-ui-editor-node-label-form-output-1').val('Computation status');
             $('#node-input-displayMode').change((event) => {
-                if (event.target[0].selected){
+                if (event.target[0].selected) {
                     $('#slider-settings').hide();
                 } else {
                     $('#slider-settings').show();
@@ -447,9 +447,19 @@
     </dl>
 
     <h3>Output</h3>
-    <p>A message is emitted when the status is recalculated (when the user is changing the target temperature or a new input message is received)</p>
+    <p>We have two outputs:
+        <ol class='node-ports'>
+            <li>Heater status: Emitted each time when the heater status has been recalculated; </li>
+            <li>Computation status: Emitted when status has been calculate; </li>
+        </ol>
+    </p>
+    <dd>Heater status syntax:</dd>
+    <pre>{
+    "topic" : &lt;topic set in properties&gt;,
+    "payload": [on|off]
+}</pre>
 
-    <dd>For example:</dd>
+    <dd>Computation status example:</dd>
     <pre>
 {
     "currentTemp":25,
