@@ -1,6 +1,15 @@
 var _ = require('lodash');
 var FrontEnd = require('./frontEnd')
 const WsServer = require('./webSocketServer')
+const frontConfigOptions = [
+    'title',
+    'calendar',
+    'unit',
+    'sliderMaxValue',
+    'sliderMinValue',
+    'sliderStep'
+];
+const frontEndTopics = ['status', 'config'];
 class UINode {
     status = undefined;
     config = undefined;
@@ -10,15 +19,6 @@ class UINode {
     #RED = undefined;
     #wsServerURL = undefined;
     #wsServer = undefined;
-    #frontConfigOptions = [
-        'title',
-        'calendar',
-        'unit',
-        'sliderMaxValue',
-        'sliderMinValue',
-        'sliderStep'
-    ]
-    #frontEndTopics = ['status', 'config'];
     constructor(RED, config) {
         this.config = config;
         this.#RED = RED;
@@ -61,8 +61,8 @@ class UINode {
 
     _createClientConfig() {
         var frontEndConf = {};
-        for (var i in this.#frontConfigOptions) {
-            var key = this.#frontConfigOptions[i];
+        for (var i in frontConfigOptions) {
+            var key = frontConfigOptions[i];
             frontEndConf[key] = this.config[key];
         }
         return frontEndConf;
@@ -191,8 +191,8 @@ class UINode {
     }
 
     _sendToFrontEnd(obj) {
-        for (var i in this.#frontEndTopics) {
-            var topic = this.#frontEndTopics[i];
+        for (var i in frontEndTopics) {
+            var topic = frontEndTopics[i];
             var payload = obj[topic];
             if (!['undefined', 'function'].includes(typeof (payload)))
                 this.#wsServer.broadcast(topic, payload);

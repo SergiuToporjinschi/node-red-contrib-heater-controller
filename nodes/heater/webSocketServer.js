@@ -1,13 +1,13 @@
+const path = 'heaterController/io/';
 const ws = require('ws');
 class WebSocketServer {
-    #path = 'heaterController/io/';
     #socketURL = '';
     #server = undefined;
     #incomingEvents = {};
     #upgradeRegistered = false;
     constructor(RED, id) {
         var base = RED.settings.httpNodeRoot.endsWith('/') ? RED.settings.httpNodeRoot : RED.settings.httpNodeRoot + '/';
-        this.#socketURL = base + this.#path + id;
+        this.#socketURL = base + path + id;
         RED.server.on('upgrade', this._handleServerUpgrade.bind(this));
     }
 
@@ -43,7 +43,7 @@ class WebSocketServer {
         this.#server.handleUpgrade(request, socket, head, ((ws) => {
             this.#server.emit('connection', ws, request);
             ws.on('message', this._onReceivedMessage.bind(this, ws));
-            ws.on('close', this._onClose.bind(this, ws));
+            //ws.on('close', this._onClose.bind(this, ws)); //Use this in case you want to do something when a client disconnects
         }).bind(this));
     }
 
@@ -63,7 +63,7 @@ class WebSocketServer {
      */
     send(topic, message, webSocket) {
         if (typeof (topic) !== 'string') { throw new Error('Invalid topic on send command'); }
-        if (typeof (webSocket) === 'undefined' ) { //TODO check if webSocket is a webSocket
+        if (typeof (webSocket) === 'undefined') { //TODO check if webSocket is a webSocket
             this.broadcast(topic, message);
         } else {
             webSocket.send(this._encodedMessage(topic, message));
@@ -82,10 +82,6 @@ class WebSocketServer {
                 client.send(msg);
             }
         });
-    }
-
-    _onClose() {
-        // debugger;
     }
 
     _onReceivedMessage(socket, message) {

@@ -1,5 +1,4 @@
 'use strict';
-const { debug } = require("console");
 const path = require("path");
 class FrontEnd {
     constructor() {

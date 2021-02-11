@@ -31,22 +31,20 @@ describe('webSocketServer', function () {
     });
 
     describe('Test methods', function () {
-
-        it('Test start', function (done) {
+        var ws;
+        beforeEach(() => {
             RED = helper.getMockedRED();
             RED.server.on = sinon.fake();
-            RED.settings.httpNodeRoot = '/node-red';
-            var ws = new WS(RED, 12345);
+            RED.settings.httpNodeRoot = 'node-red';
+            ws = new WS(RED, 12345);
+        });
+        it('Test start', function (done) {
             var serverURL = ws.start();
-            should(serverURL).be.equal('/node-red/heaterController/io/12345', 'Invalid server url');
+            should(serverURL).be.equal('node-red/heaterController/io/12345', 'Invalid server url');
             done();
         });
 
         it('Test shutdownServer', function (done) {
-            RED = helper.getMockedRED();
-            RED.server.on = sinon.fake();
-            RED.settings.httpNodeRoot = 'node-red';
-            var ws = new WS(RED, 12345);
             ws.start();
             ws.shutdownServer();
             done();
@@ -60,18 +58,10 @@ describe('webSocketServer', function () {
             { topic: 2, func: function () { }, scope: undefined },
             { topic: undefined, func: function () { }, scope: undefined }
         ], function (val) {
-            RED = helper.getMockedRED();
-            RED.server.on = sinon.fake();
-            RED.settings.httpNodeRoot = 'node-red';
-            var ws = new WS(RED, 12345);
             should(function () { ws.registerIncomingEvents(val); }).throw('Invalid arguments [topic:string, func:function]');
         });
 
         it('Test registerIncomingEvents and _triggerEvent: event is triggered', function (done) {
-            RED = helper.getMockedRED();
-            RED.server.on = sinon.fake();
-            RED.settings.httpNodeRoot = 'node-red';
-            var ws = new WS(RED, 12345);
             var eventCB = sinon.fake();
             var scopeFunc = sinon.fake();
             var socketObj = { id: 'socketObj' };
@@ -84,10 +74,6 @@ describe('webSocketServer', function () {
         });
 
         it('Test _onClientConnected: event is triggered', function (done) {
-            RED = helper.getMockedRED();
-            RED.server.on = sinon.fake();
-            RED.settings.httpNodeRoot = 'node-red';
-            var ws = new WS(RED, 12345);
             var eventCB = sinon.fake();
             var scopeFunc = sinon.fake();
             var socketObj = { id: 'socketObj' };
@@ -107,10 +93,6 @@ describe('webSocketServer', function () {
             { topic: 'testTopic', message: undefined },
             { topic: 'testTopic', message: () => { } }
         ], function (val) {
-            RED = helper.getMockedRED();
-            RED.server.on = sinon.fake();
-            RED.settings.httpNodeRoot = 'node-red';
-            var ws = new WS(RED, 12345);
             should(function () {
                 ws._encodedMessage(val.topic, val.message);
             }).throw('Invalid arguments [topic:string, message:!(undefined|function)]', 'Accepts invalid message for encoding');
@@ -124,20 +106,12 @@ describe('webSocketServer', function () {
             { topic: 'testTopic', message: undefined },
             { topic: 'testTopic', message: () => { } }
         ], function (val) {
-            RED = helper.getMockedRED();
-            RED.server.on = sinon.fake();
-            RED.settings.httpNodeRoot = 'node-red';
-            var ws = new WS(RED, 12345);
             should(function () {
                 ws._encodedMessage(val.topic, val.message);
             }).throw('Invalid arguments [topic:string, message:!(undefined|function)]', 'Accepts invalid message for encoding');
         });
 
         it('Test _encodedMessage: encodes messages', function (done) {
-            RED = helper.getMockedRED();
-            RED.server.on = sinon.fake();
-            RED.settings.httpNodeRoot = 'node-red';
-            var ws = new WS(RED, 12345);
             var encodedMessage = ws._encodedMessage('testTopic', { id: 'messageToSend' });
             should(encodedMessage).be.String('Encoded messages should be string');
             should(JSON.parse(encodedMessage)).be.deepEqual({ topic: 'testTopic', payload: { id: 'messageToSend' } }, 'Invalid encoded message');
@@ -145,30 +119,18 @@ describe('webSocketServer', function () {
         });
 
         itParam('Test _decodeMessage: throw error', [2, undefined, {}], function (val) {
-            RED = helper.getMockedRED();
-            RED.server.on = sinon.fake();
-            RED.settings.httpNodeRoot = 'node-red';
-            var ws = new WS(RED, 12345);
             should(function () {
                 ws._decodeMessage(val);
             }).throw('Invalid message!!!', 'Should throw exception for invalid message');
         });
 
         itParam('Test _decodeMessage: throw error', ['{invalidJson}'], function (val) {
-            RED = helper.getMockedRED();
-            RED.server.on = sinon.fake();
-            RED.settings.httpNodeRoot = 'node-red';
-            var ws = new WS(RED, 12345);
             should(function () {
                 ws._decodeMessage(val);
             }).throw('Could not decode message: Unexpected token i in JSON at position 1', 'Should throw exception for invalid json message');
         });
 
         itParam('Test _decodeMessage: throw error', ['{"t":2,"a":2}', '{"topic":2,"a":2}'], function (val) {
-            RED = helper.getMockedRED();
-            RED.server.on = sinon.fake();
-            RED.settings.httpNodeRoot = 'node-red';
-            var ws = new WS(RED, 12345);
             should(function () {
                 ws._decodeMessage(val);
             }).throw('Invalid message!!!', 'Should throw exception for invalid message after decoding');
@@ -178,20 +140,12 @@ describe('webSocketServer', function () {
             '{"topic":"testTopic","payload":"aStringPayload"}',
             '{"topic":"testTopic","payload":{"id":"payloadMessage"}}'
         ], function (val) {
-            RED = helper.getMockedRED();
-            RED.server.on = sinon.fake();
-            RED.settings.httpNodeRoot = 'node-red';
-            var ws = new WS(RED, 12345);
             var ret = ws._decodeMessage(val);
             should(ret).be.Object('Decode message should be an object');
             should(ret).be.deepEqual(JSON.parse(val), 'Decoded message not matching with input message');
         });
 
         it('Test send: throw exception', function (done) {
-            RED = helper.getMockedRED();
-            RED.server.on = sinon.fake();
-            RED.settings.httpNodeRoot = 'node-red';
-            var ws = new WS(RED, 12345);
             ws.broadcast = sinon.fake();
             should(() => {
                 ws.send();
@@ -200,10 +154,6 @@ describe('webSocketServer', function () {
         });
 
         itParam('Test send: messingTopic should broad cast message', [{ topic: 'topic', message: 'test' }, { topic: 'topic' }], function (val) {
-            RED = helper.getMockedRED();
-            RED.server.on = sinon.fake();
-            RED.settings.httpNodeRoot = 'node-red';
-            var ws = new WS(RED, 12345);
             ws.broadcast = sinon.fake();
             ws.send(val.topic, val.message, val.webSocket);
             should(ws.broadcast.callCount).be.equal(1, 'Message should be broadcasted if there is not socket');
@@ -212,15 +162,27 @@ describe('webSocketServer', function () {
         });
 
         it('Test send: should send message', function (done) {
-            RED = helper.getMockedRED();
-            RED.server.on = sinon.fake();
-            RED.settings.httpNodeRoot = 'node-red';
-            var ws = new WS(RED, 12345);
             ws.broadcast = sinon.fake();
             var fakeSend = sinon.fake();
             ws.send('topic', 'message', { send: fakeSend });
             should(fakeSend.callCount).be.equal(1, 'Message should be broadcasted if there is not socket');
             should(fakeSend.lastCall.args[0]).be.String('Invalid message to be send');
+            done();
+        });
+
+        it('Test _onReceivedMessage: decode and trigger event', function (done) {
+            ws.broadcast = sinon.fake();
+            var fakeSend = sinon.fake();
+
+            var eventCB = sinon.fake();
+            var scopeFunc = sinon.fake();
+            var socketObj = { id: 'socketObj' };
+            ws.registerIncomingEvents('testEvent', eventCB, scopeFunc);
+
+            ws._onReceivedMessage({ send: fakeSend }, JSON.stringify({ topic: 'testEvent', payload: 'payload' }));
+            should(eventCB.callCount).be.equal(1, 'Event not triggered when a new message arrives');
+            should(eventCB.firstCall.args[0]).be.equal('payload', 'Event not triggered with payload');
+            should(eventCB.firstCall.args[1]).be.deepEqual({ send: fakeSend }, 'Event function not triggered with the socket instance');
             done();
         });
 

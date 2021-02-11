@@ -1,14 +1,14 @@
 var UINode = require('./uINode')
+const weekDays = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+];
 class Heater extends UINode {
-    #weekDays = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday"
-    ];
     constructor(RED, config) {
         super(RED, config)
         this.log('Heater Constructor')
@@ -114,12 +114,11 @@ class Heater extends UINode {
     /**
      * Returns the code for a specific offset
      * @param {Number} offSet the number of days as offset, can be undefined == 0
-     * @param {Array} weekDays an array with all the week days names
      */
     getSearchedInterval(offSet) {
         var intervalList = [];
         for (var i in this.config.calendar) {
-            var dayId = this.#weekDays.indexOf(i);;
+            var dayId = weekDays.indexOf(i);;
             for (var j in this.config.calendar[i]) {
                 intervalList.push(dayId + j.replace(":", ""));
             }
@@ -159,7 +158,7 @@ class Heater extends UINode {
         var retObj = {
             time: time
         }
-        retObj.day = this.#weekDays[weekDay];
+        retObj.day = weekDays[weekDay];
         retObj.temp = this.config.calendar[retObj.day][time];
         return retObj;
     }
