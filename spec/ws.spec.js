@@ -1,0 +1,206 @@
+var sinon = require('sinon');
+var should = require("should");
+var itParam = require('mocha-param');
+var sinon = require('sinon');
+var _ = require('lodash');
+var helper = require("./testHelper.js");
+var WS = require('../nodes/heater/webSocketServer');
+describe('webSocketServer', function () {
+
+    it('Constructor default settings', function (done) {
+        RED = helper.getMockedRED();
+        RED.server.on = sinon.fake();
+        var ws = new WS(RED, 12345);
+        should(ws).not.be.undefined('Constructor failed!!!');
+        should(RED.server.on.callCount).be.equal(1, 'Upgrade not called');
+        should(RED.server.on.firstCall.args[0]).be.equal('upgrade', 'Upgrade not called');
+        should(RED.server.on.firstCall.args[1]).be.type('function', 'Upgrade not called with a callback function');
+        done();
+    });
+
+    it('Constructor custom settings', function (done) {
+        RED = helper.getMockedRED();
+        RED.server.on = sinon.fake();
+        RED.settings.httpNodeRoot = '/node-red';
+        var ws = new WS(RED, 12345);
+        should(ws).not.be.undefined('Constructor failed!!!');
+        should(RED.server.on.callCount).be.equal(1, 'Upgrade not called');
+        should(RED.server.on.firstCall.args[0]).be.equal('upgrade', 'Upgrade not called');
+        should(RED.server.on.firstCall.args[1]).be.type('function', 'Upgrade not called with a callback function');
+        done();
+    });
+
+    describe('Test methods', function () {
+
+        it('Test start', function (done) {
+            RED = helper.getMockedRED();
+            RED.server.on = sinon.fake();
+            RED.settings.httpNodeRoot = '/node-red';
+            var ws = new WS(RED, 12345);
+            var serverURL = ws.start();
+            should(serverURL).be.equal('/node-red/heaterController/io/12345', 'Invalid server url');
+            done();
+        });
+
+        it('Test shutdownServer', function (done) {
+            RED = helper.getMockedRED();
+            RED.server.on = sinon.fake();
+            RED.settings.httpNodeRoot = 'node-red';
+            var ws = new WS(RED, 12345);
+            ws.start();
+            ws.shutdownServer();
+            done();
+        });
+
+        itParam('Test registerIncomingEvents: throws exception', [
+            { topic: undefined, func: undefined, scope: undefined },
+            { topic: undefined, func: 2, scope: undefined },
+            { topic: 2, func: undefined, scope: undefined },
+            { topic: 'trigger', func: undefined, scope: undefined },
+            { topic: 2, func: function () { }, scope: undefined },
+            { topic: undefined, func: function () { }, scope: undefined }
+        ], function (val) {
+            RED = helper.getMockedRED();
+            RED.server.on = sinon.fake();
+            RED.settings.httpNodeRoot = 'node-red';
+            var ws = new WS(RED, 12345);
+            should(function () { ws.registerIncomingEvents(val); }).throw('Invalid arguments [topic:string, func:function]');
+        });
+
+        it('Test registerIncomingEvents and _triggerEvent: event is triggered', function (done) {
+            RED = helper.getMockedRED();
+            RED.server.on = sinon.fake();
+            RED.settings.httpNodeRoot = 'node-red';
+            var ws = new WS(RED, 12345);
+            var eventCB = sinon.fake();
+            var scopeFunc = sinon.fake();
+            var socketObj = { id: 'socketObj' };
+            ws.registerIncomingEvents('topicEvent', eventCB, scopeFunc);
+            ws._triggerEvent('topicEvent', 'msg', socketObj);
+            should(eventCB.callCount).be.equal(1, 'Event not triggered!!!');
+            should(eventCB.lastCall.args[0]).be.equal('msg', 'Invalid message for event execution');
+            should(eventCB.lastCall.args[1]).be.deepEqual(socketObj, 'Invalid socket for event execution');
+            done();
+        });
+
+        it('Test _onClientConnected: event is triggered', function (done) {
+            RED = helper.getMockedRED();
+            RED.server.on = sinon.fake();
+            RED.settings.httpNodeRoot = 'node-red';
+            var ws = new WS(RED, 12345);
+            var eventCB = sinon.fake();
+            var scopeFunc = sinon.fake();
+            var socketObj = { id: 'socketObj' };
+            ws.registerIncomingEvents('connection', eventCB, scopeFunc);
+            ws._onClientConnected(socketObj);
+            should(eventCB.callCount).be.equal(1, 'Event not triggered!!!');
+            should(eventCB.lastCall.args[0]).be.undefined('Unexpected message injection');
+            should(eventCB.lastCall.args[1]).be.deepEqual(socketObj, 'Invalid socket for event execution');
+            done();
+        });
+
+        itParam('Test _encodedMessage: throw error', [
+            { topic: undefined, message: undefined },
+            { topic: undefined, message: () => { } },
+            { topic: 2, message: () => { } },
+            { topic: 2, message: undefined },
+            { topic: 'testTopic', message: undefined },
+            { topic: 'testTopic', message: () => { } }
+        ], function (val) {
+            RED = helper.getMockedRED();
+            RED.server.on = sinon.fake();
+            RED.settings.httpNodeRoot = 'node-red';
+            var ws = new WS(RED, 12345);
+            should(function () {
+                ws._encodedMessage(val.topic, val.message);
+            }).throw('Invalid arguments [topic:string, message:!(undefined|function)]', 'Accepts invalid message for encoding');
+        });
+
+        itParam('Test _encodedMessage: throw error', [
+            { topic: undefined, message: undefined },
+            { topic: undefined, message: () => { } },
+            { topic: 2, message: () => { } },
+            { topic: 2, message: undefined },
+            { topic: 'testTopic', message: undefined },
+            { topic: 'testTopic', message: () => { } }
+        ], function (val) {
+            RED = helper.getMockedRED();
+            RED.server.on = sinon.fake();
+            RED.settings.httpNodeRoot = 'node-red';
+            var ws = new WS(RED, 12345);
+            should(function () {
+                ws._encodedMessage(val.topic, val.message);
+            }).throw('Invalid arguments [topic:string, message:!(undefined|function)]', 'Accepts invalid message for encoding');
+        });
+
+        it('Test _encodedMessage: encodes messages', function (done) {
+            RED = helper.getMockedRED();
+            RED.server.on = sinon.fake();
+            RED.settings.httpNodeRoot = 'node-red';
+            var ws = new WS(RED, 12345);
+            var encodedMessage = ws._encodedMessage('testTopic', { id: 'messageToSend' });
+            should(encodedMessage).be.String('Encoded messages should be string');
+            should(JSON.parse(encodedMessage)).be.deepEqual({ topic: 'testTopic', payload: { id: 'messageToSend' } }, 'Invalid encoded message');
+            done();
+        });
+
+        itParam('Test _decodeMessage: throw error', [2, undefined, {}], function (val) {
+            RED = helper.getMockedRED();
+            RED.server.on = sinon.fake();
+            RED.settings.httpNodeRoot = 'node-red';
+            var ws = new WS(RED, 12345);
+            should(function () {
+                ws._decodeMessage(val);
+            }).throw('Invalid message!!!', 'Should throw exception for invalid message');
+        });
+
+        itParam('Test _decodeMessage: throw error', ['{invalidJson}'], function (val) {
+            RED = helper.getMockedRED();
+            RED.server.on = sinon.fake();
+            RED.settings.httpNodeRoot = 'node-red';
+            var ws = new WS(RED, 12345);
+            should(function () {
+                ws._decodeMessage(val);
+            }).throw('Could not decode message: Unexpected token i in JSON at position 1', 'Should throw exception for invalid json message');
+        });
+
+        itParam('Test _decodeMessage: throw error', ['{"t":2,"a":2}', '{"topic":2,"a":2}'], function (val) {
+            RED = helper.getMockedRED();
+            RED.server.on = sinon.fake();
+            RED.settings.httpNodeRoot = 'node-red';
+            var ws = new WS(RED, 12345);
+            should(function () {
+                ws._decodeMessage(val);
+            }).throw('Invalid message!!!', 'Should throw exception for invalid message after decoding');
+        });
+
+        itParam('Test _decodeMessage: decode valid message', [
+            '{"topic":"testTopic","payload":"aStringPayload"}',
+            '{"topic":"testTopic","payload":{"id":"payloadMessage"}}'
+        ], function (val) {
+            RED = helper.getMockedRED();
+            RED.server.on = sinon.fake();
+            RED.settings.httpNodeRoot = 'node-red';
+            var ws = new WS(RED, 12345);
+            var ret = ws._decodeMessage(val);
+            should(ret).be.Object('Decode message should be an object');
+            should(ret).be.deepEqual(JSON.parse(val), 'Decoded message not matching with input message');
+        });
+
+        // it('Test _handleServerUpgrade: event is triggered only once', function (done) {
+        //     RED = helper.getMockedRED();
+        //     RED.server.on = sinon.fake();
+        //     RED.settings.httpNodeRoot = 'node-red';
+        //     var ws = new WS(RED, 12345);
+        //     var req = { id: 'test' };
+        //     var socketObj = { id: 'socketObj' };
+        //     var headObj = { id: 'head' };
+        //     ws._handleServerUpgrade(req, socketObj, headObj);
+        //     ws.#server
+        //     should(eventCB.callCount).be.equal(1, 'Event not triggered!!!');
+        //     should(eventCB.lastCall.args[0]).be.equal('msg', 'Invalid message for event execution');
+        //     should(eventCB.lastCall.args[1]).be.deepEqual(socketObj, 'Invalid socket for event execution');
+        //     done();
+        // });
+    });
+});

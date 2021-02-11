@@ -22,13 +22,8 @@ class WebSocketServer {
         this.#server.close();
     }
 
-    getURL() {
-        return this.#socketURL;
-    }
-
     registerIncomingEvents(topic, func, scope) {
         if (typeof (topic) !== 'string' || typeof (func) !== 'function') {
-            this.error("Invalid arguments [topic:string, func:function]");
             throw new Error("Invalid arguments [topic:string, func:function]");
         }
         this.#incomingEvents[topic] = {
@@ -38,10 +33,7 @@ class WebSocketServer {
     }
 
     _triggerEvent(topic, message, socket) {
-        var event = this.#incomingEvents[topic]
-        if (typeof (event) === 'undefined') {
-            return;
-        }
+        var event = this.#incomingEvents[topic];
         event.func.call(event.scope, message, socket);
     }
 
@@ -60,7 +52,7 @@ class WebSocketServer {
      * @param {webSocket} socket
      */
     _onClientConnected(socket) {
-        this._triggerEvent('connection', socket);
+        this._triggerEvent('connection', undefined, socket);
     }
 
     /**
@@ -126,7 +118,7 @@ class WebSocketServer {
             error.message = 'Could not decode message: ' + error.message;
             throw error;
         }
-        if (typeof (msg) !== 'object' || typeof (msg.topic) !== 'string' || typeof (msg.payload) !== 'string') {
+        if (typeof (msg) !== 'object' || typeof (msg.topic) !== 'string') {
             //TODO throw error???
             throw Error('Invalid message!!!');
         }
