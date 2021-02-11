@@ -37,6 +37,19 @@
             <option value="K" id="kUnit"><span data-i18n="heater_controller.label.kelvinUnit"></span>xs</option>
         </select>
     </div>
+
+    <div class="form-row">
+        <label for="node-input-threshold"><i class="fa fa-arrows-v"></i> <span data-i18n="heater_controller.label.hysteresis"></label>
+        <input type="number" min="-100" max="100" step="0.1" list="defaultNumbers" id="node-input-threshold" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
+        <datalist id="defaultNumbers">
+                <option value="0">
+                <option value="0.5">
+                <option value="1">
+                <option value="1.5">
+                <option value="2">
+        </datalist>
+    </div>
+
     <div class="form-row">
         <label style="width:95%; border-bottom: 1px solid #eee;"><span data-i18n="heater_controller.label.logTitle"> </span></label>
     </div>
@@ -53,10 +66,11 @@
             </select>
         </div>
     </div>
+    <div id="slider-settings">
     <div class="form-row">
         <label style="width:95%; border-bottom: 1px solid #eee;"><span data-i18n="heater_controller.label.slider"> </span></label>
     </div>
-    <div class="ident">
+    <div class="ident" >
         <div class="form-row">
             <label for="node-input-sliderMinValue"><i class="fa fa-step-backward" aria-hidden="true"></i> <span data-i18n="heater_controller.label.min"></span></label>
             <input type="number" step="1" id="node-input-sliderMinValue" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
@@ -79,22 +93,7 @@
                 <option value="3">
         </datalist>
     </div>
-    <div class="form-row">
-        <label style="width:95%; border-bottom: 1px solid #eee;"><i class="fa fa-arrows-v"></i> <span data-i18n="heater_controller.label.hysteresis"></label>
-    </div>
-    <div class="ident">
-        <div class="form-row" style="display: block;">
-            <label style="width: 140px !important" for="node-input-threshold"><i class="fa fa-level-up"></i> <span data-i18n="heater_controller.label.Threshold"></label>
-            <input type="number" min="-100" max="100" step="0.1" list="defaultNumbers" id="node-input-threshold" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
-        </div>
-        <datalist id="defaultNumbers">
-                <option value="0">
-                <option value="0.5">
-                <option value="1">
-                <option value="1.5">
-                <option value="2">
-        </datalist>
-    </div>
+</div>
     <div class="form-row">
         <label id="node-input-calendarEditorLabel" style="width:95%; border-bottom: 1px solid #eee;">
             <i class="fa fa-calendar"></i>
@@ -129,14 +128,14 @@
                 value: "C",
                 required: true,
                 validate: function (value) {
-                    return  ['C', 'F', 'K'].indexOf(value) >= 0;
+                    return ['C', 'F', 'K'].indexOf(value) >= 0;
                 }
             },
             displayMode: {
                 value: "buttons",
                 required: true,
                 validate: function (value) {
-                    return  ['buttons', 'slider'].indexOf(value) >= 0;
+                    return ['buttons', 'slider'].indexOf(value) >= 0;
                 }
             },
             order: { value: 0 },
@@ -160,7 +159,7 @@
                 value: 'days',
                 required: true,
                 validate: function (value) {
-                    return  ['days', 'changes'].indexOf(value) >= 0;
+                    return ['days', 'changes'].indexOf(value) >= 0;
                 }
             },
             logLength: {
@@ -289,20 +288,28 @@
         paletteLabel: "heater",
         label: function () { return this.name || "heater"; },
         oneditprepare: function () {
+            node = this;
+            $('#btns').text(RED._("node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.dmButtons"));
+            $('#slide').text(RED._("node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.dmSlider"));
+
             $('#node-input-topic').val(this.topic);
-            $('#cUnit').text(RED._("node-red-contrib-heater-controller1/ui_heater_controller:heater_controller.label.celsiusUnit"));
-            $('#fUnit').text(RED._("node-red-contrib-heater-controller1/ui_heater_controller:heater_controller.label.fahrenheitUnit"));
-            $('#kUnit').text(RED._("node-red-contrib-heater-controller1/ui_heater_controller:heater_controller.label.kelvinUnit"));
+            $('#cUnit').text(RED._("node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.celsiusUnit"));
+            $('#fUnit').text(RED._("node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.fahrenheitUnit"));
+            $('#kUnit').text(RED._("node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.kelvinUnit"));
 
-            $('#btns').text(RED._("node-red-contrib-heater-controller1/ui_heater_controller:heater_controller.label.dmButtons"));
-            $('#slide').text(RED._("node-red-contrib-heater-controller1/ui_heater_controller:heater_controller.label.dmSlider"));
+            $('#daysType').text(RED._("node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.daysType"));
+            $('#changesType').text(RED._("node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.changesType"));
 
-            $('#daysType').text(RED._("node-red-contrib-heater-controller1/ui_heater_controller:heater_controller.label.daysType"));
-            $('#changesType').text(RED._("node-red-contrib-heater-controller1/ui_heater_controller:heater_controller.label.changesType"));
-            $('#red-ui-editor-node-label-form-input-0').val('currentTemp | userCofig | setCalendar');
+            $('#red-ui-editor-node-label-form-input-0').val('currentTemp | userConfig | setCalendar');
             $('#red-ui-editor-node-label-form-output-0').val('Heater status');
             $('#red-ui-editor-node-label-form-output-1').val('Computation status');
-            //??
+            $('#node-input-displayMode').change((event) => {
+                if (event.target[0].selected){
+                    $('#slider-settings').hide();
+                } else {
+                    $('#slider-settings').show();
+                }
+            });
             ace.edit($('#node-info-input-info-editor>.ace_editor')[0]).setValue('Description');
             // var r = ace.edit('node-info-input-info-editor');
             // r.setValue('text');
@@ -383,7 +390,7 @@
         <dd>Step value selectable from slider</dd>
     </dl>
     <dl class="message-properties">
-        <dt>Upper threshold<span class="property-type">float</span></dt>
+        <dt>Threshold<span class="property-type">float</span></dt>
         <dd>Hysteresis/threshold limit. This value is added or subtracted from the target temperature to determinate the point of setting heater on or off</dd>
     </dl>
     <dl class="message-properties">
@@ -439,30 +446,6 @@
         </dd>
     </dl>
 
-
-    <dl class="message-properties">
-        <dt>userTargetValue</dt>
-        <dd>To set the temperature target value other than through the UI (eg. Voice command), the optional topic <b>userTargetValue</b> can be used.
-        <p style="color: #AD1625;">DEPRECATED This feature will be remove on next release, use userConfig instead</p>
-<pre>{
-    "topic" : "userTargetValue",
-    "payload" : "20.0"
-}</pre>
-        </dd>
-    </dl>
-
-    <dl class="message-properties">
-        <dt>isLocked</dt>
-        <dd>To set userCustomLocked value other than through the UI (eg. Voice command), the optional topic <b>isLocked</b> can be used.
-        <p style="color: #AD1625;">DEPRECATED This feature will be remove on next release, use userConfig instead</p>
-<pre>{
-        "topic" : "isLocked",
-        "payload" : true
-}</pre>
-        </dd>
-    </dl>
-
-
     <h3>Output</h3>
     <p>A message is emitted when the status is recalculated (when the user is changing the target temperature or a new input message is received)</p>
 
@@ -500,7 +483,7 @@
     </dl>
     <dl class="message-properties">
         <dt>nextSchedule<span class="property-type">float</span></dt>
-        <dd>Next calendar schedule. The value which will be set if the controller is set on calendar and some additional information when this will like happen like day of the week and time</dd>
+        <dd>Next calendar schedule. The value which will be set if the controller is set on calendar and some additional information when this will happen, like week day and time</dd>
     </dl>
     <dl class="message-properties">
         <dt>currentHeaterStatus<span class="property-type">string (on|off)</span></dt>
