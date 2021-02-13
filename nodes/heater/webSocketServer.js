@@ -1,59 +1,70 @@
 const path = 'heaterController/io/';
 const ws = require('ws');
+const _ = require('lodash');
+var events = require('events');
+
 class WebSocketServer {
     #socketURL = '';
     #server = undefined;
-    #incomingEvents = {};
-    #upgradeRegistered = false;
-    constructor(RED, id) {
-        var base = RED.settings.httpNodeRoot.endsWith('/') ? RED.settings.httpNodeRoot : RED.settings.httpNodeRoot + '/';
-        this.#socketURL = base + path + id;
+    #events = {};
+    constructor(RED) {
+        this.#server = new ws.Server({ noServer: true, clientTracking: true });
+        this.#server.setMaxListeners(0);
         RED.server.on('upgrade', this._handleServerUpgrade.bind(this));
     }
 
-    start() {
-        this.#server = new ws.Server({ noServer: true });
-        this.#server.setMaxListeners(0);
-        this.#server.on('connection', this._onClientConnected.bind(this));
-        return this.#socketURL;
-    }
-
-    shutdownServer() {
-        this.#server.close();
-    }
-
-    registerIncomingEvents(topic, func, scope) {
-        if (typeof (topic) !== 'string' || typeof (func) !== 'function') {
-            throw new Error("Invalid arguments [topic:string, func:function]");
+    static createInstance(RED, id) {
+        if (!this.wsw) {
+            this.wsw = new WebSocketServer(RED);
+            var base = RED.settings.httpNodeRoot.endsWith('/') ? RED.settings.httpNodeRoot : RED.settings.httpNodeRoot + '/';
+            this.wsw.#socketURL = base + path + '${id}';
         }
-        this.#incomingEvents[topic] = {
-            func: func,
-            scope: scope
-        }
+
+        this.wsw.#events[id] = new events.EventEmitter();
+        return this.wsw;
     }
 
-    _triggerEvent(topic, message, socket) {
-        var event = this.#incomingEvents[topic];
-        event.func.call(event.scope, message, socket);
+    getURL(id) {
+        return this.#socketURL.replace('${id}', id);
+    }
+
+    registerIncomingEvents(topic, func, id) {
+        if (typeof (topic) !== 'string' || typeof (func) !== 'function' || typeof (id) !== 'string') {
+            throw new Error("Invalid arguments [topic:string, func:function, id:string]");
+        }
+        this.#events[id].on(topic, func);
+    }
+
+    unRegister(id) {
+        this.#events[id].removeAllListeners();
+        this.#server.clients.forEach((client) => {
+            if (client !== ws && client.readyState === ws.OPEN) {
+                client.close(1000);
+            } else {
+                client.terminate();
+            }
+        });
+    }
+
+    _shouldIHandleThis(url) {
+        if (typeof (url) !== 'string' || url.indexOf(path) < 0) return false;
+        var urlId = url.substr(url.lastIndexOf('/') + 1);
+        return _.keys(this.#events).includes(urlId);
     }
 
     _handleServerUpgrade(request, socket, head) {
-        if (this.#socketURL !== request.url || this.#upgradeRegistered) return;
-        this.#upgradeRegistered = true;
-        this.#server.handleUpgrade(request, socket, head, ((ws) => {
-            this.#server.emit('connection', ws, request);
-            ws.on('message', this._onReceivedMessage.bind(this, ws));
-            //ws.on('close', this._onClose.bind(this, ws)); //Use this in case you want to do something when a client disconnects
+        if (!this._shouldIHandleThis(request.url)) return;
+        this.#server.handleUpgrade(request, socket, head, ((ws, message) => {
+            var id = message.url.substr(message.url.lastIndexOf('/') + 1);
+            try {
+                this.#events[id].emit('connection', ws, id);
+            } catch (error) {
+                //TODO what to do with it???
+            }
+            ws.on('message', this._onReceivedMessage.bind(this, ws, this.#events[id]));
         }).bind(this));
     }
 
-    /**
-     *  Event which will be triggered when a client is successfully connected
-     * @param {webSocket} socket
-     */
-    _onClientConnected(socket) {
-        this._triggerEvent('connection', undefined, socket);
-    }
 
     /**
      * Sends a message to a specific connected client
@@ -84,9 +95,11 @@ class WebSocketServer {
         });
     }
 
-    _onReceivedMessage(socket, message) {
-        var msg = this._decodeMessage(message);
-        this._triggerEvent(msg.topic, msg.payload, socket);
+    _onReceivedMessage(socket, event, message) {
+        console.log('nr.Clients', this.#server.clients);
+        event.emit(message.topic, message);
+        // var msg = this._decodeMessage(message);
+        // this._triggerEvent(msg.topic, msg.payload, socket);
     }
 
     /**
@@ -123,4 +136,5 @@ class WebSocketServer {
         return msg;
     }
 }
+
 module.exports = WebSocketServer;

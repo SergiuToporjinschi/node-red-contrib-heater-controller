@@ -1,23 +1,31 @@
-// var sinon = require("sinon");
-// var helper = require("node-red-node-test-helper");
-// helper.init(require.resolve('node-red'), {nodesDir: 'E:\\IOT\\Projects\\NodeRed\\node-red-contrib-heater-controller\\testNodes\\node_modules\\'});
-// var heater = require('../nodes/heater/heater-controller.js');
-// describe('Functional tests', function () {
-//     // beforeEach(function(done) {
-//     //     helper.startServer(done);
-//     // });
-//     // afterEach(function () {
-//     //     helper.unload();
-//     //     helper.stopServer(done);
-//     // });
-//     // it('Loading', function (done) {
-//     //     // heater.
-//     //     var flow = [{ id: "n1", type: "ui_heater_controller", name: "test name" }];
-//     //     helper.load(heater, flow, function () {
-//     //         var n1 = helper.getNode("n1");
-//     //         n1.should.have.property('name', 'test name');
-//     //         done();
-//     //     });
-//     //     done();
-//     // });
-// });
+var sinon = require("sinon");
+var helper = require("./testHelper.js");
+// var WS = require('../nodes/heater/webSocketServer');
+
+describe('Functional tests', function () {
+    beforeEach(function (done) {
+        done();
+    });
+    // hlp.startServer(done);
+    afterEach(function (done) {
+        done();
+    });
+    // afterEach(function () {
+    //     helper.unload();
+    //     helper.stopServer(done);
+    // });
+    it('Loading', function (done) {
+        // RED = helper.getMockedRED();
+        // WS.createInstance(RED, 'test');
+        // WS.prototype.get = function (o) {
+        //     return WS.wsw.getURL();
+        // }
+        // WS.wsw.get(WS.wsw);
+        // hlp.settings({
+        //     httpNodeRoot: '/'
+        // });
+        // hlp._RED.settings.httpNodeRoot = '/'
+        // WS.createInstance(hlp._RED, 'test');
+        done();
+    });
+});

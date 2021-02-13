@@ -29,7 +29,6 @@ class FrontEnd {
      */
     /* istanbul ignore next */
     _controller($scope, events) {
-        debugger;
         $scope.connectToWS = function (url) {
             var url = new URL($scope.serverURL, window.location.href);
             url.protocol = 'ws:';
@@ -43,10 +42,13 @@ class FrontEnd {
             $scope.socket.addEventListener('open', function (event) {
                 console.debug('Connected');
             });
+            $scope.socket.addEventListener('close', function (event) {
+                console.debug('closed');
+            });
 
             // Listen for messages
             $scope.socket.addEventListener('message', function (event) {
-                console.debug('MessageReceived ');
+                console.debug('MessageReceived ', $scope.serverURL);
                 if (typeof (event.data) !== 'string') {
                     console.error('Invalid messaged received!!!', event.data);
                     return;

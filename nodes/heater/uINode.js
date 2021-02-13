@@ -17,7 +17,6 @@ class UINode {
     #ui = undefined;
     #doneUI = undefined;
     #RED = undefined;
-    #wsServerURL = undefined;
     #wsServer = undefined;
     constructor(RED, config) {
         this.config = config;
@@ -34,7 +33,7 @@ class UINode {
             this.error(error);
             throw error;
         }
-        this.on("close", this._close);
+        this.on("close", this._close.bind(this));
     }
 
     addEvent(topic, func) {
@@ -54,9 +53,8 @@ class UINode {
     }
 
     startSocketIOServer() {
-        this.#wsServer = new WsServer(this.#RED, this.id);
-        this.#wsServerURL = this.#wsServer.start();
-        this.#wsServer.registerIncomingEvents('connection', this._newClientConnected, this);
+        this.#wsServer = WsServer.createInstance(this.#RED, this.id);
+        this.#wsServer.registerIncomingEvents('connection', this._newClientConnected.bind(this), this.id);
     }
 
     _createClientConfig() {
@@ -70,6 +68,7 @@ class UINode {
 
     _newClientConnected(ws) {
         this.#wsServer.send('config', this._createClientConfig(), ws);
+        this.#wsServer.send('status', this.status, ws);
     }
 
     /**
@@ -79,15 +78,16 @@ class UINode {
      * - Calls onClose if there is an implementation of it;
      * - call dashboard remove node if any;
      */
-    _close() {
+    _close(resolve) {
         this.debug("Close called");
-        this.#wsServer.shutdownServer();
+        this.#wsServer.unRegister(this.id);
         if (this.onOnClose) {
             this.onClose();
         }
         if (this.#doneUI) {
             this.#doneUI();
         }
+        resolve();
     }
 
     /**
@@ -128,7 +128,7 @@ class UINode {
         try {
             var frontEnd = new FrontEnd();
             var frontEndHtml = frontEnd.getHTML(this.config.displayMode, false);
-            var frontEndController = frontEnd.getController(this.#wsServerURL);
+            var frontEndController = frontEnd.getController(this.#wsServer.getURL(this.id));
             this.#doneUI = this.#ui.addWidget(Object.assign({
                 node: this,
                 width: parseInt(this.config.width),
