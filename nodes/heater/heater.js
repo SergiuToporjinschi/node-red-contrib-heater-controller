@@ -78,10 +78,10 @@ class Heater extends UINode {
         }
 
         if (msg.payload.isUserCustom === true) {
-            this.status.isUserCustom === true;
+            this.status.isUserCustom = true;
             this.status.userTargetValue = this.status.targetValue;
         } else if (msg.payload.isUserCustom === false) {
-            this.status.isUserCustom === false;
+            this.status.isUserCustom = false;
             this.status.targetValue = this.status.currentSchedule.temp;
         }
 
