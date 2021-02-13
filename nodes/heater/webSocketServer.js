@@ -6,7 +6,7 @@ var events = require('events');
 class WebSocketServer {
     #socketURL = '';
     #server = undefined;
-    #events = {};
+    #backEndClients = {};
     constructor(RED) {
         this.#server = new ws.Server({ noServer: true, clientTracking: true });
         this.#server.setMaxListeners(0);
@@ -20,7 +20,9 @@ class WebSocketServer {
             this.wsw.#socketURL = base + path + '${id}';
         }
 
-        this.wsw.#events[id] = new events.EventEmitter();
+        this.wsw.#backEndClients[id] = {
+            events: new events.EventEmitter()
+        };
         return this.wsw;
     }
 
@@ -32,11 +34,11 @@ class WebSocketServer {
         if (typeof (topic) !== 'string' || typeof (func) !== 'function' || typeof (id) !== 'string') {
             throw new Error("Invalid arguments [topic:string, func:function, id:string]");
         }
-        this.#events[id].on(topic, func);
+        this.#backEndClients[id].events.on(topic, func);
     }
 
     unRegister(id) {
-        this.#events[id].removeAllListeners();
+        this.#backEndClients[id].events.removeAllListeners();
         this.#server.clients.forEach((client) => {
             if (client !== ws && client.readyState === ws.OPEN) {
                 client.close(1000);
@@ -49,7 +51,7 @@ class WebSocketServer {
     _shouldIHandleThis(url) {
         if (typeof (url) !== 'string' || url.indexOf(path) < 0) return false;
         var urlId = url.substr(url.lastIndexOf('/') + 1);
-        return _.keys(this.#events).includes(urlId);
+        return _.keys(this.#backEndClients).includes(urlId);
     }
 
     _handleServerUpgrade(request, socket, head) {
@@ -57,49 +59,35 @@ class WebSocketServer {
         this.#server.handleUpgrade(request, socket, head, ((ws, message) => {
             var id = message.url.substr(message.url.lastIndexOf('/') + 1);
             try {
-                this.#events[id].emit('connection', ws, id);
+                this.#backEndClients[id].ws = ws;
+                this.#backEndClients[id].events.emit('connection', ws, id);
             } catch (error) {
                 //TODO what to do with it???
             }
-            ws.on('message', this._onReceivedMessage.bind(this, ws, this.#events[id]));
+            ws.on('message', this._onReceivedMessage.bind(this, this.#backEndClients[id]));
         }).bind(this));
     }
 
-
     /**
      * Sends a message to a specific connected client
-     * @param {string} topic topic on which the message will be send
-     * @param {any but not string} message message to be send
-     * @param {webSocket} webSocket if is ws instance of 'ws' the message will be sent using the specified webSocket, if is not ws instance of 'ws' the message will be broadcasted
+     * @param {string} id nodeId which sends the message
+     * @param {string} topic  topic on which the message will be send
+     * @param {any} message message to be send, can be any type but not function
      */
-    send(topic, message, webSocket) {
-        if (typeof (topic) !== 'string') { throw new Error('Invalid topic on send command'); }
-        if (typeof (webSocket) === 'undefined') { //TODO check if webSocket is a webSocket
-            this.broadcast(topic, message);
-        } else {
-            webSocket.send(this._encodedMessage(topic, message));
+    send(id, topic, message) {
+        if (typeof (topic) !== 'string' || typeof (id) === 'undefined') {
+            throw new Error('Invalid id or topic');
         }
+        var backEndClient = this.#backEndClients[id];
+        if (typeof (backEndClient) === 'undefined') {
+            throw new Error('Backend client not registered');
+        }
+        backEndClient.ws.send(this._encodedMessage(topic, message));
     };
 
-    /**
-     * Sends a message by broadcasting to all connected clients
-     * @param {string} topic topic on which the message will be send
-     * @param {any but not string} message message to be send
-     */
-    broadcast(topic, message) {
-        var msg = this._encodedMessage(topic, message);
-        this.#server.clients.forEach(function each(client) {
-            if (client !== ws && client.readyState === ws.OPEN) {
-                client.send(msg);
-            }
-        });
-    }
-
-    _onReceivedMessage(socket, event, message) {
+    _onReceivedMessage(backendClient, message) {
         console.log('nr.Clients', this.#server.clients);
-        event.emit(message.topic, message);
-        // var msg = this._decodeMessage(message);
-        // this._triggerEvent(msg.topic, msg.payload, socket);
+        backendClient.events.emit(message.topic, message);
     }
 
     /**

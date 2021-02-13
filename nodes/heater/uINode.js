@@ -67,8 +67,8 @@ class UINode {
     }
 
     _newClientConnected(ws) {
-        this.#wsServer.send('config', this._createClientConfig(), ws);
-        this.#wsServer.send('status', this.status, ws);
+        this.#wsServer.send(this.id, 'config', this._createClientConfig());
+        this.#wsServer.send(this.id, 'status', this.status);
     }
 
     /**
@@ -195,7 +195,7 @@ class UINode {
             var topic = frontEndTopics[i];
             var payload = obj[topic];
             if (!['undefined', 'function'].includes(typeof (payload)))
-                this.#wsServer.broadcast(topic, payload);
+                this.#wsServer.send(this.id, topic, payload);
         }
     }
 }
