@@ -1,4 +1,4 @@
--Status before receving message</br>
+-Status before receiving message</br>
 +Message configuration</br>
 =Status after processing configuration</br>
 
