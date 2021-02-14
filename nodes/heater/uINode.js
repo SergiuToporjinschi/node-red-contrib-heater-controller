@@ -63,6 +63,7 @@ class UINode {
             var key = frontConfigOptions[i];
             frontEndConf[key] = this.config[key];
         }
+        frontEndConf.title = frontEndConf.title + '-' + this.id;
         return frontEndConf;
     }
 
@@ -71,6 +72,9 @@ class UINode {
         this.#wsServer.send(this.id, 'status', this.status);
     }
 
+    sendStatus() {
+        this.#wsServer.send(this.id, 'status', this.status);
+    }
     /**
      * @private
      *
@@ -102,7 +106,7 @@ class UINode {
      * @param {function} doneCB function to call when processing is finished or an error occurred
      */
     input(msg, send, doneCB) {
-        this.debug("input:", msg);
+        this.debug("input: " + JSON.stringify(msg));
         try {
             this._messageIn(msg, send);
             if (doneCB) {

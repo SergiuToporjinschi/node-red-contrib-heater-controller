@@ -1,9 +1,9 @@
 <div class='wrapper' layout="column" flex layout-align="center stretch" ng-init='init()'>
     <p ng-if="config.title" class="nr-dashboard-cardtitle">{{config.title}}</p>
-    <div ng-show='!config' layout="row" layout-sm="column" layout-align="space-around">
+    <div ng-show='typeof(config) === "undefined"' layout="row" layout-sm="column" layout-align="space-around">
         <md-progress-circular md-mode="indeterminate"></md-progress-circular>
     </div>
-    <div ng-show='config'>
+    <div ng-show='typeof(config) !== "undefined"'>
         <div layout="row" layout-align="end center" class="warning-icon">
             <span class="info" title="Current calendar temp" ng-show="status.currentSchedule != undefined"><i class="fa fa-calendar-o" aria-hidden="true"></i>{{status.currentSchedule.temp}}&deg;{{config.unit}}
                 ({{status.currentSchedule.time}})</span>

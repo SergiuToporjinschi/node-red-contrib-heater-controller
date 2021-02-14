@@ -9,6 +9,7 @@ const weekDays = [
     "Saturday"
 ];
 class Heater extends UINode {
+    debugOffSet = 0;
     constructor(RED, config) {
         super(RED, config)
         this.log('Heater Constructor')
@@ -21,10 +22,29 @@ class Heater extends UINode {
         this.initTopics();
     }
 
+
     initTopics() {
         this.addEvent('currentTemp', this.onTempChange); //this topic changes currentTemperature (WE MUST RECEIVE THIS MESSAGE)
         this.addEvent('userConfig', this.onUserConfig);//this topic can be used to change user settings, isLocked, userTargetValue
         this.addEvent('setCalendar', this.onSetCalendar); //this topic can be used to change current calendar
+
+        //FOR DEBUG ONLY
+        /* istanbul ignore next */
+        this.addEvent('debug', (function (msg) {
+            this.warn('Debug topic should be used only for debug purpose!!!');
+            if (msg.action === 'setStatus') {
+                Object.assign(this.status, msg.payload);
+            } else if (msg.action === 'offset') {
+                this.debugOffSet = msg.payload.calChange;
+            } else if (msg.action === 'reset') {
+                this.status.currentSchedule.temp = 7;
+                this.status.targetValue = 8;
+                this.status.userTargetValue = 10;
+                this.status.isUserCustom = false;
+                this.status.isLocked = false;
+                this.sendStatus();
+            }
+        }).bind(this)); //this topic can be used to change current calendar
     }
 
     initCurrentState() {
@@ -54,8 +74,8 @@ class Heater extends UINode {
         this.status.currentTemp = msg.payload;
 
         //update schedulers
-        this.status.currentSchedule = this.getScheduleOffSet();
-        this.status.nextSchedule = this.getScheduleOffSet(1);
+        this.status.currentSchedule = this.getScheduleOffSet(this.debugOffSet);
+        this.status.nextSchedule = this.getScheduleOffSet(1 + this.debugOffSet);
 
         //recalculate status
         var calculatedStatus = this.recalculate();
@@ -80,18 +100,32 @@ class Heater extends UINode {
         if (msg.payload.isUserCustom === true) {
             this.status.isUserCustom = true;
             this.status.userTargetValue = this.status.targetValue;
+            msg.payload.userTargetValue = typeof (msg.payload.userTargetValue) !== 'undefined' ? msg.payload.userTargetValue : this.status.userTargetValue;
         } else if (msg.payload.isUserCustom === false) {
+            delete msg.payload.isLocked; //if you send me isUserCustom = false I will decide if isLocked
+            delete msg.payload.userTargetValue; //if you send me isUserCustom = false I will decide target temp
             this.status.isUserCustom = false;
+            this.status.isLocked = false;
             this.status.targetValue = this.status.currentSchedule.temp;
         }
 
-        this.status.isLocked = typeof (msg.payload.isLocked) !== 'undefined' ? msg.payload.isLocked : this.status.isLocked;
-        this.status.userTargetValue = typeof (msg.payload.userTargetValue) !== 'undefined' ? msg.payload.userTargetValue : this.status.userTargetValue;
-
-        if (this.status.isLocked === true || this.oldStatus.userTargetValue != this.status.userTargetValue) {
+        if (msg.payload.isLocked === true) {
+            this.status.isLocked = true;
             this.status.isUserCustom = true;
+            //if I don't have a userTargetValue then take the current calendar value
+            this.status.userTargetValue = typeof (this.status.targetValue) !== 'undefined' ? this.status.targetValue : this.status.currentSchedule.temp;
+            this.status.targetValue = this.status.userTargetValue;
+        } else if (msg.payload.isLocked === false) {
+            this.status.isLocked = false;
+            this.status.userTargetValue = this.status.targetValue;
         }
 
+        if (msg.payload.userTargetValue) {
+            this.status.userTargetValue = msg.payload.userTargetValue;
+            this.status.targetValue = this.status.userTargetValue;
+            this.status.isUserCustom = true;
+        }
+        this.status.userTargetValue = this.status.targetValue;
         //recalculate status
         var calculatedStatus = this.recalculate();
         return { heaterStatus: calculatedStatus, status: this.status };
@@ -216,6 +250,10 @@ class Heater extends UINode {
             this.status.targetValue = this.status.userTargetValue;
             return this.calculateStatus(this.status.targetValue);
         }
+
+        //simply temperature goes up and reaches the target
+        this.calculateStatus(this.status.targetValue);
+
         //if nothing changed
         return this.status.currentHeaterStatus; //should return an unchanged status ;
     }

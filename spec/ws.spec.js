@@ -81,47 +81,20 @@ describe("ws", () => {
 
             it('Test shutdownServer', function (done) {
                 ws.unRegister(id);
-                WS.prototype.unRegister(id);
                 done();
             });
 
             itParam('Test registerIncomingEvents: throws exception', [
-                { topic: undefined, func: undefined, scope: undefined },
-                { topic: undefined, func: 2, scope: undefined },
-                { topic: 2, func: undefined, scope: undefined },
-                { topic: 'trigger', func: undefined, scope: undefined },
-                { topic: 2, func: function () { }, scope: undefined },
-                { topic: undefined, func: function () { }, scope: undefined }
+                { topic: undefined, func: undefined, id: undefined },
+                { topic: undefined, func: 2, id: undefined },
+                { topic: 2, func: undefined, id: undefined },
+                { topic: 'trigger', func: undefined, id: undefined },
+                { topic: 2, func: function () { }, id: undefined },
+                { topic: undefined, func: function () { }, id: undefined }
             ], function (val) {
-                should(function () { ws.registerIncomingEvents(val); }).throw('Invalid arguments [topic:string, func:function]');
-            });
-
-            it('Test registerIncomingEvents and _triggerEvent: event is triggered', function (done) {
-                var eventCB = sinon.fake();
-                var scopeFunc = sinon.fake();
-                var socketObj = { id: 'socketObj' };
-
-                ws.registerIncomingEvents('topicEvent', eventCB, scopeFunc);
-                ws._triggerEvent('topicEvent', 'msg', socketObj);
-
-                should(eventCB.callCount).be.equal(1, 'Event not triggered!!!');
-                should(eventCB.lastCall.args[0]).be.equal('msg', 'Invalid message for event execution');
-                should(eventCB.lastCall.args[1]).be.deepEqual(socketObj, 'Invalid socket for event execution');
-                done();
-            });
-
-            it('Test _onClientConnected: event is triggered', function (done) {
-                var eventCB = sinon.fake();
-                var scopeFunc = sinon.fake();
-                var socketObj = { id: 'socketObj' };
-
-                ws.registerIncomingEvents('connection', eventCB, scopeFunc);
-                ws._onClientConnected(socketObj);
-
-                should(eventCB.callCount).be.equal(1, 'Event not triggered!!!');
-                should(eventCB.lastCall.args[0]).be.undefined('Unexpected message injection');
-                should(eventCB.lastCall.args[1]).be.deepEqual(socketObj, 'Invalid socket for event execution');
-                done();
+                    should(function () {
+                        ws.registerIncomingEvents(val.topic, val.func, val.id);
+                    }).throw('Invalid arguments [topic:string, func:function, id:string]');
             });
 
             itParam('Test _encodedMessage: throw error', [
@@ -193,44 +166,20 @@ describe("ws", () => {
 
                 should(() => {
                     ws.send();
-                }).throw('Invalid topic on send command', 'Should not be able to send message without an valid topic');
+                }).throw('Invalid id or topic', 'Should not be able to send message without an valid topic');
 
-                done();
-            });
-
-            itParam('Test send: messingTopic should broad cast message', [{ topic: 'topic', message: 'test' }, { topic: 'topic' }], function (val) {
-                ws.broadcast = sinon.fake();
-
-                ws.send(val.topic, val.message, val.webSocket);
-
-                should(ws.broadcast.callCount).be.equal(1, 'Message should be broadcasted if there is not socket');
-                should(ws.broadcast.lastCall.args[0]).be.equal(val.topic, 'Invalid topic for broadcasted message');
-                should(ws.broadcast.lastCall.args[1]).be.deepEqual(val.message, 'Invalid payload for broadcasted message');
-            });
-
-            it('Test send: should send message', function (done) {
-                ws.broadcast = sinon.fake();
-                var fakeSend = sinon.fake();
-
-                ws.send('topic', 'message', { send: fakeSend });
-
-                should(fakeSend.callCount).be.equal(1, 'Message should be broadcasted if there is not socket');
-                should(fakeSend.lastCall.args[0]).be.String('Invalid message to be send');
                 done();
             });
 
             it('Test _onReceivedMessage: decode and trigger event', function (done) {
                 ws.broadcast = sinon.fake();
-                var fakeSend = sinon.fake();
                 var eventCB = sinon.fake();
-                var scopeFunc = sinon.fake();
 
-                ws.registerIncomingEvents('testEvent', eventCB, scopeFunc);
-                ws._onReceivedMessage({ send: fakeSend }, JSON.stringify({ topic: 'testEvent', payload: 'payload' }));
+                ws.registerIncomingEvents('fakeTopic', eventCB, id);
+                ws._onReceivedMessage(id, JSON.stringify({ topic: 'fakeTopic', payload: 'payload' }));
 
                 should(eventCB.callCount).be.equal(1, 'Event not triggered when a new message arrives');
-                should(eventCB.firstCall.args[0]).be.equal('payload', 'Event not triggered with payload');
-                should(eventCB.firstCall.args[1]).be.deepEqual({ send: fakeSend }, 'Event function not triggered with the socket instance');
+                should(eventCB.firstCall.args[0]).be.deepEqual({ topic: 'fakeTopic', payload: 'payload' }, 'Event function not triggered with sent payload');
                 done();
             });
         });

@@ -39,7 +39,9 @@ class WebSocketServer {
 
     unRegister(id) {
         this.#backEndClients[id].events.removeAllListeners();
+        var clientWs = this.#backEndClients[id]
         this.#server.clients.forEach((client) => {
+            if (clientWs !== client) return; //TODO check this
             if (client !== ws && client.readyState === ws.OPEN) {
                 client.close(1000);
             } else {
@@ -64,7 +66,7 @@ class WebSocketServer {
             } catch (error) {
                 //TODO what to do with it???
             }
-            ws.on('message', this._onReceivedMessage.bind(this, this.#backEndClients[id]));
+            ws.on('message', this._onReceivedMessage.bind(this, id));
         }).bind(this));
     }
 
@@ -82,12 +84,14 @@ class WebSocketServer {
         if (typeof (backEndClient) === 'undefined') {
             throw new Error('Backend client not registered');
         }
+        console.log('SendMessage to ', id, message);
         backEndClient.ws.send(this._encodedMessage(topic, message));
     };
 
-    _onReceivedMessage(backendClient, message) {
+    _onReceivedMessage(id, message) {
         console.log('nr.Clients', this.#server.clients);
-        backendClient.events.emit(message.topic, message);
+        var content = this._decodeMessage(message);
+        this.#backEndClients[id].events.emit(content.topic, content);
     }
 
     /**

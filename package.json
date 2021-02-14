@@ -16,7 +16,7 @@
     "start": "nodemon C:/Users/Sergi/AppData/Roaming/npm/node_modules/node-red/red.js",
     "test": "mocha",
     "test-cov": "nyc npm run test",
-    "test-dev": "nodemon --exec \"npm run test\""
+    "test-dev": "nodemon --exec \"mocha\""
   },
   "node-red": {
     "nodes": {

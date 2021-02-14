@@ -71,12 +71,16 @@ class FrontEnd {
 
         $scope.configReceived = function (payload) {
             console.debug('Config received', payload);
-            $scope.config = payload; //TODO maybe we should copy only attributes for not messing-up the links
+            $scope.config = typeof ($scope.config) === 'undefined' ? {} : $scope.config;
+            Object.assign($scope.config, payload);
+            $scope.$apply()
         }
 
         $scope.statusReceived = function (payload) {
             console.debug('Status received', payload);
-            $scope.status = payload; //TODO maybe we should copy only attributes for not messing-up the links
+            $scope.status = typeof ($scope.status) === 'undefined' ? {} : $scope.status;
+            Object.assign($scope.status, payload);
+            $scope.$apply()
         }
 
         $scope.init = function () {

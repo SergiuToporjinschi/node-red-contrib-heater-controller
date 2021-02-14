@@ -22,9 +22,11 @@ describe("uiNodes", () => {
             UINode.prototype.on = sinon.fake();
             UINode.prototype.id = 'fakeIdUINode';
         })
+
         afterEach(function () {
             sandbox.restore();
         });
+
         it('Test Constructor: throws an error', function (done) {
             UINode.prototype.on = sinon.stub().withArgs('input', function () { }).throws(new Error('an error message'));
             should(() => {
@@ -59,6 +61,7 @@ describe("uiNodes", () => {
             RED = helper.getMockedRED();
             done();
         });
+
         describe('Test Methods', () => {
             var uiNode = undefined;
             beforeEach(() => {
@@ -132,7 +135,6 @@ describe("uiNodes", () => {
                 should(uiNode._sendToFrontEnd.callCount).be.equal(1, 'front end function not called');
                 done();
             });
-            // [{ topic: 'status', payload: { test: 'somePayload' } }, { topic: 'status', payload: { test: 'somePayload' } }]
 
             it('Test input: event returns valid topics to be send to output', function (done) {
                 var val = [undefined, { topic: 'status', payload: { test: 'somePayload' } }]
@@ -176,6 +178,7 @@ describe("uiNodes", () => {
                 should(_.keys(configReturn)).be.deepEqual(acceptedKeys, 'front-end config is not a valid object');
                 done();
             });
+
         });
     });
 });

@@ -215,6 +215,7 @@ describe("heater.spec.js", () => {
             itParam("Test recalculate if !isLocked, schedule changed, turning it on/off, currentTemp static ", data_20C, (val) => {
                 hc.status.isLocked = false;
                 var fakeSend = sinon.fake();
+                hc._sendToFrontEnd = sinon.fake();
                 hc._messageIn({//dummy value
                     topic: 'currentTemp',
                     payload: 20
@@ -228,19 +229,20 @@ describe("heater.spec.js", () => {
                 should(fakeSend.lastCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
                 should.deepEqual(fakeSend.lastCall.args[0][0], { topic: 'heaterStatus', payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
                 should.deepEqual(fakeSend.lastCall.args[0][1], { topic: 'status', payload: hc.status }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
-            });
+            }); var cnt = 1;
             itParam("Test recalculate userCustomTemp ", [
                 { isUserCustom: true, isLocked: true, currentTemp: 15, userCurrentTemp: 20, state: 'on' }, { isUserCustom: true, isLocked: true, currentTemp: 20, userCurrentTemp: 18, state: 'off' },
                 { isUserCustom: true, isLocked: true, currentTemp: 19, userCurrentTemp: 18, state: 'off' }, { isUserCustom: true, isLocked: true, currentTemp: 15, userCurrentTemp: 18, state: 'on' },
                 //isUserCustom,isLocked false
-                { isUserCustom: false, isLocked: false, currentTemp: 15, userCurrentTemp: 20, state: 'on' }, { isUserCustom: false, isLocked: false, currentTemp: 20, userCurrentTemp: 18, state: 'off' },
-                { isUserCustom: false, isLocked: false, currentTemp: 19, userCurrentTemp: 18, state: 'off' }, { isUserCustom: false, isLocked: false, currentTemp: 15, userCurrentTemp: 18, state: 'on' },
+                { isUserCustom: false, isLocked: false, currentTemp: 15, userCurrentTemp: 20, state: 'on' },{ isUserCustom: false, isLocked: false, currentTemp: 15, userCurrentTemp: 18, state: 'on' },
                 //undefined
                 { isUserCustom: undefined, isLocked: false, currentTemp: 15, userCurrentTemp: 20, state: 'on' }, { isUserCustom: undefined, isLocked: false, currentTemp: 20, userCurrentTemp: 18, state: 'off' },
                 { isUserCustom: undefined, isLocked: false, currentTemp: 19, userCurrentTemp: 18, state: 'off' }, { isUserCustom: undefined, isLocked: false, currentTemp: 15, userCurrentTemp: 18, state: 'on' }
             ], (val) => {
                 helper.setMockedDate('2021-01-31T08:00:00.000');
                 hc.status.isLocked = false;
+                hc.status.currentSchedule.temp = 20;
+                hc._sendToFrontEnd = sinon.fake();
                 hc._messageIn({//dummy value to make forced_ByScheduler = false
                     topic: 'currentTemp',
                     payload: val.currentTemp
@@ -258,6 +260,7 @@ describe("heater.spec.js", () => {
                 should(fakeSend.lastCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
                 should.deepEqual(fakeSend.lastCall.args[0][0].payload, val.state, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
                 should.deepEqual(fakeSend.lastCall.args[0][1].payload, hc.status, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
+                cnt++;
             });
         });
 
@@ -287,6 +290,7 @@ describe("heater.spec.js", () => {
                 helper.setMockedDate('2021-01-31T08:00:00.000'); // 20 C
                 var fakeSend = sinon.fake();
                 hc.send = fakeSend;
+                hc._sendToFrontEnd = sinon.fake();
 
                 hc._messageIn({
                     topic: 'currentTemp',
@@ -333,142 +337,6 @@ describe("heater.spec.js", () => {
                 }).throw('Missing configuration or group');
             });
 
-        });
-
-        describe('Test onUserConfig', () => {
-            beforeEach(() => {
-                fakeSend = sinon.fake();
-                hc.send = fakeSend;
-            });
-            itParam("Should throw exception for invalid payload: onUserConfig", [{}, true, '', function () { }, 1,
-            { isLocked: 1 }, { isLocked: '1' }, { userTargetValue: '' }, { userTargetValue: true }, { isUserCustom: 1 }, { isUserCustom: 's' },
-            ], (val) => {
-                should(function () {
-                    hc.onUserConfig({
-                        payload: val
-                    });
-                }).throw('Invalid payload');
-                should(hc.error.callCount).be.aboveOrEqual(1, "Exception not logged!!!: " + JSON.stringify(val));
-            });
-            itParam("Check: onUserConfig.isUserCustom", [true, false], (val) => {
-                hc.recalculate = sinon.fake();
-                hc.oldStatus = {};
-                hc.status = {
-                    targetValue: 15,
-                    currentSchedule: {
-                        temp: 17
-                    }
-                };
-                hc.onUserConfig({
-                    payload: {
-                        isUserCustom: val
-                    }
-                });
-                if (val) {
-                    should(hc.status.userTargetValue).be.equal(hc.status.targetValue, 'isCustom = true is not changing userTargetValue');
-                } else {
-                    should(hc.status.targetValue).be.equal(hc.status.currentSchedule.temp, ' isCustom = false is not setting targetValue with status.currentSchedule.temp');
-                }
-                should(hc.recalculate.callCount).be.equal(1, 'Recalculate is not triggered when receiving a new configuration');
-            });
-            itParam("Check: onUserConfig.isLocked", [true, false], (val) => {
-                // In case of true is freezing value until calendar change
-                hc.oldStatus = {};
-                hc.recalculate = sinon.fake();
-                hc.status = { isLocked: !val };
-                hc.onUserConfig({
-                    payload: {
-                        isLocked: val
-                    }
-                });
-                should(hc.status.isLocked).be.equal(val, ' isLocked is not setting status.isLocked');
-                should(hc.recalculate.callCount).be.equal(1, 'Recalculate is not triggered when receiving a new configuration');
-            });
-            itParam("Check: onUserConfig.userTargetValue", [undefined, 10], (val) => {
-                hc.oldStatus = {};
-                hc.recalculate = sinon.fake();
-                hc.status = { userTargetValue: (val || 0) + 5 };
-                hc.onUserConfig({
-                    payload: {
-                        userTargetValue: val
-                    }
-                });
-                var exp = val ? val : 5;
-                should(hc.status.userTargetValue).be.equal(exp, ' userTargetValue is not setting status.userTargetValue');
-                should(hc.recalculate.callCount).be.equal(1, 'Recalculate is not triggered when receiving a new configuration');
-            });
-            var testData = [
-                //User changes temp and locks it
-                {
-                    input: {
-                        isUserCustom: false,
-                        isLocked: true,
-                        userTargetValue: 25
-                    },
-                    output: {
-                        isUserCustom: true,
-                        isLocked: true,
-                        userTargetValue: 25,
-                        targetValue: 10 //It will be change on computation
-                    }
-                },
-                //user changes only the userTargetValue
-                {
-                    input: {
-                        isUserCustom: false,
-                        isLocked: false,
-                        userTargetValue: 25
-                    },
-                    output: {
-                        isUserCustom: true,
-                        isLocked: false,
-                        userTargetValue: 25,
-                        targetValue: 10 //It will be change on computation
-                    }
-                },
-                //user changes only the locking
-                {
-                    input: {
-                        isLocked: true,
-                    },
-                    output: {
-                        isUserCustom: true,
-                        isLocked: true,
-                        userTargetValue: undefined,
-                        targetValue: 3 //It will be change on computation
-                    }
-                },
-                //user changes only the userTargetValue
-                {
-                    input: {
-                        userTargetValue: 50,
-                    },
-                    output: {
-                        isUserCustom: true,
-                        isLocked: false,
-                        userTargetValue: 50
-                    }
-                }
-            ]
-
-            itParam("Check: onUserConfig", testData, (val) => {
-                hc.oldStatus = {};
-                hc.recalculate = sinon.fake();
-                hc.status = { currentSchedule: { temp: 10 }, isLocked: false, userTargetValue: 5, isUserCustom: false, targetValue: 3 };
-                hc.onUserConfig({
-                    payload: val.input
-                });
-                if (typeof (val.output.isUserCustom) !== 'undefined')
-                    should(hc.status.isUserCustom).be.equal(val.output.isUserCustom, 'incorrect isUserCustom: ' + JSON.stringify(val));
-                if (typeof (val.output.isLocked) !== 'undefined')
-                    should(hc.status.isLocked).be.equal(val.output.isLocked, 'incorrect isLocked: ' + JSON.stringify(val));
-                if (typeof (val.output.userTargetValue) !== 'undefined')
-                    should(hc.status.userTargetValue).be.equal(val.output.userTargetValue, 'incorrect userTargetValue: ' + JSON.stringify(val));
-                if (typeof (val.output.targetValue) !== 'undefined')
-                    should(hc.status.targetValue).be.equal(val.output.targetValue, 'incorrect targetValue: ' + JSON.stringify(val));
-
-                should(hc.recalculate.callCount).be.equal(1, 'Recalculate is not triggered when receiving a new configuration');
-            });
         });
     });
 });
