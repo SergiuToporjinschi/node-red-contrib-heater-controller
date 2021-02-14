@@ -47,6 +47,9 @@
   font-size: 5em;
   font-weight: bold;
 }
+.heater-slider md-slider .md-track {
+    background-color: gray;
+}
 
 .iconFalse {
   color: gray;
