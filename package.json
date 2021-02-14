@@ -67,7 +67,7 @@
       "package.json"
     ],
     "nodeArgs": "",
-    "ext": "js json md html"
+    "ext": "js json md html css"
   },
   "nyc": {
     "exclude": [

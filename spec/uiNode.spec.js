@@ -178,7 +178,6 @@ describe("uiNodes", () => {
                 should(_.keys(configReturn)).be.deepEqual(acceptedKeys, 'front-end config is not a valid object');
                 done();
             });
-
         });
     });
 });

@@ -131,7 +131,7 @@ class UINode {
         this.debug("createWidget called");
         try {
             var frontEnd = new FrontEnd();
-            var frontEndHtml = frontEnd.getHTML(this.config.displayMode, false);
+            var frontEndHtml = frontEnd.getHTML(this.config.displayMode, this.#ui.isDark(), this.#ui.getTheme());
             var frontEndController = frontEnd.getController(this.#wsServer.getURL(this.id));
             this.#doneUI = this.#ui.addWidget(Object.assign({
                 node: this,

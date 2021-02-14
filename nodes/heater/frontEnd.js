@@ -4,7 +4,7 @@ class FrontEnd {
     constructor() {
     }
 
-    getHTML(displayMode, isDark) {
+    getHTML(displayMode, isDark, theme) {
         //TODO take in consideration isDark theme;
         var fs = require('fs');
         var htmlFile = 'frontEndButtons.html';

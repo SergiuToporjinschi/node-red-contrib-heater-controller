@@ -1,9 +1,9 @@
-<div class='wrapper' layout="column" flex layout-align="center stretch" ng-init='init()'>
-    <p ng-if="config.title" class="nr-dashboard-cardtitle">{{config.title}}</p>
+<div class='heater-slider wrapper' layout="column" flex layout-align="center stretch" ng-init='init()'>
+    <p ng-if="config.title" class="title">{{config.title}}</p>
     <div ng-show='typeof(config) === "undefined"' layout="row" layout-sm="column" layout-align="space-around">
         <md-progress-circular md-mode="indeterminate"></md-progress-circular>
     </div>
-    <div ng-show='typeof(config) !== "undefined"'>
+    <div ng-show='typeof(config) !== "undefined"' class="content">
         <div layout="row" layout-align="end center" class="warning-icon">
             <span class="info" title="Current calendar temp" ng-show="status.currentSchedule != undefined"><i class="fa fa-calendar-o" aria-hidden="true"></i>{{status.currentSchedule.temp}}&deg;{{config.unit}}
                 ({{status.currentSchedule.time}})</span>
@@ -11,28 +11,25 @@
                 ({{status.nextSchedule.time}})</span>
             <span class="info" title="Logs" ng-show="status.logs.length > 0" ng-click="showLogs()"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
             <div flex></div>
-            <i title="Calendar is missing" class="fa fa-calendar" style="color:red" aria-hidden="true" ng-if="!config.calendar"></i>
-            <i title="Current temperature is missing" class="fa fa-thermometer-empty" style="color:red" aria-hidden="true" ng-if="!status.currentTemp"></i>
+            <i title="Calendar is missing" class="fa fa-calendar" style="color:red" aria-hidden="true" ng-if="config.calendar"></i>
+            <i title="Current temperature is missing" class="fa fa-thermometer-empty" style="color:red" aria-hidden="true" ng-if="status.currentTemp"></i>
         </div>
-        <div layout="row" layout-align="center center" class="container">
-            <div layout-align="start center" flex="20"><i ng-click='lockCustom()' ng-class="status.isLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select link-pointer" style="font-size: 2em; color:#0094ce"></i>
-            </div>
-            <div layout="row" layout-align="center center" flex>
-                <div layout-align="end center" layout="column">
-                    <div title="Current target (user value or calendar). Double-click for reset." ng-class="{'user-mode': status.isUserCustom}" class="temp no-select link-pointer" md-swipe-left="toSchedule()"
-                        md-swipe-right="toSchedule()" ng-dblclick="toSchedule()">{{status.targetValue | number:1}}&deg;{{config.unit}}</div>
-                </div>
-                <div class='heaterContr' layout-align="center center" layout="column">
-                    <div class="targetTemp" flex="50">{{status.currentTemp | number:1}}</div>
-                    <div layout-align="space-between" layout="row" flex="50">
+        <div class="control-container">
+            <div class="icon-contr-container" >
+                <div class="side-icon-container"><i ng-click='lockCustom()' ng-class="status.isLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select link-pointer" style="font-size: 2em; color:#0094ce"></i></div>
+                <div title="Current target (user value or calendar). Double-click for reset." ng-class="{'user-mode': status.isUserCustom}" class="target-temp temp no-select link-pointer" md-swipe-left="toSchedule()"
+                    md-swipe-right="toSchedule()" ng-dblclick="toSchedule()">{{status.targetValue | number:1}}&deg;{{config.unit}}</div>
+                <div class='side-icon-container'>
+                    <div class="targetTemp">{{status.currentTemp | number:1}}</div>
+                    <div>
                         <i title="Heater status" class="fa fa-fire icon" ng-class="status.currentHeaterStatus == 'on' ? 'iconTrue' : 'iconFalse'" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
-        </div>
-        <div layout-align="center stretch" layout="column">
-            <md-slider md-discrete ng-disabled='!status || !status.targetValue || !status.currentTemp' ng-change="sendVal()" class="md-primary" ng-model="status.userTargetValue" step="{{config.sliderStep}}"
-                min="{{config.sliderMinValue}}" max="{{config.sliderMaxValue}}">
+            <div>
+                <md-slider md-discrete ng-disabled='!status || !status.targetValue || !status.currentTemp' ng-change="sendVal()" class="md-primary" ng-model="status.userTargetValue" step="{{config.sliderStep}}"
+                    min="{{config.sliderMinValue}}" max="{{config.sliderMaxValue}}">
+            </div>
         </div>
     </div>
 </div>
