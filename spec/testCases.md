@@ -1,6 +1,6 @@
--Status before receving message
-+Message configuration
-=Status after processing configuration
+-Status before receving message</br>
++Message configuration</br>
+=Status after processing configuration</br>
 
 | case |-</br>calendar |-</br>targetValue |-</br>userTargetValue  ||+</br>isUserCustom |+</br>isLocked |+</br>userTargetValue ||=</br>isUserCustom |=</br>isLocked |=</br>targetValue |=</br>userTargetValue |
 |------|--------------|-----------------|----------------------|--|----------------|--------------|---------------------|---|---------------|--------------|-----------------|---------------------|
