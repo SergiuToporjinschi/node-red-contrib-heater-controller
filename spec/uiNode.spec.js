@@ -43,7 +43,17 @@ describe("uiNodes", () => {
         });
 
         it('Test _createWidget: create design throws error', function (done) {
-            RED.require = sinon.stub().withArgs('node-red-dashboard').throws(new Error('anError'));
+            RED.require = sinon.stub();
+            var addWidgetStub = sinon.stub();
+            var constrUI = sinon.stub();
+            addWidgetStub.throws(new Error('anError'));
+            constrUI.returns({
+                addWidget: addWidgetStub,
+                isDark: sinon.stub(),
+                getTheme: sinon.stub()
+            });
+            RED.require.withArgs('node-red-dashboard').returns(constrUI);
+
             UINode.prototype.on = sinon.stub().withArgs('input', function () { }).throws(new Error('an error message'));
             should(() => {
                 new UINode(RED, {
@@ -51,7 +61,7 @@ describe("uiNodes", () => {
                     calendar: JSON.stringify(helper.calendar)
                 });
             }).throw('anError', 'Not expected exception message!!!');
-            should(UINode.prototype.error.callCount).be.equal(1, 'Exception not logged!!!');
+            should(UINode.prototype.error.callCount).be.equal(2, 'Exception not logged!!!');
             RED = helper.getMockedRED();
             done();
         });
