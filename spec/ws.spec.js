@@ -216,7 +216,7 @@ describe("ws", () => {
                 setTimeout(() => {
                     should(connectionCalledFake.callCount).be.equal(1, "WebSocketServer is not attached or connection event is not called");
                     done();
-                }, 3 * 1000);
+                }, 2 * 1000);
             });
         })
     });

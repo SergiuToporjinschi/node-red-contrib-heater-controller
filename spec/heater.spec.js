@@ -115,6 +115,7 @@ describe("heater.spec.js", () => {
                 // console.log(JSON.stringify(testSetting))
                 var fakeTimer = helper.setMockedDate(testSetting.currentTime);//Sunday
                 var ret = hc.getScheduleOffSet(testSetting.offSet);
+                fakeTimer.restore();
                 ret.time.length.should.be.equal(5);
                 ret.time.should.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/, "Incorrect time format: " + JSON.stringify(testSetting));
 
@@ -124,7 +125,6 @@ describe("heater.spec.js", () => {
 
                 ret.should.have.keys("day", "time", "temp");
                 ret.should.be.deepEqual(testSetting.expected, 'Not expected object: ' + JSON.stringify(testSetting));
-                fakeTimer.restore();
             });
         });
 
@@ -225,11 +225,11 @@ describe("heater.spec.js", () => {
                     topic: 'currentTemp',
                     payload: 20
                 }, fakeSend);
+                fakeTimer.restore();
                 should(fakeSend.callCount).be.equal(1, 'Send function not called :' + JSON.stringify(val))
                 should(fakeSend.lastCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
                 should.deepEqual(fakeSend.lastCall.args[0][0], { topic: 'heaterStatus', payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
                 should.deepEqual(fakeSend.lastCall.args[0][1], { topic: 'status', payload: hc.status }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
-                fakeTimer.restore();
             });
             itParam("Test recalculate userCustomTemp ", [
                 { isUserCustom: true, isLocked: true, currentTemp: 15, userCurrentTemp: 20, state: 'on' }, { isUserCustom: true, isLocked: true, currentTemp: 20, userCurrentTemp: 18, state: 'off' },
@@ -257,11 +257,11 @@ describe("heater.spec.js", () => {
                         userTargetValue: val.userCurrentTemp
                     }
                 }, fakeSend);
+                fakeTimer.restore();
                 should(fakeSend.callCount).be.equal(1, 'Send function not called :' + JSON.stringify(val))
                 should(fakeSend.lastCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
                 should.deepEqual(fakeSend.lastCall.args[0][0].payload, val.state, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
                 should.deepEqual(fakeSend.lastCall.args[0][1].payload, hc.status, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
-                fakeTimer.restore();
             });
         });
 
@@ -306,11 +306,11 @@ describe("heater.spec.js", () => {
                     topic: 'currentTemp',
                     payload: val
                 }, fakeSend);
+                fakeTimer.restore();
                 should(fakeSend.callCount).be.equal(1, 'Send function not called :' + JSON.stringify(val))
                 should(fakeSend.lastCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
                 should.deepEqual(fakeSend.lastCall.args[0][0], { topic: 'heaterStatus', payload: val < 20 ? 'on' : 'off' }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
                 should.deepEqual(fakeSend.lastCall.args[0][1], { topic: 'status', payload: initialStatus }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
-                fakeTimer.restore();
             });
 
             var exceptions = [undefined, 1,
