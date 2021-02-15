@@ -326,12 +326,8 @@ describe("heater.spec.js", () => {
 
             itParam("Should throw exception: constructor", [undefined, 1, { test: 1 }, { group: 1 }, { group: true }], (val) => {
                 delete require.cache[require.resolve('../nodes/heater/heater')];
-
                 var heat = helper.getMockedHeaterControllerFaked(require('../nodes/heater/heater'));
                 should(function () {
-                    RED.require = sinon.fake.returns(sinon.fake.returns({
-                        addWidget: sinon.fake()
-                    }));
                     heat.prototype._createWidget = sinon.fake();
                     new heat(RED, val);
                 }).throw('Missing configuration or group');

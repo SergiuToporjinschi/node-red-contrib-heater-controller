@@ -113,9 +113,11 @@ var exp = {
         };
         Red.require = sinon.stub();
         var addWidgetStub = sinon.stub();
+        var isDarkStub = sinon.stub().returns(false);
+        var getThemeStub = sinon.stub().returns({});
         var constrUI = sinon.stub();
         addWidgetStub.returns(sinon.fake());
-        constrUI.returns({ addWidget: addWidgetStub });
+        constrUI.returns({ addWidget: addWidgetStub, isDark : isDarkStub, getTheme: getThemeStub });
         Red.require.withArgs('node-red-dashboard').returns(constrUI);
         return Red;
     },
@@ -141,6 +143,7 @@ var exp = {
     getMockedHeaterControllerFaked: function (hc) {
         hc = this.getMockedHeaterController(hc, sinon.fake(), sinon.fake(), sinon.fake(), sinon.fake(), sinon.fake());
         hc.prototype.context = sinon.fake.returns({ set: sinon.fake() });
+        hc.prototype.receive = sinon.fake.returns();
         hc.prototype.id = 'heaterID1';
         return hc;
     },
