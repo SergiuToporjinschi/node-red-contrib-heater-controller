@@ -29,6 +29,7 @@ class FrontEnd {
      */
     /* istanbul ignore next */
     _controller($scope, events) {
+        $scope.userConfigAttributes = ['isLocked', 'userTargetValue', 'isUserCustom'];
         $scope.connectToWS = function (url) {
             var url = new URL($scope.serverURL, window.location.href);
             url.protocol = 'ws:';
@@ -72,7 +73,7 @@ class FrontEnd {
         $scope.configReceived = function (payload) {
             $scope.config = typeof ($scope.config) === 'undefined' ? {} : $scope.config;
             Object.assign($scope.config, payload);
-            $scope.$apply()
+            $scope.$apply();
         }
 
         $scope.statusReceived = function (payload) {
@@ -81,8 +82,28 @@ class FrontEnd {
             if (typeof ($scope.status.userTargetValue) === 'undefined') {
                 $scope.status.userTargetValue = $scope.status.targetValue;
             }
-            $scope.$apply()
+            $scope.$apply();
         }
+
+        $scope.getTransformStatus = function () {
+            var userPayload = {};
+            for (var i in $scope.status) {
+                if ($scope.userConfigAttributes.includes(i)) {
+                    userPayload[i] = $scope.status[i];
+                }
+            }
+            return Object.keys(userPayload).length > 0 ? { payload: userPayload } : undefined;
+        };
+
+        $scope.sendStatus = function () {
+            var statusToSend = $scope.getTransformStatus();
+            if (typeof (statusToSend) === undefined) {
+                console.error('Invalid status');
+                throw new Error("Invalid status");
+            }
+            statusToSend.topic = 'userConfig';
+            $scope.socket.send(JSON.stringify(statusToSend));
+        };
 
         $scope.init = function () {
             /*$scope.serverURL*/
@@ -93,13 +114,15 @@ class FrontEnd {
             $scope.status.isLocked = !$scope.status.isLocked;
             //TODO check if we can set only targetValue
             $scope.status.isUserCustom = true;
-        }
+            $scope.sendStatus();
+        };
 
         $scope.userTargetChanged = function () {
             //Set this as initial status but after sending the new settings we will have a refreshed status with the real values
             //TODO check if we can set only targetValue
             $scope.status.targetValue = $scope.status.userTargetValue;
             $scope.status.isUserCustom = true;
+            $scope.sendStatus();
         };
 
         $scope.toSchedule = function (event) {
@@ -108,6 +131,7 @@ class FrontEnd {
             $scope.status.targetValue = $scope.status.currentSchedule.temp;
             $scope.status.userTargetValue = $scope.status.targetValue;
             $scope.status.isUserCustom = false;
+            $scope.sendStatus();
         };
     }
 }

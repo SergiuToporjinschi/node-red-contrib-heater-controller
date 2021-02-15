@@ -42,6 +42,9 @@ class UINode {
             throw new Error("Invalid arguments [topic:string, func:function]");
         }
         this.#events[topic] = func;
+        if (topic === 'userConfig') { //we are auto-binding this topic to back link of the node.
+            this.#wsServer.registerIncomingEvents(topic, this.receive.bind(this), this.id);
+        }
     }
 
     removeEvent(topic) {
@@ -75,6 +78,7 @@ class UINode {
     sendStatus() {
         this.#wsServer.send(this.id, 'status', this.status);
     }
+
     /**
      * @private
      *
