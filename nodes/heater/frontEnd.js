@@ -88,20 +88,14 @@ class FrontEnd {
             $scope.connectToWS();
         };
 
-        $scope.statusChangedEvent = function (payload) {
-            // $scope.status = payload;
-            // debugger;
-        }
+        $scope.userTargetChanged = function (newValue, oldValue) {
+            console.log('newVal: ', $scope.status.userTargetValue);
+        };
 
-        $scope.changeTemp = function () {
-            console.log($scope.config);
-            $scope.socket.send(JSON.stringify({
-                topic: 'msg',
-                payload: 'content!?!?'
-            }));
-        }
+        $scope.toSchedule = function (event,a,b,c) {
+            debugger;
+        };
     }
-
 }
 
 module.exports = FrontEnd;

@@ -34,6 +34,7 @@
   margin: 0 1em;
   justify-content: center;
   flex-direction: column;
+  text-align: center;
 }
 
 .heater-slider .target-temp {
@@ -41,6 +42,7 @@
   display: flex;
   justify-content: center;
   align-self: center;
+  height: 100%;
 }
 .heater-slider .temp {
   color: #0094ce;
@@ -51,29 +53,25 @@
     background-color: gray;
 }
 
-.iconFalse {
+.heater-slider .targetTemp {
+  color: #0094ce;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.heater-slider .iconFalse {
   color: gray;
 }
 
-.iconTrue {
+.heater-slider .iconTrue {
   color: #ff4d4d;
-}
-
-.icon {
-  margin: 0;
-  margin-left: 10px;
-  font-size: 1em;
 }
 
 .userSettingsIcon {
   margin-right: 20px;
 }
 
-.targetTemp {
-  color: #0094ce;
-  font-size: 1em;
-  font-weight: bold;
-}
+
 
 .heaterContr {
   margin-left: 10px;
