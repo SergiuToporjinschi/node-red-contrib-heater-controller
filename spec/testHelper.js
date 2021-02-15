@@ -1,35 +1,36 @@
 var _ = require("lodash");
 const { fake } = require("sinon");
 var sinon = require('sinon');
+var WebSocketClient = require('websocket').client;
 var exp = {
     configEx: {
-        calendar:'{\n    "Monday": {\n        "00:00": 19,\n        "06:20": 22,\n        "08:00": 19,\n        "16:40": 22,\n        "23:59": 19\n    },\n    "Tuesday": {\n        "00:00": 19,\n        "06:20": 22,\n        "08:00": 19,\n        "16:40": 22,\n        "23:59": 19\n    },\n    "Wednesday": {\n        "00:00": 19,\n        "06:20": 22,\n        "08:00": 19,\n        "16:40": 22,\n        "23:59": 19\n    },\n    "Thursday": {\n        "00:00": 19,\n        "06:20": 22,\n        "08:00": 19,\n        "16:40": 22,\n        "23:59": 19\n    },\n    "Friday": {\n        "00:00": 19,\n        "06:20": 23,\n        "08:00": 19,\n        "16:40": 22,\n        "23:59": 19\n    },\n    "Saturday": {\n        "00:00": 19,\n        "08:00": 20,\n        "20:00": 22,\n        "23:59": 19\n    },\n    "Sunday": {\n        "00:00": 19,\n        "08:00": 20,\n        "20:00": 22,\n        "23:59": 19\n    }\n}',
-        displayMode:'buttons',
-        g:'d2d20a7c.2b2bc8',
-        group:'add64240.8d8c9',
+        calendar: '{\n    "Monday": {\n        "00:00": 19,\n        "06:20": 22,\n        "08:00": 19,\n        "16:40": 22,\n        "23:59": 19\n    },\n    "Tuesday": {\n        "00:00": 19,\n        "06:20": 22,\n        "08:00": 19,\n        "16:40": 22,\n        "23:59": 19\n    },\n    "Wednesday": {\n        "00:00": 19,\n        "06:20": 22,\n        "08:00": 19,\n        "16:40": 22,\n        "23:59": 19\n    },\n    "Thursday": {\n        "00:00": 19,\n        "06:20": 22,\n        "08:00": 19,\n        "16:40": 22,\n        "23:59": 19\n    },\n    "Friday": {\n        "00:00": 19,\n        "06:20": 23,\n        "08:00": 19,\n        "16:40": 22,\n        "23:59": 19\n    },\n    "Saturday": {\n        "00:00": 19,\n        "08:00": 20,\n        "20:00": 22,\n        "23:59": 19\n    },\n    "Sunday": {\n        "00:00": 19,\n        "08:00": 20,\n        "20:00": 22,\n        "23:59": 19\n    }\n}',
+        displayMode: 'buttons',
+        g: 'd2d20a7c.2b2bc8',
+        group: 'add64240.8d8c9',
         height: 4,
         testFunction: function () { },
-        id:'cf35eb5f.d228c8',
-        info:'Description',
+        id: 'cf35eb5f.d228c8',
+        info: 'Description',
         inputLabels: ['currentTemp | userCofig | setCalendar'],
-        logLength:1,
-        logLengthType:'days',
-        name:'Heater setting currentTemp',
-        order:0,
+        logLength: 1,
+        logLengthType: 'days',
+        name: 'Heater setting currentTemp',
+        order: 0,
         outputLabels: ['Heater status', 'Computation status'],
-        sliderMaxValue:35,
-        sliderMinValue:10,
-        sliderStep:0.5,
-        threshold:0.5,
-        title:'Heater',
-        topic:'heaterStatus',
-        type:'ui_heater_controller',
-        unit:'C',
-        width:6,
-        wires: [[1,23,4], '23'],
-        x:520,
-        y:480,
-        z:'869218bd.a018c8'
+        sliderMaxValue: 35,
+        sliderMinValue: 10,
+        sliderStep: 0.5,
+        threshold: 0.5,
+        title: 'Heater',
+        topic: 'heaterStatus',
+        type: 'ui_heater_controller',
+        unit: 'C',
+        width: 6,
+        wires: [[1, 23, 4], '23'],
+        x: 520,
+        y: 480,
+        z: '869218bd.a018c8'
     },
     calendar: {
         "Monday": { //2021-01-35 [1]
@@ -80,25 +81,6 @@ var exp = {
             "23:59": 19
         }
     },
-    defaLastInfoNode: {
-        "currentTemp": 20, //B -> value calculated input from sensor
-        "targetValue": 20, //CALC -> Value calculated based on calendar or usr input
-        "isUserCustom": false, //-> IB
-        "isLocked": false, // -> IB
-        "userTargetValue": 20, //-> IB
-        "currentSchedule": { //-> calendar
-            "temp": 20,
-            "day": "Monday",
-            "time": "00:00"
-        },
-        "nextSchedule": { //-> calendar
-            "temp": 20,
-            "day": "Monday",
-            "time": "08:00"
-        },
-        "currentHeaterStatus": "off",
-        "time": new Date().toLocaleString()
-    },
     getMockedRED: function (params) {
         var Red = {
             server: {
@@ -117,28 +99,9 @@ var exp = {
         var getThemeStub = sinon.stub().returns({});
         var constrUI = sinon.stub();
         addWidgetStub.returns(sinon.fake());
-        constrUI.returns({ addWidget: addWidgetStub, isDark : isDarkStub, getTheme: getThemeStub });
+        constrUI.returns({ addWidget: addWidgetStub, isDark: isDarkStub, getTheme: getThemeStub });
         Red.require.withArgs('node-red-dashboard').returns(constrUI);
         return Red;
-    },
-    mockedNode: {
-        'context': {
-            context: {},
-            'get': function (key) {
-                return this.context[key];
-            },
-            'set': function (key, value) {
-                this.context[key] = value;
-            }
-        },
-        'send': () => { },
-        'error': () => { },
-        'log': () => { },
-        'warn': () => { },
-        'send': () => { }
-    },
-    searchForStatusNode() {
-
     },
     getMockedHeaterControllerFaked: function (hc) {
         hc = this.getMockedHeaterController(hc, sinon.fake(), sinon.fake(), sinon.fake(), sinon.fake(), sinon.fake());
@@ -166,23 +129,41 @@ var exp = {
             now: new Date(dateString + this.getOffSetInHHMM()),
             shouldAdvanceTime: false
         });
-        // const spy = sinon.
-        //     .spyOn(global, 'Date')
-        //     .mockImplementation(() => mockDate);
         return clock;
-
-        // const currentDate = new Date(dateString);
-        // realDate = Date;
-        // global.Date = class extends Date {
-        //     constructor(date) {
-        //         if (date) {
-        //             return super(date);
-        //         }
-
-        //         return currentDate;
-        //     }
-        // };
     }
 };
-exp.defaNewInfoNode = _.cloneDeep(exp.defaLastInfoNode);
+
+function startHTTPServer(port) {
+    port = port || 8080
+    const http = require('http');
+    const server = http.createServer();
+
+    server.keepAliveTimeout = 1;
+    server.listen(port);
+    return server;
+}
+
+function WSClient(url) {
+    this.client = new WebSocketClient();
+    this.client.on('connectFailed', function (connection) {
+        console.log('WebSocket Client Connected');
+    });
+    var wsClient = this;
+    this.client.on('connect', function (connection) {
+        console.log('WebSocket Client Connected');
+
+        wsClient.connection = connection;
+
+        connection.on('error', function (error) {
+            console.log("Connection Error: " + error.toString());
+        });
+        connection.on('close', function () {
+            console.log('echo-protocol Connection Closed');
+        });
+    });
+    this.client.connect(url);
+}
+
+exp.WSClient = WSClient;
+exp.startHTTPServer = startHTTPServer;
 module.exports = exp;

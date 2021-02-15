@@ -92,9 +92,9 @@ describe("ws", () => {
                 { topic: 2, func: function () { }, id: undefined },
                 { topic: undefined, func: function () { }, id: undefined }
             ], function (val) {
-                    should(function () {
-                        ws.registerIncomingEvents(val.topic, val.func, val.id);
-                    }).throw('Invalid arguments [topic:string, func:function, id:string]');
+                should(function () {
+                    ws.registerIncomingEvents(val.topic, val.func, val.id);
+                }).throw('Invalid arguments [topic:string, func:function, id:string]');
             });
 
             itParam('Test _encodedMessage: throw error', [
@@ -183,5 +183,41 @@ describe("ws", () => {
                 done();
             });
         });
+
+        describe('Tests with WS client', () => {
+            var id = "dummyID";
+            beforeEach(() => {
+                delete require.cache[require.resolve('../nodes/heater/webSocketServer')];
+                delete require.cache[require.resolve('../nodes/heater/uINode')];
+                delete require.cache[require.resolve('../nodes/heater/heater')];
+                delete require.cache[require.resolve('./testHelper.js')];
+                WS = require('../nodes/heater/webSocketServer');
+                RED = helper.getMockedRED();
+                id = 'dummyID';
+            });
+            it('Test _shouldIHandleThis: for invalid urls', function (done) {
+                var instance = WS.createInstance(RED, id + 1)
+                var connectionCalledFake = sinon.fake();
+                instance.registerIncomingEvents('connection', connectionCalledFake, id + 1);
+                should(instance._shouldIHandleThis(1)).be.false('Accepts invalid urls');
+                should(instance._shouldIHandleThis('/heaterController/io')).be.false('Accepts invalid urls');
+                should(instance._shouldIHandleThis('/heaterController/io/' + id + 1)).be.true('Does not accepts valid urls');
+                done();
+            });
+
+            it('Test _handleServerUpgrade: handling a proper request', function (done) {
+                RED.server = helper.startHTTPServer();
+                var instance = WS.createInstance(RED, id);
+                var connectionCalledFake = sinon.fake();
+                instance.registerIncomingEvents('connection', connectionCalledFake, id);
+
+                var wsClient = new helper.WSClient('ws://localhost:8080/heaterController/io/' + id);
+
+                setTimeout(() => {
+                    should(connectionCalledFake.callCount).be.equal(1, "WebSocketServer is not attached or connection event is not called");
+                    done();
+                }, 3 * 1000);
+            });
+        })
     });
 });

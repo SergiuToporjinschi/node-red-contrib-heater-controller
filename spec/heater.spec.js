@@ -12,7 +12,6 @@ describe("heater.spec.js", () => {
         var RED = helper.getMockedRED();;
         var hc;
         const sandbox = sinon.createSandbox();
-
         beforeEach(() => {
             // sandbox.spy(RED);
             var HeaterController = helper.getMockedHeaterControllerFaked(require('../nodes/heater/heater'));
@@ -26,8 +25,8 @@ describe("heater.spec.js", () => {
          * Test offSet calculation
          */
         describe("Test calculating schedule with offset", () => {
+            ;
             beforeEach(() => {
-                helper.setMockedDate('2021-01-31T08:00:00.000');//Sunday
                 // RED.require.withArgs('node-red-dashboard').returns(sinon.fake());
 
                 hc = new HeaterController(RED, {
@@ -114,7 +113,7 @@ describe("heater.spec.js", () => {
             ];
             itParam("Testing getScheduleOffSet", offSetData, (testSetting) => {
                 // console.log(JSON.stringify(testSetting))
-                helper.setMockedDate(testSetting.currentTime);//Sunday
+                var fakeTimer = helper.setMockedDate(testSetting.currentTime);//Sunday
                 var ret = hc.getScheduleOffSet(testSetting.offSet);
                 ret.time.length.should.be.equal(5);
                 ret.time.should.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/, "Incorrect time format: " + JSON.stringify(testSetting));
@@ -125,6 +124,7 @@ describe("heater.spec.js", () => {
 
                 ret.should.have.keys("day", "time", "temp");
                 ret.should.be.deepEqual(testSetting.expected, 'Not expected object: ' + JSON.stringify(testSetting));
+                fakeTimer.restore();
             });
         });
 
@@ -220,7 +220,7 @@ describe("heater.spec.js", () => {
                     topic: 'currentTemp',
                     payload: 20
                 }, sinon.fake());
-                helper.setMockedDate('2021-01-31T' + val.time + ':00.000');//Sunday
+                var fakeTimer = helper.setMockedDate('2021-01-31T' + val.time + ':00.000');//Sunday
                 hc._messageIn({
                     topic: 'currentTemp',
                     payload: 20
@@ -229,17 +229,18 @@ describe("heater.spec.js", () => {
                 should(fakeSend.lastCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
                 should.deepEqual(fakeSend.lastCall.args[0][0], { topic: 'heaterStatus', payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
                 should.deepEqual(fakeSend.lastCall.args[0][1], { topic: 'status', payload: hc.status }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
-            }); var cnt = 1;
+                fakeTimer.restore();
+            });
             itParam("Test recalculate userCustomTemp ", [
                 { isUserCustom: true, isLocked: true, currentTemp: 15, userCurrentTemp: 20, state: 'on' }, { isUserCustom: true, isLocked: true, currentTemp: 20, userCurrentTemp: 18, state: 'off' },
                 { isUserCustom: true, isLocked: true, currentTemp: 19, userCurrentTemp: 18, state: 'off' }, { isUserCustom: true, isLocked: true, currentTemp: 15, userCurrentTemp: 18, state: 'on' },
                 //isUserCustom,isLocked false
-                { isUserCustom: false, isLocked: false, currentTemp: 15, userCurrentTemp: 20, state: 'on' },{ isUserCustom: false, isLocked: false, currentTemp: 15, userCurrentTemp: 18, state: 'on' },
+                { isUserCustom: false, isLocked: false, currentTemp: 15, userCurrentTemp: 20, state: 'on' }, { isUserCustom: false, isLocked: false, currentTemp: 15, userCurrentTemp: 18, state: 'on' },
                 //undefined
                 { isUserCustom: undefined, isLocked: false, currentTemp: 15, userCurrentTemp: 20, state: 'on' }, { isUserCustom: undefined, isLocked: false, currentTemp: 20, userCurrentTemp: 18, state: 'off' },
                 { isUserCustom: undefined, isLocked: false, currentTemp: 19, userCurrentTemp: 18, state: 'off' }, { isUserCustom: undefined, isLocked: false, currentTemp: 15, userCurrentTemp: 18, state: 'on' }
             ], (val) => {
-                helper.setMockedDate('2021-01-31T08:00:00.000');
+                var fakeTimer = helper.setMockedDate('2021-01-31T08:00:00.000');
                 hc.status.isLocked = false;
                 hc.status.currentSchedule.temp = 20;
                 hc._sendToFrontEnd = sinon.fake();
@@ -260,7 +261,7 @@ describe("heater.spec.js", () => {
                 should(fakeSend.lastCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
                 should.deepEqual(fakeSend.lastCall.args[0][0].payload, val.state, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
                 should.deepEqual(fakeSend.lastCall.args[0][1].payload, hc.status, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
-                cnt++;
+                fakeTimer.restore();
             });
         });
 
@@ -287,7 +288,7 @@ describe("heater.spec.js", () => {
             });
 
             itParam("Current temp remains static from call to call: onTempChange", [-10, 0, 10, 25], (val) => {
-                helper.setMockedDate('2021-01-31T08:00:00.000'); // 20 C
+                var fakeTimer = helper.setMockedDate('2021-01-31T08:00:00.000'); // 20 C
                 var fakeSend = sinon.fake();
                 hc.send = fakeSend;
                 hc._sendToFrontEnd = sinon.fake();
@@ -309,6 +310,7 @@ describe("heater.spec.js", () => {
                 should(fakeSend.lastCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
                 should.deepEqual(fakeSend.lastCall.args[0][0], { topic: 'heaterStatus', payload: val < 20 ? 'on' : 'off' }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
                 should.deepEqual(fakeSend.lastCall.args[0][1], { topic: 'status', payload: initialStatus }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
+                fakeTimer.restore();
             });
 
             var exceptions = [undefined, 1,
