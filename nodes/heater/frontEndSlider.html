@@ -17,20 +17,20 @@
         <div class="control-container">
             <div class="icon-contr-container">
                 <div class="side-icon-container">
-                    <i ng-click='lockCustom()' ng-class="status.isLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select link-pointer" style="font-size: 2em; color:#0094ce"></i>
-                    <i ng-click='toSchedule($event)' class="fa fa-rotate-left link-pointer" style="font-size: 1.5em; color:#0094ce"></i>
+                    <i ng-click='isLocked($event)' ng-class="status.isLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select link-pointer" style="font-size: 2em; color:#0094ce" title="Locking on current target (isLocked)"></i>
+                    <i ng-click='toSchedule($event)' class="fa fa-rotate-left no-select link-pointer" style="font-size: 1.5em; color:#0094ce" title="Reset target value to current schedule (isUserCustomFalse)"></i>
                 </div>
 
                 <div title="Current target (user value or calendar). Double-click for reset." ng-class="{'user-mode': status.isUserCustom}" class="target-temp temp no-select link-pointer"
-                    md-swipe-left="toSchedule($event)" md-swipe-right="toSchedule($event)" ng-dblclick="toSchedule($event)">{{status.targetValue | number:1}}&deg;{{config.unit}}</div>
+                    md-swipe-left="toSchedule($event)" md-swipe-right="toSchedule($event)" ng-dblclick="toSchedule($event)">{{status.targetValue ? (status.targetValue | number:1) : "--.-"}}&deg;{{config.unit}}</div>
                 <div class='side-icon-container'>
-                    <div class="targetTemp">{{status.currentTemp | number:1}}</div>
+                    <div class="current-cal-temp" title="Current temperature (currentTemp)">{{status.currentTemp ? (status.currentTemp | number:1) : "--.-"}}</div>
                     <i title="Heater status" style="font-size: 1.5em;" class="fa fa-fire icon" ng-class="status.currentHeaterStatus == 'on' ? 'iconTrue' : 'iconFalse'" aria-hidden="true"></i>
                 </div>
             </div>
             <div>
                 <md-slider md-discrete ng-disabled='!status || !status.targetValue || !status.currentTemp' ng-change="userTargetChanged($event)" class="md-primary" ng-model="status.userTargetValue"
-                    step="{{config.sliderStep}}" min="{{config.sliderMinValue}}" max="{{config.sliderMaxValue}}">
+                    step="{{config.sliderStep}}" min="{{config.sliderMinValue}}" max="{{config.sliderMaxValue}}" title="Current user target temperature (userTargetValue)">
             </div>
         </div>
     </div>
