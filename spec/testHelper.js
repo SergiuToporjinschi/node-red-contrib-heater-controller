@@ -144,7 +144,7 @@ function startHTTPServer(port) {
     return server;
 }
 
-function WSClient(url) {
+function WSClient(url, onConnect) {
     this.client = new WebSocketClient();
     this.client.on('connectFailed', function (connection) {
         console.log('WebSocket Client Connected');
@@ -154,7 +154,9 @@ function WSClient(url) {
         console.log('WebSocket Client Connected');
 
         wsClient.connection = connection;
-
+        if (onConnect) {
+            onConnect();
+        }
         connection.on('error', function (error) {
             console.log("Connection Error: " + error.toString());
         });
