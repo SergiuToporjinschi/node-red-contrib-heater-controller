@@ -229,7 +229,7 @@ describe("ws", () => {
                 var connectionCalledFake = sinon.fake();
                 instance.registerIncomingEvents('connection', connectionCalledFake, id);
 
-                var wsClient = new helper.WSClient('ws://localhost:8080/heaterController/io/' + id+1, () => {
+                var wsClient = new helper.WSClient('ws://localhost:8080/heaterController/io/' + id + 1, () => {
                     instance.send(id, 'test', 'test');
                 });
                 setTimeout(() => {
@@ -264,8 +264,7 @@ describe("ws", () => {
                 var wsClient = new helper.WSClient('ws://localhost:8080/heaterController/io/' + id, () => {
                     instance.send(id, 'test', 'test');
                     instance.unRegister(id);
-                    console.log(wsClient.connection.connected);
-                });
+                 });
 
                 setTimeout(() => {
                     should(connectionCalledFake.callCount).be.equal(1, "WebSocketServer is not attached or connection event is not called");
@@ -273,7 +272,6 @@ describe("ws", () => {
                     done();
                 }, 2 * 1000);
             });
-
         });
     });
 });

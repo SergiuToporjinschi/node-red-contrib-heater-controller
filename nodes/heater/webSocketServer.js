@@ -39,9 +39,8 @@ class WebSocketServer {
 
     unRegister(id) {
         this.#backEndClients[id].events.removeAllListeners();
-        var clientWs = this.#backEndClients[id]
         this.#server.clients.forEach((client) => {
-            if (clientWs !== client) return; //TODO check this
+            if (client.clientId !== id) return;
             if (client !== ws && client.readyState === ws.OPEN) {
                 client.close(1000);
             } else {
@@ -61,6 +60,7 @@ class WebSocketServer {
         this.#server.handleUpgrade(request, socket, head, ((ws, message) => {
             var id = message.url.substr(message.url.lastIndexOf('/') + 1);
             try {
+                ws.clientId = id;
                 this.#backEndClients[id].ws = ws;
                 this.#backEndClients[id].events.emit('connection', ws, id);
             } catch (error) {
