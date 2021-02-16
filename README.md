@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0a5d4e2aafae4234bbf4728d260c35d7)](https://app.codacy.com/gh/SergiuToporjinschi/node-red-contrib-heater-controller?utm_source=github.com&utm_medium=referral&utm_content=SergiuToporjinschi/node-red-contrib-heater-controller&utm_campaign=Badge_Grade)
 [![GitHub license](https://img.shields.io/github/license/SergiuToporjinschi/node-red-contrib-heater-controller.svg?service=github)](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/blob/master/LICENSE)
 [![npm version](https://img.shields.io/npm/v/node-red-contrib-heater-controller.svg?&service=github)](https://www.npmjs.com/package/node-red-contrib-heater-controller?activeTab=versions)
 [![npm](https://img.shields.io/npm/dt/node-red-contrib-heater-controller.svg?service=github)](https://www.npmjs.com/package/node-red-contrib-heater-controller)
