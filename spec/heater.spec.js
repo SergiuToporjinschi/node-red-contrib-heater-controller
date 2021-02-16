@@ -202,9 +202,9 @@ describe("heater.spec.js", () => {
                 time: '00:00',
                 state: 'off'
             }, {
-                time: '08:00',
-                state: 'off'
-            }, {
+            //     time: '08:00',
+            //     state: 'off'
+            // }, {
                 time: '20:00',
                 state: 'on'
             }, {

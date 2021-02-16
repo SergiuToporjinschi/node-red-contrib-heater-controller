@@ -136,7 +136,8 @@ var exp = {
 function startHTTPServer(port) {
     port = port || 8080
     const http = require('http');
-    const server = http.createServer();
+    var server = http.createServer();
+    server = require('http-shutdown')(server);
 
     server.keepAliveTimeout = 1;
     server.listen(port);
@@ -162,6 +163,7 @@ function WSClient(url) {
         });
     });
     this.client.connect(url);
+    return this.client;
 }
 
 exp.WSClient = WSClient;

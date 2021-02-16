@@ -215,6 +215,7 @@ describe("ws", () => {
 
                 setTimeout(() => {
                     should(connectionCalledFake.callCount).be.equal(1, "WebSocketServer is not attached or connection event is not called");
+                    RED.server.shutdown();
                     done();
                 }, 2 * 1000);
             });

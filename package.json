@@ -45,6 +45,7 @@
   ],
   "devDependencies": {
     "coveralls": "^3.1.0",
+    "http-shutdown": "^1.2.2",
     "lodash": "~4.17.20",
     "mocha": "^8.2.1",
     "mocha-param": "^2.0.1",
