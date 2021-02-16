@@ -12,7 +12,7 @@ module.exports = {
     "parserOptions": {
         "ecmaVersion": 12
     },
-    "ignorePatterns": ["spec/**/*.*", ".*"],
+    "ignorePatterns": ["spec/**/*.*", ".*", ".vscode/**/*.*", ""],
     "rules": {
         "quotes": ["error", "single"]
     }

@@ -13,7 +13,7 @@ class Heater extends UINode {
     constructor(RED, config) {
         super(RED, config)
         this.log('Heater Constructor')
-        if (typeof (this.config) !== 'object' || !this.config.hasOwnProperty('group') || typeof (this.config.group) !== 'string') {
+        if (typeof (this.config) !== 'object' || !Object.hasOwnProperty.call(this.config, 'group') || typeof (this.config.group) !== 'string') {
             this.error('Missing configuration or group!!!');
             throw Error('Missing configuration or group');
         }
@@ -89,7 +89,7 @@ class Heater extends UINode {
      */
     onUserConfig(msg) {
         if (typeof (msg.payload) !== 'object' ||
-            !(msg.payload.hasOwnProperty('isLocked') || msg.payload.hasOwnProperty('userTargetValue') || msg.payload.hasOwnProperty('isUserCustom')) ||
+            !(Object.hasOwnProperty.call(msg.payload, 'isLocked') || Object.hasOwnProperty.call(msg.payload, 'userTargetValue') || Object.hasOwnProperty.call(msg.payload, 'isUserCustom')) ||
             !(['undefined', 'boolean'].includes(typeof (msg.payload.isLocked)) &&
                 ['undefined', 'number'].includes(typeof (msg.payload.userTargetValue)) &&
                 ['undefined', 'boolean'].includes(typeof (msg.payload.isUserCustom)))) {
