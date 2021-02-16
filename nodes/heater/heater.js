@@ -87,6 +87,8 @@ class Heater extends UINode {
      * @param {object} msg
      * @todo Meeds refactoring of attribute check!!!
      */
+    //TODO fix this
+    // eslint-disable-next-line complexity
     onUserConfig(msg) {
         if (typeof (msg.payload) !== 'object' ||
             !(Object.hasOwnProperty.call(msg.payload, 'isLocked') || Object.hasOwnProperty.call(msg.payload, 'userTargetValue') || Object.hasOwnProperty.call(msg.payload, 'isUserCustom')) ||
@@ -209,6 +211,8 @@ class Heater extends UINode {
         return this.status.currentHeaterStatus || this.oldStatus.currentHeaterStatus || 'off';
     }
 
+    //TODO fix this
+    // eslint-disable-next-line complexity
     recalculate() {
         if (typeof (this.status) === 'undefined' || typeof (this.status.currentTemp) !== 'number') {
             this.debug('Recalculate: no current temperature!!!');

@@ -12,8 +12,9 @@ class FrontEnd {
         if (displayMode !== 'buttons') {
             htmlFile = 'frontEndSlider.html';
         }
-        var cssContent = fs.readFileSync(path.resolve(__dirname, './', 'frontEnd.css'), 'utf8');
-        var htmlContent = fs.readFileSync(path.resolve(__dirname, './', htmlFile), 'utf8');
+        const currentDirName = path.resolve(path.dirname('./nodes/heater/./'));
+        var cssContent = fs.readFileSync(path.resolve(currentDirName, 'frontEnd.css'), 'utf8');
+        var htmlContent = fs.readFileSync(path.resolve(currentDirName, htmlFile), 'utf8');
         return '<style>' + cssContent + '</style>' + htmlContent;
     }
 
@@ -113,14 +114,12 @@ class FrontEnd {
 
         $scope.isLocked = function () {
             $scope.status.isLocked = !$scope.status.isLocked;
-            //TODO check if we can set only targetValue
             $scope.status.isUserCustom = true;
             $scope.sendStatus();
         };
 
         $scope.userTargetChanged = function () {
             //Set this as initial status but after sending the new settings we will have a refreshed status with the real values
-            //TODO check if we can set only targetValue
             $scope.status.targetValue = $scope.status.userTargetValue;
             $scope.status.isUserCustom = true;
             $scope.sendStatus();
@@ -128,7 +127,6 @@ class FrontEnd {
 
         $scope.toSchedule = function () {
             //Set this as initial status but after sending the new settings we will have a refreshed status with the real values
-            //TODO check if we can set only isUserCustom
             $scope.status.targetValue = $scope.status.currentSchedule.temp;
             $scope.status.userTargetValue = $scope.status.targetValue;
             $scope.status.isUserCustom = false;
