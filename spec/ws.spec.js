@@ -161,14 +161,10 @@ describe("ws", () => {
                 should(ret).be.deepEqual(JSON.parse(val), 'Decoded message not matching with input message');
             });
 
-            it('Test send: throw exception', function (done) {
-                ws.broadcast = sinon.fake();
-
+            itParam('Test send: throw exception', [{ id: 'test' }, { topic: 'test' }, { topic: 1, id: true }], function (val) {
                 should(() => {
-                    ws.send();
+                    ws.send(val.id, val.topic, val.message);
                 }).throw('Invalid id or topic', 'Should not be able to send message without an valid topic');
-
-                done();
             });
 
             it('Test _onReceivedMessage: decode and trigger event', function (done) {
@@ -180,6 +176,13 @@ describe("ws", () => {
 
                 should(eventCB.callCount).be.equal(1, 'Event not triggered when a new message arrives');
                 should(eventCB.firstCall.args[0]).be.deepEqual({ topic: 'fakeTopic', payload: 'payload' }, 'Event function not triggered with sent payload');
+                done();
+            });
+
+            it('Test send: client does not exists', function (done) {
+                should(() => {
+                    ws.send('test', 'test', 'test');
+                }).throw('Backend client not registered', 'Un registered client can call send method');
                 done();
             });
         });
@@ -219,6 +222,6 @@ describe("ws", () => {
                     done();
                 }, 2 * 1000);
             });
-        })
+        });
     });
 });
