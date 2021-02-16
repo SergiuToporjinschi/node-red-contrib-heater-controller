@@ -23,23 +23,23 @@ class UINode {
         this.#RED = RED;
         try {
             if (this.#ui === undefined) {
-                this.#ui = RED.require("node-red-dashboard")(RED);
+                this.#ui = RED.require('node-red-dashboard')(RED);
             }
             RED.nodes.createNode(this, this.config);
             this.startSocketIOServer();
             this._createWidget();
-            this.on("input", this.input.bind(this));
+            this.on('input', this.input.bind(this));
         } catch (error) {
             this.error(error);
             throw error;
         }
-        this.on("close", this._close.bind(this));
+        this.on('close', this._close.bind(this));
     }
 
     addEvent(topic, func) {
         if (typeof (topic) !== 'string' || typeof (func) !== 'function') {
-            this.error("Invalid arguments [topic:string, func:function]");
-            throw new Error("Invalid arguments [topic:string, func:function]");
+            this.error('Invalid arguments [topic:string, func:function]');
+            throw new Error('Invalid arguments [topic:string, func:function]');
         }
         this.#events[topic] = func;
         if (topic === 'userConfig') { //we are auto-binding this topic to back link of the node.
@@ -49,8 +49,8 @@ class UINode {
 
     removeEvent(topic) {
         if (typeof (topic) !== 'string') {
-            this.error("Invalid argument [topic:string]");
-            throw new Error("Invalid argument [topic:string]");
+            this.error('Invalid argument [topic:string]');
+            throw new Error('Invalid argument [topic:string]');
         }
         delete this.#events[topic];
     }
@@ -70,7 +70,7 @@ class UINode {
         return frontEndConf;
     }
 
-    _newClientConnected(ws) {
+    _newClientConnected() {
         this.#wsServer.send(this.id, 'config', this._createClientConfig());
         this.#wsServer.send(this.id, 'status', this.status);
     }
@@ -87,7 +87,7 @@ class UINode {
      * - call dashboard remove node if any;
      */
     _close(resolve) {
-        this.debug("Close called");
+        this.debug('Close called');
         this.#wsServer.unRegister(this.id);
         if (this.onOnClose) {
             this.onClose();
@@ -110,7 +110,7 @@ class UINode {
      * @param {function} doneCB function to call when processing is finished or an error occurred
      */
     input(msg, send, doneCB) {
-        this.debug("input: " + JSON.stringify(msg));
+        this.debug('input: ' + JSON.stringify(msg));
         try {
             this._messageIn(msg, send);
             if (doneCB) {
@@ -132,7 +132,7 @@ class UINode {
      * Called in constructor to build the interface
      */
     _createWidget() {
-        this.debug("createWidget called");
+        this.debug('createWidget called');
         try {
             var frontEnd = new FrontEnd();
             var frontEndHtml = frontEnd.getHTML(this.config.displayMode, this.#ui.isDark(), this.#ui.getTheme());
@@ -145,7 +145,7 @@ class UINode {
                 order: this.config.order || 0
             }, {
                 format: frontEndHtml,
-                templateScope: "local",
+                templateScope: 'local',
                 emitOnlyNewValues: false,
                 forwardInputMessages: false,
                 storeFrontEndInputAsState: true,

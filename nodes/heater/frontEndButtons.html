@@ -20,9 +20,9 @@
         </div>
     </div>
     <div layout="column" layout-align="stretch" flex class="container ">{{ msg.isUserCustom}}
-        <md-button ng-click="changeTemp('+')"md-no-ink class="md-raised"><i class="fa fa-chevron-up" style="max-hei"></i></md-button>
+        <md-button ng-click="changeTemp('+')"md-no-ink class="md-raised"><i class="fa fa-chevron-up"></i></md-button>
         <span ng-class="{'user-mode': msg.isUserCustom}" class="temp no-select link-pointer" md-swipe-left="toSchedule()" md-swipe-right="toSchedule()" ng-dblclick="toSchedule()"
             title="Current target (user value or calendar). Double-click for reset.">{{msg.targetValue | number:1}}&deg;{{config.unit}}</span>
-        <md-button ng-click="changeTemp('-')" ng-disabled="!msg || !msg.currentTemp" md-no-ink class="md-raised" style="margin:0px"><i class="fa fa-chevron-down"></i></md-button>
+        <md-button ng-click="changeTemp('-')" ng-disabled="!msg || !msg.currentTemp" md-no-ink class="md-raised" style="margin:0"><i class="fa fa-chevron-down"></i></md-button>
     </div>
 </div>

@@ -14,6 +14,7 @@ module.exports = {
     },
     "ignorePatterns": ["spec/**/*.*", ".*", ".vscode/**/*.*", ""],
     "rules": {
-        "quotes": ["error", "single"]
+        "quotes": ["error", "single"],
+        "complexity": ["error", { "max": 10 }]
     }
 };
