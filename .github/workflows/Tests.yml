@@ -5,8 +5,20 @@ name: Tests
 
 on:
   push:
+    paths: 
+      - '**.js'
+      - '**.css'
+      - '**.json'
+      - '**.html'
+      - '**.yml'
     branches: [ Refactoring ]
   pull_request:
+    paths: 
+      - '**.js'
+      - '**.css'
+      - '**.json'
+      - '**.html'
+      - '**.yml'
     branches: [ Refactoring ]
 
 jobs:
