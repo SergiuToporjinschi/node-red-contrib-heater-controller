@@ -190,6 +190,7 @@ For example:
     The last or current target temperature set by user
   * **isUserCustom** (boolean)
     True if current target temperature is set by the user
+
 ## [ChangeLog](CHANGELOG.md)
 
 If you find this project useful, please consider supporting it with a donation <br/>
