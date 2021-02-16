@@ -1,12 +1,12 @@
 var UINode = require('./uINode')
 const weekDays = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday"
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday'
 ];
 class Heater extends UINode {
     debugOffSet = 0;
@@ -49,15 +49,15 @@ class Heater extends UINode {
 
     initCurrentState() {
         this.status = {
-            "currentTemp": undefined, //Current room temperature
-            "targetValue": undefined, //Target temperature for the room
-            "isUserCustom": undefined, //Is targetValue a user custom value?
-            "isLocked": undefined, //Is targetValue locked (locker is true)
-            "userTargetValue": undefined, //Target temperature set by user
-            "currentSchedule": undefined, //Current target temperature from scheduler for this moment
-            "nextSchedule": undefined, //Next target temperature from scheduler for next change
-            "currentHeaterStatus": undefined, //Is heater running?
-            "time": new Date().toLocaleString()
+            'currentTemp': undefined, //Current room temperature
+            'targetValue': undefined, //Target temperature for the room
+            'isUserCustom': undefined, //Is targetValue a user custom value?
+            'isLocked': undefined, //Is targetValue locked (locker is true)
+            'userTargetValue': undefined, //Target temperature set by user
+            'currentSchedule': undefined, //Current target temperature from scheduler for this moment
+            'nextSchedule': undefined, //Next target temperature from scheduler for next change
+            'currentHeaterStatus': undefined, //Is heater running?
+            'time': new Date().toLocaleString()
         }
         this.context().set('status', this.status);
         this.status.currentSchedule = this.getScheduleOffSet();
@@ -67,7 +67,7 @@ class Heater extends UINode {
     onTempChange(msg) {
         //console.log('currentTemp');
         if (typeof (msg.payload) !== 'number') {
-            this.error("onTempChange->Invalid payload [" + JSON.stringify(msg) + "]");
+            this.error('onTempChange->Invalid payload [' + JSON.stringify(msg) + ']');
             throw new Error('Invalid payload');
         }
 
@@ -93,7 +93,7 @@ class Heater extends UINode {
             !(['undefined', 'boolean'].includes(typeof (msg.payload.isLocked)) &&
                 ['undefined', 'number'].includes(typeof (msg.payload.userTargetValue)) &&
                 ['undefined', 'boolean'].includes(typeof (msg.payload.isUserCustom)))) {
-            this.error("onUserConfig->Invalid payload [" + JSON.stringify(msg) + "]");
+            this.error('onUserConfig->Invalid payload [' + JSON.stringify(msg) + ']');
             throw new Error('Invalid payload');
         }
 
@@ -133,13 +133,13 @@ class Heater extends UINode {
 
     onSetCalendar(msg) {
         if (typeof (msg.payload) !== 'object') {
-            this.error("onSetCalendar->Invalid payload [" + JSON.stringify(msg) + "]");
+            this.error('onSetCalendar->Invalid payload [' + JSON.stringify(msg) + ']');
             throw new Error('Invalid payload');
         }
         try {
             this.config.calendar = require('./calendarValidation').check(msg.payload);
         } catch (error) {
-            this.error("Invalid calendar", error.details);
+            this.error('Invalid calendar', error.details);
             throw error;
         }
         return { heaterStatus: undefined, status: this.status };
@@ -152,13 +152,13 @@ class Heater extends UINode {
     getSearchedInterval(offSet) {
         var intervalList = [];
         for (var i in this.config.calendar) {
-            var dayId = weekDays.indexOf(i);;
+            var dayId = weekDays.indexOf(i);
             for (var j in this.config.calendar[i]) {
-                intervalList.push(dayId + j.replace(":", ""));
+                intervalList.push(dayId + j.replace(':', ''));
             }
         }
         intervalList.sort();
-        var nowCode = new Date().getDay() + ("0" + new Date().getHours()).slice(-2) + ("0" + new Date().getMinutes()).slice(-2);
+        var nowCode = new Date().getDay() + ('0' + new Date().getHours()).slice(-2) + ('0' + new Date().getMinutes()).slice(-2);
         var isInInterval = intervalList.indexOf(nowCode) >= 0;
         var currentPoz = intervalList.indexOf(nowCode);
         if (!isInInterval) {
@@ -187,7 +187,7 @@ class Heater extends UINode {
     getScheduleOffSet(userOffset) {
         var intervalCode = this.getSearchedInterval(userOffset || 0);
         var weekDay = intervalCode[0];
-        var time = intervalCode.substr(1).substr(0, 2) + ":" + intervalCode.substr(1).substr(2);
+        var time = intervalCode.substr(1).substr(0, 2) + ':' + intervalCode.substr(1).substr(2);
 
         var retObj = {
             time: time
@@ -199,9 +199,9 @@ class Heater extends UINode {
 
     calculateStatus(targetValue) {
         if (this.status.currentTemp >= (this.config.threshold + targetValue)) {
-            this.status.currentHeaterStatus = "off";
+            this.status.currentHeaterStatus = 'off';
         } else if (this.status.currentTemp <= (targetValue - this.config.threshold)) {
-            this.status.currentHeaterStatus = "on";
+            this.status.currentHeaterStatus = 'on';
         }
 
         //if currentTemp = 5, target = 5, threshold != 0 then there is a possibility for having no choice but keep the initial status
@@ -210,12 +210,12 @@ class Heater extends UINode {
     }
 
     recalculate() {
-        if (typeof (this.status) === 'undefined' || typeof (this.status.currentTemp) !== "number") {
-            this.debug("Recalculate: no current temperature!!!");
+        if (typeof (this.status) === 'undefined' || typeof (this.status.currentTemp) !== 'number') {
+            this.debug('Recalculate: no current temperature!!!');
             return;
         }
-        if (typeof (this.status.currentSchedule) !== "object") {
-            this.debug("Recalculate: no schedule!!!");
+        if (typeof (this.status.currentSchedule) !== 'object') {
+            this.debug('Recalculate: no schedule!!!');
             return;
         }
 

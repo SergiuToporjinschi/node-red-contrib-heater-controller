@@ -32,7 +32,7 @@ class WebSocketServer {
 
     registerIncomingEvents(topic, func, id) {
         if (typeof (topic) !== 'string' || typeof (func) !== 'function' || typeof (id) !== 'string') {
-            throw new Error("Invalid arguments [topic:string, func:function, id:string]");
+            throw new Error('Invalid arguments [topic:string, func:function, id:string]');
         }
         this.#backEndClients[id].events.on(topic, func);
     }
@@ -86,7 +86,7 @@ class WebSocketServer {
         }
         console.log('SendMessage to ', id, message);
         backEndClient.ws.send(this._encodedMessage(topic, message));
-    };
+    }
 
     _onReceivedMessage(id, message) {
         console.log('nr.Clients', this.#server.clients);

@@ -149,7 +149,7 @@ function WSClient(url, onConnect) {
     this.client.on('connectFailed', function (connection) {
         console.log('WebSocket Client Connected');
     });
-    var wsClient = this;
+    var wsClient = this.client;
     this.client.on('connect', function (connection) {
         console.log('WebSocket Client Connected');
 

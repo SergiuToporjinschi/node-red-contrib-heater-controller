@@ -44,7 +44,10 @@
     "nodes/**/*.*"
   ],
   "devDependencies": {
+    "babel-eslint": "^10.1.0",
     "coveralls": "^3.1.0",
+    "eslint": "^7.20.0",
+    "eslint-plugin-es5": "^1.5.0",
     "http-shutdown": "^1.2.2",
     "lodash": "~4.17.20",
     "mocha": "^8.2.1",
