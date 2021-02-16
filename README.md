@@ -7,6 +7,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/SergiuToporjinschi/node-red-contrib-heater-controller.svg?service=github)](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/stargazers)
 [![GitHub watchers](https://img.shields.io/github/watchers/SergiuToporjinschi/node-red-contrib-heater-controller.svg?service=github)](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/watchers)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0a5d4e2aafae4234bbf4728d260c35d7)](https://app.codacy.com/gh/SergiuToporjinschi/node-red-contrib-heater-controller?utm_source=github.com&utm_medium=referral&utm_content=SergiuToporjinschi/node-red-contrib-heater-controller&utm_campaign=Badge_Grade)
 [![Maintainability](https://api.codeclimate.com/v1/badges/dc1e814f47a134beef43/maintainability?service=github)](https://codeclimate.com/github/SergiuToporjinschi/node-red-contrib-heater-controller/maintainability)
 [![Package Quality](http://npm.packagequality.com/shield/node-red-contrib-heater-controller.svg?service=github)](http://packagequality.com/#?package=node-red-contrib-heater-controller)
 [![Tests](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/workflows/Tests/badge.svg)](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/actions)
