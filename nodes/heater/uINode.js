@@ -88,7 +88,7 @@ class UINode {
     _close(resolve) {
         this.debug('Close called');
         this.#wsServer.unRegister(this.id);
-        if (this.onOnClose) {
+        if (this.onClose) {
             this.onClose();
         }
         if (this.#doneUI) {

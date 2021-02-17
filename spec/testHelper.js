@@ -109,12 +109,16 @@ var exp = {
         WS.wsw = undefined;
         return WS;
     },
-    getNodeUI: function () {
+    getNodeUI: function (WS) {
         delete require.cache[require.resolve('../nodes/heater/uINode')];
-        delete require.cache[require.resolve('../nodes/heater/webSocketServer')];
-        var WS = require('../nodes/heater/webSocketServer');
+        if (!WS) {
+            delete require.cache[require.resolve('../nodes/heater/webSocketServer')];
+            var WS = require('../nodes/heater/webSocketServer');
+        }
         var UINode = require('../nodes/heater/uINode');
-        WS.wsw = undefined;
+        if (!WS) {
+            WS.wsw = undefined;
+        }
         UINode.prototype.debug = sinon.fake();
         UINode.prototype.error = sinon.fake();
         UINode.prototype.on = sinon.fake();

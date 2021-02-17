@@ -269,7 +269,6 @@ describe("ws", () => {
                     instance1.unRegister(id + 1);
                 });
 
-
                 setTimeout((() => {
                     should(connectionCalledFake.callCount).be.equal(1, "WebSocketServer is not attached or connection event is not called");
                     done();
