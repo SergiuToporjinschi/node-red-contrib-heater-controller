@@ -103,7 +103,28 @@ var exp = {
         Red.require.withArgs('node-red-dashboard').returns(constrUI);
         return Red;
     },
+    getWsMocked: function () {
+        delete require.cache[require.resolve('../nodes/heater/webSocketServer')];
+        var WS = require('../nodes/heater/webSocketServer');
+        WS.wsw = undefined;
+        return WS;
+    },
+    getNodeUI: function () {
+        delete require.cache[require.resolve('../nodes/heater/uINode')];
+        delete require.cache[require.resolve('../nodes/heater/webSocketServer')];
+        var WS = require('../nodes/heater/webSocketServer');
+        var UINode = require('../nodes/heater/uINode');
+        WS.wsw = undefined;
+        UINode.prototype.debug = sinon.fake();
+        UINode.prototype.error = sinon.fake();
+        UINode.prototype.on = sinon.fake();
+        UINode.prototype.id = 'fakeIdUINode';
+        return UINode;
+    },
     getMockedHeaterControllerFaked: function (hc) {
+        delete require.cache[require.resolve('../nodes/heater/webSocketServer')];
+        var WS = require('../nodes/heater/webSocketServer');
+        WS.wsw = undefined;
         hc = this.getMockedHeaterController(hc, sinon.fake(), sinon.fake(), sinon.fake(), sinon.fake(), sinon.fake());
         hc.prototype.context = sinon.fake.returns({ set: sinon.fake() });
         hc.prototype.receive = sinon.fake.returns();
@@ -144,15 +165,13 @@ function startHTTPServer(port) {
     return server;
 }
 
-function WSClient(url, onConnect) {
+function WSClient(url, onConnect, onMessage, onClose) {
     this.client = new WebSocketClient();
     this.client.on('connectFailed', function (connection) {
         console.log('WebSocket Client Connected');
     });
     var wsClient = this.client;
     this.client.on('connect', function (connection) {
-        console.log('WebSocket Client Connected');
-
         wsClient.connection = connection;
         if (onConnect) {
             onConnect();
@@ -160,9 +179,14 @@ function WSClient(url, onConnect) {
         connection.on('error', function (error) {
             console.log("Connection Error: " + error.toString());
         });
-        connection.on('close', function () {
-            console.log('echo-protocol Connection Closed');
-        });
+
+        if (onClose) {
+            connection.on('close', onClose);
+        }
+
+        if (onMessage) {
+            connection.on('message', onMessage);
+        }
     });
     this.client.connect(url);
     return this.client;

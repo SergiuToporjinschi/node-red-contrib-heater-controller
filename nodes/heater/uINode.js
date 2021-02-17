@@ -66,7 +66,6 @@ class UINode {
             var key = frontConfigOptions[i];
             frontEndConf[key] = this.config[key];
         }
-        frontEndConf.title = frontEndConf.title + '-' + this.id;
         return frontEndConf;
     }
 

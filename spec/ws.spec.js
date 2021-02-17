@@ -4,17 +4,17 @@ var itParam = require('mocha-param');
 var sinon = require('sinon');
 var _ = require('lodash');
 var helper = require("./testHelper.js");
-var WS = require('../nodes/heater/webSocketServer');
 describe("ws", () => {
     describe('webSocketServer', function () {
-
-        it('Constructor default settings', function (done) {
+        var id, WS;
+        beforeEach(() => {
             delete require.cache[require.resolve('../nodes/heater/webSocketServer')];
-            WS = require('../nodes/heater/webSocketServer');
             RED = helper.getMockedRED();
             RED.server.on = sinon.fake();
-            var id = 'dummyID';
-
+            WS = helper.getWsMocked();
+            id = 'dummyID';
+        });
+        it('Constructor default settings', function (done) {
             WS.createInstance(RED, id);
 
             should(WS.wsw.getURL(id)).be.equal("/heaterController/io/dummyID", 'Invalid generated URL');
@@ -26,12 +26,7 @@ describe("ws", () => {
         });
 
         it('Constructor custom settings', function (done) {
-            delete require.cache[require.resolve('../nodes/heater/webSocketServer')];
-            RED = helper.getMockedRED();
-            RED.server.on = sinon.fake();
             RED.settings.httpNodeRoot = '/node-red';
-            var id = 'dummyID';
-            WS.wsw = undefined;
 
             WS.createInstance(RED, id);
 
@@ -44,12 +39,7 @@ describe("ws", () => {
         });
 
         it('Constructor check for singleTone', function (done) {
-            delete require.cache[require.resolve('../nodes/heater/webSocketServer')];
-            RED = helper.getMockedRED();
-            RED.server.on = sinon.fake();
             RED.settings.httpNodeRoot = '/node-red';
-            var id = 'dummyID';
-            WS.wsw = undefined;
 
             WS.createInstance(RED, id);
 
@@ -69,12 +59,12 @@ describe("ws", () => {
         });
 
         describe('Test methods', function () {
-            var ws, id;
+            var ws;
             beforeEach(() => {
                 RED = helper.getMockedRED();
                 RED.server.on = sinon.fake();
                 RED.settings.httpNodeRoot = 'node-red';
-                id = 'dummyID';
+                WS = helper.getWsMocked();
                 WS.createInstance(RED, id);
                 ws = WS.wsw;
             });
@@ -188,89 +178,79 @@ describe("ws", () => {
         });
 
         describe('Tests with WS client', () => {
-            var id = "dummyID";
+            var instance;
+
             beforeEach(() => {
-                delete require.cache[require.resolve('../nodes/heater/webSocketServer')];
-                delete require.cache[require.resolve('../nodes/heater/uINode')];
-                delete require.cache[require.resolve('../nodes/heater/heater')];
-                delete require.cache[require.resolve('./testHelper.js')];
-                WS = require('../nodes/heater/webSocketServer');
                 RED = helper.getMockedRED();
-                id = 'dummyID';
+                RED.server = helper.startHTTPServer();
+                WS = helper.getWsMocked();
+                instance = WS.createInstance(RED, id);
             });
+
+            afterEach(() => {
+                RED.server.shutdown();
+            });
+
             it('Test _shouldIHandleThis: for invalid urls', function (done) {
-                var instance = WS.createInstance(RED, id + 1)
                 var connectionCalledFake = sinon.fake();
-                instance.registerIncomingEvents('connection', connectionCalledFake, id + 1);
+                instance.registerIncomingEvents('connection', connectionCalledFake, id);
                 should(instance._shouldIHandleThis(1)).be.false('Accepts invalid urls');
                 should(instance._shouldIHandleThis('/heaterController/io')).be.false('Accepts invalid urls');
-                should(instance._shouldIHandleThis('/heaterController/io/' + id + 1)).be.true('Does not accepts valid urls');
+                should(instance._shouldIHandleThis('/heaterController/io/' + id)).be.true('Does not accepts valid urls');
                 done();
             });
 
             it('Test _handleServerUpgrade: handling a proper request', function (done) {
-                RED.server = helper.startHTTPServer();
-                var instance = WS.createInstance(RED, id);
                 var connectionCalledFake = sinon.fake();
                 instance.registerIncomingEvents('connection', connectionCalledFake, id);
 
-                var wsClient = new helper.WSClient('ws://localhost:8080/heaterController/io/' + id);
+                new helper.WSClient('ws://localhost:8080/heaterController/io/' + id);
 
-                setTimeout(() => {
+                setTimeout((() => {
                     should(connectionCalledFake.callCount).be.equal(1, "WebSocketServer is not attached or connection event is not called");
-                    RED.server.shutdown();
                     done();
-                }, 2 * 1000);
+                }).bind(this), 2 * 1000);
             });
 
             it('Test _handleServerUpgrade: testing invalid client connection', function (done) {
-                RED.server = helper.startHTTPServer();
-                var instance = WS.createInstance(RED, id);
                 var connectionCalledFake = sinon.fake();
                 instance.registerIncomingEvents('connection', connectionCalledFake, id);
 
-                var wsClient = new helper.WSClient('ws://localhost:8080/heaterController/io/' + id + 1, () => {
+                new helper.WSClient('ws://localhost:8080/heaterController/io/' + id + 1, () => {
                     instance.send(id, 'test', 'test');
                 });
-                setTimeout(() => {
+                setTimeout((() => {
                     should(connectionCalledFake.callCount).be.equal(0, "WebSocketServer is not attached or connection event is not called");
-                    RED.server.shutdown();
                     done();
-                }, 2 * 1000);
+                }).bind(this), 2 * 1000);
             });
 
             it('Test send: can send message to existing client', function (done) {
-                RED.server = helper.startHTTPServer();
-                var instance = WS.createInstance(RED, id);
                 var connectionCalledFake = sinon.fake();
                 instance.registerIncomingEvents('connection', connectionCalledFake, id);
 
-                var wsClient = new helper.WSClient('ws://localhost:8080/heaterController/io/' + id, () => {
+                new helper.WSClient('ws://localhost:8080/heaterController/io/' + id, () => {
                     instance.send(id, 'test', 'test');
                 });
-                setTimeout(() => {
+                setTimeout((() => {
                     should(connectionCalledFake.callCount).be.equal(1, "WebSocketServer is not attached or connection event is not called");
-                    RED.server.shutdown();
                     done();
-                }, 2 * 1000);
+                }).bind(this), 2 * 1000);
             });
 
             it('Test unRegister: should be able to unregistered a node', function (done) {
-                RED.server = helper.startHTTPServer();
-                var instance = WS.createInstance(RED, id);
                 var connectionCalledFake = sinon.fake();
                 instance.registerIncomingEvents('connection', connectionCalledFake, id);
 
-                var wsClient = new helper.WSClient('ws://localhost:8080/heaterController/io/' + id, () => {
+                new helper.WSClient('ws://localhost:8080/heaterController/io/' + id, () => {
                     instance.send(id, 'test', 'test');
                     instance.unRegister(id);
-                 });
+                });
 
-                setTimeout(() => {
+                setTimeout((() => {
                     should(connectionCalledFake.callCount).be.equal(1, "WebSocketServer is not attached or connection event is not called");
-                    RED.server.shutdown();
                     done();
-                }, 2 * 1000);
+                }).bind(this), 2 * 1000);
             });
         });
     });

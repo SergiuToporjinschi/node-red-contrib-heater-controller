@@ -84,12 +84,10 @@ class WebSocketServer {
         if (typeof (backEndClient) === 'undefined') {
             throw new Error('Backend client not registered');
         }
-        console.log('SendMessage to ', id, message);
         backEndClient.ws.send(this._encodedMessage(topic, message));
     }
 
     _onReceivedMessage(id, message) {
-        console.log('nr.Clients', this.#server.clients);
         var content = this._decodeMessage(message);
         this.#backEndClients[id].events.emit(content.topic, content);
     }

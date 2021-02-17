@@ -2,7 +2,7 @@ var sinon = require('sinon');
 var should = require("should");
 var itParam = require('mocha-param');
 var helper = require("./testHelper.js");
-var UINode = require('../nodes/heater/uINode');
+
 var _ = require('lodash');
 var tempRising = [];
 for (var i = 10.5; i < 30; i = i + 0.5) {
@@ -13,14 +13,11 @@ describe("uiNodes", () => {
     describe("Functions", function () {
         var RED = helper.getMockedRED();
         const sandbox = sinon.createSandbox();
+        var UINode;
 
         beforeEach(() => {
+            UINode = helper.getNodeUI();
             RED = helper.getMockedRED();
-            delete require.cache[require.resolve('../nodes/heater/uINode')];
-            UINode.prototype.debug = sinon.fake();
-            UINode.prototype.error = sinon.fake();
-            UINode.prototype.on = sinon.fake();
-            UINode.prototype.id = 'fakeIdUINode';
         })
 
         afterEach(function () {
@@ -69,6 +66,7 @@ describe("uiNodes", () => {
         describe('Test Methods', () => {
             var uiNode = undefined;
             beforeEach(() => {
+                UINode = helper.getNodeUI();
                 uiNode = new UINode(RED, {
                     displayMode: 'buttons',
                     calendar: JSON.stringify(helper.calendar)
@@ -182,6 +180,53 @@ describe("uiNodes", () => {
                 should(_.keys(configReturn)).be.deepEqual(acceptedKeys, 'front-end config is not a valid object');
                 done();
             });
+
+            it('Test _newClientConnected: when first connect send config and status', function (done) {
+                // delete require.cache[require.resolve('../nodes/heater/webSocketServer')];
+                // delete require.cache[require.resolve('../nodes/heater/uINode')];
+                // delete require.cache[require.resolve('../nodes/heater/heater')];
+                // delete require.cache[require.resolve('./testHelper.js')];
+
+                // UINode.prototype.debug = sinon.fake();
+                // UINode.prototype.error = sinon.fake();
+                // UINode.prototype.on = sinon.fake();
+                // UINode.prototype.id = 'fakeIdUINode';
+                // helper.getWsMocked();
+                var LOCAL_RED = helper.getMockedRED();
+                LOCAL_RED.server = helper.startHTTPServer();
+                var config = {
+                    title: 'test',
+                    calendar: JSON.stringify(helper.calendar)
+                }
+                var UINode = helper.getNodeUI();
+                uiNode = new UINode(LOCAL_RED, Object.assign({}, config, { displayMode: 'buttons' }));
+                uiNode.status = {
+                    currentHeaterStatus: { temp: 22 },
+                    nextSchedule: { temp: 20 },
+                    isLocked: true,
+                    userTargetValue: 10
+                };
+
+                var wsClient = new helper.WSClient('ws://localhost:8080/heaterController/io/' + UINode.prototype.id, undefined, (message) => {
+                    should(message.utf8Data).be.String("message is not an object");
+                    var data = JSON.parse(message.utf8Data);
+                    should(data).be.Object("message is not an object");
+                    if (data.topic === 'config') {
+                        should(data.topic).be.equal('config', "Config not send on client connected");
+                        should(data.payload).be.deepEqual(config, "Config not send on client connected");
+                    }
+                    if (data.topic === 'status') {
+                        should(data.topic).be.equal('status', "Status not send on client connected");
+                        should(data.payload).be.deepEqual(uiNode.status, "Config not send on client connected");
+                    }
+                });
+                setTimeout((() => {
+                    wsClient.connection.drop();
+                    LOCAL_RED.server.shutdown();
+                    done();
+                }).bind(this), 3 * 1000);
+            });
+
         });
     });
 });

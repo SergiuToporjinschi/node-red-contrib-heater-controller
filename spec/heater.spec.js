@@ -13,7 +13,6 @@ describe("heater.spec.js", () => {
         var hc;
         const sandbox = sinon.createSandbox();
         beforeEach(() => {
-            // sandbox.spy(RED);
             var HeaterController = helper.getMockedHeaterControllerFaked(require('../nodes/heater/heater'));
             sandbox.spy(HeaterController);
         })
@@ -25,10 +24,7 @@ describe("heater.spec.js", () => {
          * Test offSet calculation
          */
         describe("Test calculating schedule with offset", () => {
-            ;
             beforeEach(() => {
-                // RED.require.withArgs('node-red-dashboard').returns(sinon.fake());
-
                 hc = new HeaterController(RED, {
                     group: 'someGroup',
                     calendar: JSON.stringify(helper.calendar),
