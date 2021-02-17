@@ -44,6 +44,7 @@ class WebSocketServer {
             if (client !== ws && client.readyState === ws.OPEN) {
                 client.close(1000);
             } else {
+                /* istanbul ignore next */ //this will not be tested is a very extreme case
                 client.terminate();
             }
         });

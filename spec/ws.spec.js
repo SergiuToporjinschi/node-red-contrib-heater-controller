@@ -252,6 +252,29 @@ describe("ws", () => {
                     done();
                 }).bind(this), 2 * 1000);
             });
+
+            it('Test unRegister: should be able to unregistered a node', function (done) {
+                var connectionCalledFake = sinon.fake();
+                var connectionCalledFake1 = sinon.fake();
+                instance.registerIncomingEvents('connection', connectionCalledFake, id);
+                instance1 = WS.createInstance(RED, id + 1);
+                instance1.registerIncomingEvents('connection', connectionCalledFake1, id + 1);
+
+                new helper.WSClient('ws://localhost:8080/heaterController/io/' + id, () => {
+                    instance.send(id, 'test', 'test');
+                    instance.unRegister(id);
+                });
+                new helper.WSClient('ws://localhost:8080/heaterController/io/' + id + 1, () => {
+                    instance1.send(id + 1, 'test', 'test');
+                    instance1.unRegister(id + 1);
+                });
+
+
+                setTimeout((() => {
+                    should(connectionCalledFake.callCount).be.equal(1, "WebSocketServer is not attached or connection event is not called");
+                    done();
+                }).bind(this), 3 * 1000);
+            });
         });
     });
 });
