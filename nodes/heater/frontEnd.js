@@ -137,6 +137,12 @@ class FrontEnd {
             $scope.status.isUserCustom = false;
             $scope.sendStatus();
         };
+
+        $scope.buttonsChangeTemp = function (direction) {
+            $scope.status.userTargetValue += ($scope.config.sliderStep * (direction === '-' ? -1 : 1));
+            $scope.status.isUserCustom = true;
+            $scope.sendStatus();
+        };
     }
 }
 

@@ -3,7 +3,7 @@
     <div ng-show='typeof(config) === "undefined"' layout="row" layout-sm="column" layout-align="space-around">
         <md-progress-circular md-mode="indeterminate"></md-progress-circular>
     </div>
-    <div ng-show='typeof(config) !== "undefined"' class="content" style="border: 1px solid red">
+    <div ng-show='typeof(config) !== "undefined"' class="content">
         <div layout="row" layout-align="end center" class="warning-icon">
             <span class="info" title="Current calendar temp" ng-show="status.currentSchedule != undefined"><i class="fa fa-calendar-o" aria-hidden="true"></i>{{status.currentSchedule.temp}}&deg;{{config.unit}}
                 ({{status.currentSchedule.time}})</span>
