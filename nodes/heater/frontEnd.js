@@ -143,6 +143,22 @@ class FrontEnd {
             $scope.status.isUserCustom = true;
             $scope.sendStatus();
         };
+
+        $scope.buttonsDisabled = function (direction) {
+            var statusCondition = typeof ($scope.status) === 'undefined';
+            if (statusCondition) return;
+
+            var tempCondition = false;
+            if (direction === '-') {
+                tempCondition = $scope.status.userTargetValue == $scope.config.sliderMinValue;
+            } else {
+                tempCondition = $scope.status.userTargetValue == $scope.config.sliderMaxValue;
+            }
+
+            return statusCondition || tempCondition ||
+                typeof ($scope.status.targetValue) === 'undefined' ||
+                typeof ($scope.status.currentTemp) === 'undefined';
+        }
     }
 }
 

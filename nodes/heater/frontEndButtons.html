@@ -27,12 +27,12 @@
             </div>
         </div>
         <div class="control-column">
-            <md-button ng-click="buttonsChangeTemp('+')" md-no-ink class="md-primary control-button" ng-disabled="!status || !status.targetValue || !status.currentTemp"><i class="fa fa-chevron-up"></i></md-button>
+            <md-button ng-click="buttonsChangeTemp('+')" md-no-ink class="md-primary control-button" ng-disabled="buttonsDisabled('+')"><i class="fa fa-chevron-up"></i></md-button>
             <div title="Current target (user value or calendar). Double-click for reset." ng-class="{'user-mode': status.isUserCustom}" class="target-temp temp no-select link-pointer" md-swipe-left="toSchedule($event)"
                 md-swipe-right="toSchedule($event)" ng-dblclick="toSchedule($event)">
                 {{status.targetValue ? (status.targetValue | number:1) : "--.-"}}&deg;{{config.unit}}
             </div>
-            <md-button ng-click="buttonsChangeTemp('-')" md-no-ink class="md-primary control-button" ng-disabled="!status || !status.targetValue || !status.currentTemp" style="margin:0"><i class="fa fa-chevron-down"></i>
+            <md-button ng-click="buttonsChangeTemp('-')" md-no-ink class="md-primary control-button" ng-disabled="buttonsDisabled('-')" style="margin:0"><i class="fa fa-chevron-down"></i>
             </md-button>
         </div>
     </div>
