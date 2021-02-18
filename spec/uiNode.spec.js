@@ -263,14 +263,6 @@ describe("uiNodes", () => {
             should(UINode.prototype.onClose.callCount).be.equal(1, "onClose is not called when calling _close");
             done();
         });
-        // const frontConfigOptions = [
-        //     'title',
-        //     'calendar',
-        //     'unit',
-        //     'sliderMaxValue',
-        //     'sliderMinValue',
-        //     'sliderStep'
-        // ];
         itParam('Test _sendToFrontEnd: should call websocket.send', [
             {
                 heaterStatus: "on",

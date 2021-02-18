@@ -1,8 +1,8 @@
-.heater-slider.wrapper {
+.heater-buttons.wrapper {
   padding: 0.5em;
 }
 
-.heater-slider p.title {
+.heater-buttons p.title {
   margin-bottom: 0.7em;
   margin-top: 0;
   font-size: larger;
@@ -10,23 +10,24 @@
   z-index: 1;
 }
 
-.heater-slider .content {
+.heater-buttons .content {
   width: 100%;
   height: 100%;
+  display: flex;
 }
 
-.heater-slider .icon-contr-container {
+.heater-buttons .icon-contr-container {
   flex: auto;
   display: flex;
 }
 
-.heater-slider .control-container {
+.heater-buttons .control-container {
   height: 84%;
   flex-flow: column;
   display: flex;
 }
 
-.heater-slider .side-icon-container {
+.heater-buttons .side-icon-container {
   display: flex;
   margin: 0 1em;
   justify-content: center;
@@ -34,19 +35,19 @@
   text-align: center;
 }
 
-.heater-slider .current-cal-temp {
+.heater-buttons .current-cal-temp {
   color: #0094ce;
   font-size: 1.5em;
   font-weight: bold;
 }
 
-.heater-slider .side-icon-container i,
-.heater-slider .side-icon-container .current-cal-temp {
+.heater-buttons .side-icon-container i,
+.heater-buttons .side-icon-container .current-cal-temp {
   margin-top: 4px;
   margin-bottom: 4px;
 }
 
-.heater-slider .target-temp {
+.heater-buttons .target-temp {
   flex-grow: 3;
   display: flex;
   justify-content: center;
@@ -54,25 +55,25 @@
   height: 100%;
 }
 
-.heater-slider .temp {
+.heater-buttons .temp {
   color: #0094ce;
   font-size: 5em;
   font-weight: bold;
 }
 
-.heater-slider md-slider .md-track {
+.heater-buttons md-slider .md-track {
   background-color: gray;
 }
 
-.heater-slider .iconFalse {
+.heater-buttons .iconFalse {
   color: gray;
 }
 
-.heater-slider .iconTrue {
+.heater-buttons .iconTrue {
   color: #ff4d4d;
 }
 
-.heater-slider .no-select:focus {
+.heater-buttons .no-select:focus {
   outline: none;
   -webkit-touch-callout: none;
 
@@ -92,20 +93,20 @@
   user-select: none;
 }
 
-.heater-slider .warning-icon i {
+.heater-buttons .warning-icon i {
   margin-left: 5px;
   margin-right: 5px;
 }
 
-.heater-slider .link-pointer {
+.heater-buttons .link-pointer {
   cursor: pointer;
 }
 
-.heater-slider .user-mode {
+.heater-buttons .user-mode {
   color: rgb(63, 81, 181) !important;
 }
 
-.heater-slider .info {
+.heater-buttons .info {
   margin-right: 10px;
 }
 
@@ -117,21 +118,3 @@
   margin-left: 10px;
 }
 
-.btns .info .item {
-  margin-bottom: 7px;
-}
-
-.btns .icon-disabled {
-  color: gray;
-}
-
-.btns .icon-enabled {
-  color: #0094ce;
-}
-
-.btns .temp {
-  color: #0094ce;
-  font-size: 3em;
-  font-weight: bold;
-  text-align: center;
-}

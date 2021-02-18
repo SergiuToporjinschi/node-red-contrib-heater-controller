@@ -1,6 +1,16 @@
 /* eslint no-console: ["error", { allow: ["warn", "error", "debug"] }] */
 'use strict';
-const path = require('path');
+const displayModeFiles = {
+    buttons: {
+        html: './nodes/heater/frontEndButtons.html',
+        css: './nodes/heater/frontEndButtons.css'
+    },
+    slider: {
+        html: './nodes/heater/frontEndSlider.html',
+        css: './nodes/heater/frontEndSlider.css'
+    }
+}
+
 class FrontEnd {
     constructor() {
     }
@@ -8,13 +18,8 @@ class FrontEnd {
     getHTML(displayMode, isDark, theme) {
         //TODO take in consideration isDark theme;
         var fs = require('fs');
-        var htmlFile = 'frontEndButtons.html';
-        if (displayMode !== 'buttons') {
-            htmlFile = 'frontEndSlider.html';
-        }
-        const currentDirName = path.resolve(path.dirname('./nodes/heater/./'));
-        var cssContent = fs.readFileSync(path.resolve(currentDirName, 'frontEnd.css'), 'utf8');
-        var htmlContent = fs.readFileSync(path.resolve(currentDirName, htmlFile), 'utf8');
+        var cssContent = fs.readFileSync(displayModeFiles[displayMode].css, 'utf8');
+        var htmlContent = fs.readFileSync(displayModeFiles[displayMode].html, 'utf8');
         return '<style>' + cssContent + '</style>' + htmlContent;
     }
 
