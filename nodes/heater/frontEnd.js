@@ -18,8 +18,8 @@ class FrontEnd {
     getHTML(displayMode, isDark, theme) {
         //TODO take in consideration isDark theme;
         var fs = require('fs');
-        var cssContent = fs.readFileSync(displayModeFiles[displayMode].css, 'utf8');
-        var htmlContent = fs.readFileSync(displayModeFiles[displayMode].html, 'utf8');
+        var cssContent = fs.readFileSync(displayModeFiles[displayMode || 'slider'].css, 'utf8');
+        var htmlContent = fs.readFileSync(displayModeFiles[displayMode || 'slider'].html, 'utf8');
         return '<style>' + cssContent + '</style>' + htmlContent;
     }
 
