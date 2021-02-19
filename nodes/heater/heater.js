@@ -67,7 +67,7 @@ class Heater extends UINode {
         this.context().set('logs', this.logs);
     }
 
-    onLogsRequest(msg) {
+    onLogsRequest() {
         return { logs: this.logs };
     }
 
