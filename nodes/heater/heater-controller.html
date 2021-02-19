@@ -1,118 +1,110 @@
 <script type="text/html text/x-red" data-template-name="ui_heater_controller">
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="heater_controller.label.name"></span></label>
-        <input type="text" id="node-input-name">
-    </div>
-    <div class="form-row" id="template-row-group">
-        <label for="node-input-group"><i class="fa fa-table"></i> <span data-i18n="heater_controller.label.group"></span></label>
-        <input type="text" id="node-input-group">
-    </div>
-    <div class="form-row" id="template-row-size">
-        <label><i class="fa fa-object-group"></i> <span data-i18n="heater_controller.label.size"></span></label>
-        <input type="hidden" id="node-input-width">
-        <input type="hidden" id="node-input-height">
-        <button class="editor-button" id="node-input-size"></button>
-    </div>
-    <div class="form-row">
-        <label for="node-input-topic"><i class="fa fa-tasks"></i> <span data-i18n="heater_controller.label.topic"></span></label>
-        <input type="text" id="node-input-topic">
-    </div>
-    <div class="form-row">
-        <label for="node-input-title"><i class="fa fa-tasks"></i> <span data-i18n="heater_controller.label.title"></span></label>
-        <input type="text" id="node-input-title">
-    </div>
-    <div class="form-row">
-        <label for="node-input-displayMode"><i class="fa fa-thermometer-empty"></i> <span data-i18n="heater_controller.label.displayMode"></span></label>
-        <select id="node-input-displayMode">
-            <option value="buttons" id="btns" selected="selected"><span data-i18n="heater_controller.label.dmButtons"></span></option>
-            <option value="slider" id="slide"><span data-i18n="heater_controller.label.dmSlider"></span></option>
-        </select>
-    </div>
+      <div class="form-row">
+          <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="heater_controller.label.name"></span></label>
+          <input type="text" id="node-input-name">
+      </div>
+      <div class="form-row" id="template-row-group">
+          <label for="node-input-group"><i class="fa fa-table"></i> <span data-i18n="heater_controller.label.group"></span></label>
+          <input type="text" id="node-input-group">
+      </div>
+      <div class="form-row" id="template-row-size">
+          <label><i class="fa fa-object-group"></i> <span data-i18n="heater_controller.label.size"></span></label>
+          <input type="hidden" id="node-input-width">
+          <input type="hidden" id="node-input-height">
+          <button class="editor-button" id="node-input-size"></button>
+      </div>
+      <div class="form-row">
+          <label for="node-input-topic"><i class="fa fa-tasks"></i> <span data-i18n="heater_controller.label.topic"></span></label>
+          <input type="text" id="node-input-topic">
+      </div>
+      <div class="form-row">
+          <label for="node-input-title"><i class="fa fa-tasks"></i> <span data-i18n="heater_controller.label.title"></span></label>
+          <input type="text" id="node-input-title">
+      </div>
+      <div class="form-row">
+          <label for="node-input-displayMode"><i class="fa fa-thermometer-empty"></i> <span data-i18n="heater_controller.label.displayMode"></span></label>
+          <select id="node-input-displayMode">
+              <option value="buttons" id="btns" selected="selected"><span data-i18n="heater_controller.label.dmButtons"></span></option>
+              <option value="slider" id="slide"><span data-i18n="heater_controller.label.dmSlider"></span></option>
+          </select>
+      </div>
 
-    <div class="form-row">
-        <label for="node-input-unit"><i class="fa fa-thermometer-empty"></i> <span data-i18n="heater_controller.label.unit"></span></label>
-        <select id="node-input-unit">
-            <option value="C" id="cUnit" selected="selected"><span data-i18n="heater_controller.label.celsiusUnit"></span>x</option>
-            <option value="F" id="fUnit"><span data-i18n="heater_controller.label.fahrenheitUnit"></span>x</option>
-            <option value="K" id="kUnit"><span data-i18n="heater_controller.label.kelvinUnit"></span>xs</option>
-        </select>
-    </div>
+      <div class="form-row">
+          <label for="node-input-unit"><i class="fa fa-thermometer-empty"></i> <span data-i18n="heater_controller.label.unit"></span></label>
+          <select id="node-input-unit">
+              <option value="C" id="cUnit" selected="selected"><span data-i18n="heater_controller.label.celsiusUnit"></span>x</option>
+              <option value="F" id="fUnit"><span data-i18n="heater_controller.label.fahrenheitUnit"></span>x</option>
+              <option value="K" id="kUnit"><span data-i18n="heater_controller.label.kelvinUnit"></span>xs</option>
+          </select>
+      </div>
 
-    <div class="form-row">
-        <label for="node-input-threshold"><i class="fa fa-arrows-v"></i> <span data-i18n="heater_controller.label.hysteresis"></label>
-        <input type="number" min="-100" max="100" step="0.1" list="defaultNumbers" id="node-input-threshold" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" dir="">
-        <datalist id="defaultNumbers">
-                <option value="0">
-                <option value="0.5">
-                <option value="1">
-                <option value="1.5">
-                <option value="2">
-        </datalist>
-    </div>
-
-    <div class="form-row">
-        <label style="width:95%; border-bottom: 1px solid #eee;"><span data-i18n="heater_controller.label.logTitle"> </span></label>
-    </div>
-    <div class="ident">
-        <div class="form-row">
-            <label for="node-input-logLength"><i class="fa fa-file-text-o" aria-hidden="true"></i> <span data-i18n="heater_controller.label.logLength"></span></label>
-            <input type="number" id="node-input-logLength" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
-        </div>
-        <div class="form-row">
-            <label for="node-input-logLengthType"><i class="fa fa-file-text-o"></i> <span data-i18n="heater_controller.label.logLengthType"></span></label>
-            <select id="node-input-logLengthType">
-                <option value="days" id="daysType" selected="selected"><span data-i18n="heater_controller.label.daysType"></span>x</option>
-                <option value="changes" id="changesType"><span data-i18n="heater_controller.label.changesType"></span>x</option>
-            </select>
-        </div>
-    </div>
-    <div id="slider-settings">
-    <div class="form-row">
-        <label style="width:95%; border-bottom: 1px solid #eee;"><span data-i18n="heater_controller.label.slider"> </span></label>
-    </div>
-    <div class="ident" >
-        <div class="form-row">
-            <label for="node-input-sliderMinValue"><i class="fa fa-step-backward" aria-hidden="true"></i> <span data-i18n="heater_controller.label.min"></span></label>
-            <input type="number" step="1" id="node-input-sliderMinValue" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
-        </div>
-        <div class="form-row">
-            <label for="node-input-sliderMaxValue"><i class="fa fa-step-forward" aria-hidden="true"></i> <span data-i18n="heater_controller.label.max"></span></label>
-            <input type="number" step="1" id="node-input-sliderMaxValue" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
-        </div>
-        <div class="form-row">
-            <label for="node-input-sliderStep"> <span data-i18n="heater_controller.label.step"></span></label>
-            <input type="number" min="0.1" step="0.1" list="stepSliderValues" id="node-input-sliderStep" data-i18n="[placeholder]heater_controller.placeholder.value" style="width: 280px" >
-        </div>
-        <datalist id="stepSliderValues">
-                <option value="0.1">
-                <option value="0.5">
-                <option value="1">
-                <option value="1.5">
-                <option value="2">
-                <option value="2.5">
-                <option value="3">
-        </datalist>
-    </div>
-</div>
-    <div class="form-row">
-        <label id="node-input-calendarEditorLabel" style="width:95%; border-bottom: 1px solid #eee;">
-            <i class="fa fa-calendar"></i>
-            <span data-i18n="heater_controller.label.calendar"></span>
-            <button id="node-input-json-format" class="editor-button editor-button-small" style="float: right"><span data-i18n="editor:jsonEditor.format"></span></button>
-        </label>
-    </div>
-    <div class="ident">
-        <div class="form-row">
-            <input type="hidden" id="node-input-calendar">
-        </div>
-        <div class="form-row node-text-editor-row">
-            <div style="height:650px; min-height:100px" class="node-text-editor" id="node-input-calendarEditor" ></div>
-        </div>
-    </div>
+      <div class="form-row">
+          <label for="node-input-threshold"><i class="fa fa-arrows-v"></i> <span data-i18n="heater_controller.label.hysteresis"></label>
+          <input type="number" min="-100" max="100" step="0.1" list="defaultNumbers" id="node-input-threshold" data-i18n="[placeholder]heater_controller.placeholder.value" dir="">
+          <datalist id="defaultNumbers">
+                  <option value="0">
+                  <option value="0.5">
+                  <option value="1">
+                  <option value="1.5">
+                  <option value="2">
+          </datalist>
+      </div>
+      <div class="form-row">
+          <label style="width:100%; border-bottom: 1px solid #eee;"><span data-i18n="heater_controller.label.logTitle"> </span></label>
+      </div>
+      <div class="ident">
+          <div class="form-row">
+              <label for="node-input-logLength"><i class="fa fa-file-text-o" aria-hidden="true"></i> <span data-i18n="heater_controller.label.logLength"></span></label>
+              <input type="number" step="1" min="0" max="100" id="node-input-logLength" data-i18n="[placeholder]heater_controller.placeholder.value">
+          </div>
+      </div>
+      <div id="slider-settings">
+            <div class="form-row">
+                <label style="width:100%; border-bottom: 1px solid #eee;"><span data-i18n="heater_controller.label.slider"> </span></label>
+            </div>
+            <div class="ident" >
+                <div class="form-row">
+                    <label for="node-input-sliderMinValue"><i class="fa fa-step-backward" aria-hidden="true"></i> <span data-i18n="heater_controller.label.min"></span></label>
+                    <input type="number" step="1" id="node-input-sliderMinValue" data-i18n="[placeholder]heater_controller.placeholder.value">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-sliderMaxValue"><i class="fa fa-step-forward" aria-hidden="true"></i> <span data-i18n="heater_controller.label.max"></span></label>
+                    <input type="number" step="1" id="node-input-sliderMaxValue" data-i18n="[placeholder]heater_controller.placeholder.value">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-sliderStep"> <span data-i18n="heater_controller.label.step"></span></label>
+                    <input type="number" min="0.1" step="0.1" list="stepSliderValues" id="node-input-sliderStep" data-i18n="[placeholder]heater_controller.placeholder.value">
+                </div>
+                <datalist id="stepSliderValues">
+                        <option value="0.1"></option>
+                        <option value="0.5"></option>
+                        <option value="1"></option>
+                        <option value="1.5"></option>
+                        <option value="2"></option>
+                        <option value="2.5"></option>
+                        <option value="3"></option>
+                </datalist>
+            </div>
+      </div>
+      <div class="form-row">
+          <label id="node-input-calendarEditorLabel" style="width:95%; border-bottom: 1px solid #eee;">
+              <i class="fa fa-calendar"></i>
+              <span data-i18n="heater_controller.label.calendar"></span>
+              <button id="node-input-json-format" class="editor-button editor-button-small" style="float: right"><span data-i18n="editor:jsonEditor.format"></span></button>
+          </label>
+      </div>
+      <div class="ident">
+          <div class="form-row">
+              <input type="hidden" id="node-input-calendar">
+          </div>
+          <div class="form-row node-text-editor-row">
+              <div style="height:650px; min-height:100px" class="node-text-editor" id="node-input-calendarEditor" ></div>
+          </div>
+      </div>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType("ui_heater_controller", {
+    RED.nodes.registerType('ui_heater_controller', {
         category: 'dashboard',
         color: 'rgb( 63, 173, 181)',
         defaults: {
@@ -125,14 +117,14 @@
                 }
             },
             unit: {
-                value: "C",
+                value: 'C',
                 required: true,
                 validate: function (value) {
                     return ['C', 'F', 'K'].indexOf(value) >= 0;
                 }
             },
             displayMode: {
-                value: "buttons",
+                value: 'buttons',
                 required: true,
                 validate: function (value) {
                     return ['buttons', 'slider'].indexOf(value) >= 0;
@@ -147,25 +139,20 @@
                     var width = v || 0;
                     var currentGroup = $('#node-input-group').val() || this.group;
                     var groupNode = RED.nodes.node(currentGroup);
-                    valid = !groupNode || + width <= +groupNode.width;
-                    $("#node-input-size").toggleClass("input-error", !valid);
+                    valid = !groupNode || +width <= +groupNode.width;
+                    $('#node-input-size').toggleClass('input-error', !valid);
                     return valid;
                 }
             },
             height: { value: 4 },
             topic: { value: '' },
             title: { value: 'Heater' },
-            logLengthType: {
-                value: 'days',
-                required: true,
-                validate: function (value) {
-                    return ['days', 'changes'].indexOf(value) >= 0;
-                }
-            },
             logLength: {
                 value: 1,
                 required: true,
-                validate: RED.validators.number()
+                validate: function(v){
+                    return RED.validators.number(v)(v) && v >= 0 && v <= 100;
+                }
             },
             sliderMinValue: {
                 value: 10,
@@ -201,307 +188,321 @@
                 validate: function (v) {
                     var valid = true;
                     var calendar = {};
-                    if (typeof v === "object") {
+                    if (typeof v === 'object') {
                         calendar = v;
-                    } else if (typeof v === "string") {
+                    } else if (typeof v === 'string') {
                         try {
                             calendar = JSON.parse(v);
                         } catch (e) {
                             valid = false;
-                            console.log("Invalid JSON in Heater calendar ", e);
+                            console.log('Invalid JSON in Heater calendar ', e);
                         }
                     } else {
                         valid = false;
-                        console.log("Invalid JSON in Heater calendar ", e);
+                        console.log('Invalid JSON in Heater calendar ', e);
                     }
 
-                    var wd = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].sort();
+                    var wd = [
+                        'Sunday',
+                        'Monday',
+                        'Tuesday',
+                        'Wednesday',
+                        'Thursday',
+                        'Friday',
+                        'Saturday'
+                    ].sort();
                     if (valid && wd.length != Object.keys(calendar).sort().length) {
-                        valid = false;
+                        valid = false
                     }
 
                     for (var i = 0; valid && i < wd.length; i++) {
                         if (Object.keys(calendar[wd[i]]).length <= 0) {
-                            valid = false;
+                            valid = false
                         }
                     }
-                    $("#node-input-calendarEditorLabel").toggleClass("input-error", !valid);
-                    $("#node-input-calendarEditor").toggleClass("input-error", !valid);
+                    $('#node-input-calendarEditorLabel').toggleClass('input-error', !valid);
+                    $('#node-input-calendarEditor').toggleClass('input-error', !valid);
                     return valid;
                 },
                 value: JSON.stringify(
                     {
-                        "Monday": {
-                            "00:00": 19,
-                            "06:20": 22,
-                            "08:00": 19,
-                            "16:40": 22,
-                            "23:59": 19
+                        Monday: {
+                            '00:00': 19,
+                            '06:20': 22,
+                            '08:00': 19,
+                            '16:40': 22,
+                            '23:59': 19
                         },
-                        "Tuesday": {
-                            "00:00": 19,
-                            "06:20": 22,
-                            "08:00": 19,
-                            "16:40": 22,
-                            "23:59": 19
+                        Tuesday: {
+                            '00:00': 19,
+                            '06:20': 22,
+                            '08:00': 19,
+                            '16:40': 22,
+                            '23:59': 19
                         },
-                        "Wednesday": {
-                            "00:00": 19,
-                            "06:20": 22,
-                            "08:00": 19,
-                            "16:40": 22,
-                            "23:59": 19
+                        Wednesday: {
+                            '00:00': 19,
+                            '06:20': 22,
+                            '08:00': 19,
+                            '16:40': 22,
+                            '23:59': 19
                         },
-                        "Thursday": {
-                            "00:00": 19,
-                            "06:20": 22,
-                            "08:00": 19,
-                            "16:40": 22,
-                            "23:59": 19
+                        Thursday: {
+                            '00:00': 19,
+                            '06:20': 22,
+                            '08:00': 19,
+                            '16:40': 22,
+                            '23:59': 19
                         },
-                        "Friday": {
-                            "00:00": 19,
-                            "06:20": 23,
-                            "08:00": 19,
-                            "16:40": 22,
-                            "23:59": 19
+                        Friday: {
+                            '00:00': 19,
+                            '06:20': 23,
+                            '08:00': 19,
+                            '16:40': 22,
+                            '23:59': 19
                         },
-                        "Saturday": {
-                            "00:00": 19,
-                            "08:00": 20,
-                            "20:00": 22,
-                            "23:59": 19
+                        Saturday: {
+                            '00:00': 19,
+                            '08:00': 20,
+                            '20:00': 22,
+                            '23:59': 19
                         },
-                        "Sunday": {
-                            "00:00": 19,
-                            "08:00": 20,
-                            "20:00": 22,
-                            "23:59": 19
+                        Sunday: {
+                            '00:00': 19,
+                            '08:00': 20,
+                            '20:00': 22,
+                            '23:59': 19
                         }
-                    }, null, 4)
+                    },
+                    null,
+                    4
+                )
             }
         },
         inputs: 1,
-        outputs: 2,
-        align: "left",
-        icon: "heater.png",
-        paletteLabel: "heater",
-        label: function () { return this.name || "heater"; },
+        outputs: 3,
+        align: 'left',
+        icon: 'heater.png',
+        paletteLabel: 'heater',
+        label: function () {
+            return this.name || 'heater'
+        },
         oneditprepare: function () {
-            node = this;
-            $('#btns').text(RED._("node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.dmButtons"));
-            $('#slide').text(RED._("node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.dmSlider"));
-
+            var node = this;
+            $('#btns').text(RED._('node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.dmButtons'));
+            $('#slide').text(RED._('node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.dmSlider'));
             $('#node-input-topic').val(this.topic);
-            $('#cUnit').text(RED._("node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.celsiusUnit"));
-            $('#fUnit').text(RED._("node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.fahrenheitUnit"));
-            $('#kUnit').text(RED._("node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.kelvinUnit"));
+            $('#cUnit').text(RED._('node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.celsiusUnit'));
+            $('#fUnit').text(RED._('node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.fahrenheitUnit'));
+            $('#kUnit').text(RED._('node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.kelvinUnit'));
 
-            $('#daysType').text(RED._("node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.daysType"));
-            $('#changesType').text(RED._("node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.changesType"));
-
+            $('#daysType').text(RED._('node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.daysType'));
+            $('#changesType').text(RED._('node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.changesType'));
             $('#red-ui-editor-node-label-form-input-0').val('currentTemp | userConfig | setCalendar');
             $('#red-ui-editor-node-label-form-output-0').val('Heater status');
             $('#red-ui-editor-node-label-form-output-1').val('Computation status');
             ace.edit($('#node-info-input-info-editor>.ace_editor')[0]).setValue('Description');
-            // var r = ace.edit('node-info-input-info-editor');
-            // r.setValue('text');
-            $("#node-input-size").elementSizer({
-                width: "#node-input-width",
-                height: "#node-input-height",
-                group: "#node-input-group"
+            $('#node-input-size').elementSizer({
+                width: '#node-input-width',
+                height: '#node-input-height',
+                group: '#node-input-group'
             });
 
             this.editor = RED.editor.createEditor({
                 id: 'node-input-calendarEditor',
                 mode: 'ace/mode/json',
-                value: $("#node-input-calendar").val()
+                value: $('#node-input-calendar').val()
             });
 
             var editor = this.editor;
-            $("#node-input-json-format").on('click', function (e) {
+            $('#node-input-json-format').on('click', function (e) {
                 e.preventDefault();
                 try {
-                    editor.getSession().setValue(JSON.stringify(JSON.parse(editor.getSession().getValue()), null, 4));
+                    editor
+                        .getSession()
+                        .setValue(
+                            JSON.stringify(
+                                JSON.parse(editor.getSession().getValue()),
+                                null,
+                                4
+                            )
+                        )
                 } catch (e) {
-                    console.log("Invalid JSON in Heater calendar ")
+                    console.log('Invalid JSON in Heater calendar ')
                 }
             });
-            // $('#unit').val(this.unit || "C");
-            // $('#displayMode').val(this.displayMode || "buttons");
             this.editor.focus();
         },
 
         oneditsave: function () {
-            var calendarVal = this.editor.getValue();
-            this.editor.destroy();
-            delete this.editor;
-            this.topic = $('#node-input-topic').val();
-            this.logLength = Number.parseInt(this.logLength);
-            this.sliderMaxValue = Number.parseFloat(this.sliderMaxValue);
-            this.sliderMinValue = Number.parseFloat(this.sliderMinValue);
+            var calendarVal = this.editor.getValue()
+            this.editor.destroy()
+            delete this.editor
+            this.topic = $('#node-input-topic').val()
+            debugger
+            this.logLength = Number.parseInt(this.logLength)
+            this.sliderMaxValue = Number.parseFloat(this.sliderMaxValue)
+            this.sliderMinValue = Number.parseFloat(this.sliderMinValue)
             this.sliderStep = Number.parseFloat(this.sliderStep)
-            this.threshold = Number.parseFloat(this.threshold);
-            // this.unit = $('#unit').val();
-            // this.displayMode = $('#displayMode').val();
-            $("#node-input-calendar").val(calendarVal);
+            this.threshold = Number.parseFloat(this.threshold)
+            $('#node-input-calendar').val(calendarVal)
         },
         oneditcancel: function () {
-            this.editor.destroy();
-            delete this.editor;
+            this.editor.destroy()
+            delete this.editor
         },
         oneditresize: function (size) {
-            this.editor.resize();
+            this.editor.resize()
         }
-    });
+    })
 </script>
 <script type="text/html text/x-red" data-help-name="ui_heater_controller">
-    <p>A dashboard ui interface node for controlling a heater;</p>
-    <h3>Properties</h3>
-    <dl class="message-properties">
-        <dt>Topic <span class="property-type">string</span></dt>
-        <dd>Topic sent with all messages; this cannot be taken from input since it expects a fixed topic</dd>
-    </dl>
-    <dl class="message-properties">
-        <dt>Title <span class="property-type">string</span></dt>
-        <dd>An optional title that will appear in front view to identify the heater.</dd>
-    </dl>
-    <dl class="message-properties">
-        <dt>Unit <span class="property-type">Celsius/Fahrenheit/Kelvin</span></dt>
-        <dd>Display unit</dd>
-    </dl>
-    <dl class="message-properties">
-        <dt>Min <span class="property-type">integer</span></dt>
-        <dd>Minimum value selectable using slider</dd>
-    </dl>
-    <dl class="message-properties">
-        <dt>Max <span class="property-type">boolean</span></dt>
-        <dd>Maximum vale selectable using slider</dd>
-    </dl>
-    <dl class="message-properties">
-        <dt>Step <span class="property-type">integer</span></dt>
-        <dd>Step value selectable from slider</dd>
-    </dl>
-    <dl class="message-properties">
-        <dt>Threshold<span class="property-type">float</span></dt>
-        <dd>Hysteresis/threshold limit. This value is added or subtracted from the target temperature to determinate the point of setting heater on or off</dd>
-    </dl>
-    <dl class="message-properties">
-        <dt>Calendar<span class="property-type">json</span></dt>
-        <dd>The calendar which will be apply in automatic mode. Needs to be a valid JSON with float values for temperature.<br>
-            Is important to cover the entire interval of 24/7, otherwise will keep the temperature until next since or next week day</dd>
-        <dd>For example:</dd>
-        <pre>
-{
-    "Monday" : {
-        "00:00" : 19,
-        "06:20" : 22,
-        "08:00" : 19,
-        "16:40" : 22,
-        "23:59" : 19
-    },
-    "Tuesday" : {
-        "00:00" : 19,
-        "06:20" : 22,
-        "08:00" : 19,
-        "16:40" : 22,
-        "23:59" : 19
-    }
-}
-        </pre>
-    </dl>
-    <h3>Inputs</h3>
-    <dl class="message-properties">
-        <dt>currentTemp</dt>
-        <dd>
-            This controller accepts one main input which has to have topic as "currentTemp" and payload needs to be a float
-            <p>The heater status is recalculated when this message received, or when the user is changing the target temperature.</p>
-            <p style="color: #AD1625;">The entire control is not functional until this message is received</p>
-<pre>{
-    "topic" : "currentTemp",
-    "payload" : "22.5"
-}</pre>
-        </dd>
-    </dl>
+      <p>A dashboard ui interface node for controlling a heater;</p>
+      <h3>Properties</h3>
+      <dl class="message-properties">
+          <dt>Topic <span class="property-type">string</span></dt>
+          <dd>Topic sent with all messages; this cannot be taken from input since it expects a fixed topic</dd>
+      </dl>
+      <dl class="message-properties">
+          <dt>Title <span class="property-type">string</span></dt>
+          <dd>An optional title that will appear in front view to identify the heater.</dd>
+      </dl>
+      <dl class="message-properties">
+          <dt>Unit <span class="property-type">Celsius/Fahrenheit/Kelvin</span></dt>
+          <dd>Display unit</dd>
+      </dl>
+      <dl class="message-properties">
+          <dt>Min <span class="property-type">integer</span></dt>
+          <dd>Minimum value selectable using slider</dd>
+      </dl>
+      <dl class="message-properties">
+          <dt>Max <span class="property-type">boolean</span></dt>
+          <dd>Maximum vale selectable using slider</dd>
+      </dl>
+      <dl class="message-properties">
+          <dt>Step <span class="property-type">integer</span></dt>
+          <dd>Step value selectable from slider</dd>
+      </dl>
+      <dl class="message-properties">
+          <dt>Threshold<span class="property-type">float</span></dt>
+          <dd>Hysteresis/threshold limit. This value is added or subtracted from the target temperature to determinate the point of setting heater on or off</dd>
+      </dl>
+      <dl class="message-properties">
+          <dt>Calendar<span class="property-type">json</span></dt>
+          <dd>The calendar which will be apply in automatic mode. Needs to be a valid JSON with float values for temperature.<br>
+              Is important to cover the entire interval of 24/7, otherwise will keep the temperature until next since or next week day</dd>
+          <dd>For example:</dd>
+          <pre>
+  {
+      "Monday" : {
+          "00:00" : 19,
+          "06:20" : 22,
+          "08:00" : 19,
+          "16:40" : 22,
+          "23:59" : 19
+      },
+      "Tuesday" : {
+          "00:00" : 19,
+          "06:20" : 22,
+          "08:00" : 19,
+          "16:40" : 22,
+          "23:59" : 19
+      }
+  }
+          </pre>
+      </dl>
+      <h3>Inputs</h3>
+      <dl class="message-properties">
+          <dt>currentTemp</dt>
+          <dd>
+              This controller accepts one main input which has to have topic as "currentTemp" and payload needs to be a float
+              <p>The heater status is recalculated when this message received, or when the user is changing the target temperature.</p>
+              <p style="color: #AD1625;">The entire control is not functional until this message is received</p>
+  <pre>{
+      "topic" : "currentTemp",
+      "payload" : "22.5"
+  }</pre>
+          </dd>
+      </dl>
 
-    <dl class="message-properties">
-        <dt>userConfig</dt>
-        <dd>To set user configuration value other than through the UI (eg. Voice command), the optional topic <b>userConfig</b> can be used.
-            <ul>
-                <li><b>isLocked</b> - will enable/disable the lock on the dashboard;</li>
-                <li><b>userTargetValue</b> - will set a user target temperature on the dashboard, and will set `isUserCustom` as true if is not set in the message; </li>
-                <li><b>isUserCustom</b> - will set a user target temperature on the dashboard according to current target or to current `userTargetValue`, if is received on false without `userTargetValue` then the will change only the slider;</li>
-            </ul>
-<pre>{
-    "topic" : "userConfig",
-    "payload" : {"isLocked": true, "userTargetValue": 25.5, "isUserCustom": false}
-}</pre>
-        </dd>
-    </dl>
+      <dl class="message-properties">
+          <dt>userConfig</dt>
+          <dd>To set user configuration value other than through the UI (eg. Voice command), the optional topic <b>userConfig</b> can be used.
+              <ul>
+                  <li><b>isLocked</b> - will enable/disable the lock on the dashboard;</li>
+                  <li><b>userTargetValue</b> - will set a user target temperature on the dashboard, and will set `isUserCustom` as true if is not set in the message; </li>
+                  <li><b>isUserCustom</b> - will set a user target temperature on the dashboard according to current target or to current `userTargetValue`, if is received on false without `userTargetValue` then the will change only the slider;</li>
+              </ul>
+  <pre>{
+      "topic" : "userConfig",
+      "payload" : {"isLocked": true, "userTargetValue": 25.5, "isUserCustom": false}
+  }</pre>
+          </dd>
+      </dl>
 
-    <h3>Output</h3>
-    <p>We have two outputs:
-        <ol class='node-ports'>
-            <li>Heater status: Emitted each time when the heater status has been recalculated; </li>
-            <li>Computation status: Emitted when status has been calculate; </li>
-        </ol>
-    </p>
-    <dd>Heater status syntax:</dd>
-    <pre>{
-    "topic" : &lt;topic set in properties&gt;,
-    "payload": [on|off]
-}</pre>
+      <h3>Output</h3>
+      <p>We have two outputs:
+          <ol class='node-ports'>
+              <li>Heater status: Emitted each time when the heater status has been recalculated; </li>
+              <li>Computation status: Emitted when status has been calculate; </li>
+          </ol>
+      </p>
+      <dd>Heater status syntax:</dd>
+      <pre>{
+      "topic" : &lt;topic set in properties&gt;,
+      "payload": [on|off]
+  }</pre>
 
-    <dd>Computation status example:</dd>
-    <pre>
-{
-    "currentTemp":25,
-    "targetValue":20,
-    "currentSchedule":{
-        temp: 19,
-        day: "Wednesday",
-        time: "00:00"
-    },
-    "nextSchedule":{
-        temp: 22,
-        day: "Wednesday",
-        time: "06:20"
-    },
-    "currentHeaterStatus":"off",
-    "userTargetValue":20,
-    "isUserCustom":true
-}
-    </pre>
-    <dl class="message-properties">
-        <dt>currentTemp<span class="property-type">float</span></dt>
-        <dd>The last current temperature received</dd>
-    </dl>
-    <dl class="message-properties">
-        <dt>targetValue<span class="property-type">float</span></dt>
-        <dd>Target temperature displayed in front-end. Could be user custom value, if is changed by the user, or calendar current temperature value set by calendar</dd>
-    </dl>
-    <dl class="message-properties">
-        <dt>currentSchedule<span class="property-type">float</span></dt>
-        <dd>Current calendar schedule. The value which would be set if the controller is set on calendar and some additional information like day of the week and time</dd>
-    </dl>
-    <dl class="message-properties">
-        <dt>nextSchedule<span class="property-type">float</span></dt>
-        <dd>Next calendar schedule. The value which will be set if the controller is set on calendar and some additional information when this will happen, like week day and time</dd>
-    </dl>
-    <dl class="message-properties">
-        <dt>currentHeaterStatus<span class="property-type">string (on|off)</span></dt>
-        <dd>Calculated the heater status based on the difference between target value and current temperature</dd>
-    </dl>
-    <dl class="message-properties">
-        <dt>userTargetValue<span class="property-type">float</span></dt>
-        <dd>The current target temperature set by user. This value will be the target until the next schedule if the isLocked is false.</dd>
-    </dl>
-    <dl class="message-properties">
-        <dt>isUserCustom<span class="property-type">boolean</span></dt>
-        <dd>True if current target temperature is set by the user</dd>
-    </dl>
-    <dl class="message-properties">
-        <dt>isLocked<span class="property-type">boolean</span></dt>
-        <dd>True if current target temperature is locked; if is true, the calendar value will not become targetValue, if is false and the user has set a custom value that value will be available until next schedule change</dd>
-    </dl>
+      <dd>Computation status example:</dd>
+      <pre>
+  {
+      "currentTemp":25,
+      "targetValue":20,
+      "currentSchedule":{
+          temp: 19,
+          day: "Wednesday",
+          time: "00:00"
+      },
+      "nextSchedule":{
+          temp: 22,
+          day: "Wednesday",
+          time: "06:20"
+      },
+      "currentHeaterStatus":"off",
+      "userTargetValue":20,
+      "isUserCustom":true
+  }
+      </pre>
+      <dl class="message-properties">
+          <dt>currentTemp<span class="property-type">float</span></dt>
+          <dd>The last current temperature received</dd>
+      </dl>
+      <dl class="message-properties">
+          <dt>targetValue<span class="property-type">float</span></dt>
+          <dd>Target temperature displayed in front-end. Could be user custom value, if is changed by the user, or calendar current temperature value set by calendar</dd>
+      </dl>
+      <dl class="message-properties">
+          <dt>currentSchedule<span class="property-type">float</span></dt>
+          <dd>Current calendar schedule. The value which would be set if the controller is set on calendar and some additional information like day of the week and time</dd>
+      </dl>
+      <dl class="message-properties">
+          <dt>nextSchedule<span class="property-type">float</span></dt>
+          <dd>Next calendar schedule. The value which will be set if the controller is set on calendar and some additional information when this will happen, like week day and time</dd>
+      </dl>
+      <dl class="message-properties">
+          <dt>currentHeaterStatus<span class="property-type">string (on|off)</span></dt>
+          <dd>Calculated the heater status based on the difference between target value and current temperature</dd>
+      </dl>
+      <dl class="message-properties">
+          <dt>userTargetValue<span class="property-type">float</span></dt>
+          <dd>The current target temperature set by user. This value will be the target until the next schedule if the isLocked is false.</dd>
+      </dl>
+      <dl class="message-properties">
+          <dt>isUserCustom<span class="property-type">boolean</span></dt>
+          <dd>True if current target temperature is set by the user</dd>
+      </dl>
+      <dl class="message-properties">
+          <dt>isLocked<span class="property-type">boolean</span></dt>
+          <dd>True if current target temperature is locked; if is true, the calendar value will not become targetValue, if is false and the user has set a custom value that value will be available until next schedule change</dd>
+      </dl>
 </script>

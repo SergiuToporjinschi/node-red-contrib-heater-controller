@@ -194,7 +194,8 @@ class UINode {
         if (typeof (msg) !== 'object') return;
         var heaterStatus = typeof (msg.heaterStatus) !== 'undefined' ? { topic: this.config.topic, payload: msg.heaterStatus } : undefined;
         var status = typeof (msg.status) !== 'undefined' ? { topic: 'status', payload: msg.status } : undefined;
-        send([heaterStatus, status]);
+        var logs = typeof (msg.logs) !== 'undefined' ? { topic: 'logs', payload: msg.logs } : undefined;
+        send([heaterStatus, status, logs]);
     }
 
     _sendToFrontEnd(obj) {

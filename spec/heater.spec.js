@@ -198,9 +198,9 @@ describe("heater.spec.js", () => {
                 time: '00:00',
                 state: 'off'
             }, {
-            //     time: '08:00',
-            //     state: 'off'
-            // }, {
+                //     time: '08:00',
+                //     state: 'off'
+                // }, {
                 time: '20:00',
                 state: 'on'
             }, {
@@ -274,6 +274,78 @@ describe("heater.spec.js", () => {
                 });
                 hc.status.currentSchedule = {}; //not null
                 sandbox.restore
+            });
+
+            it("onLogsRequest", (done) => {
+                RED = helper.getMockedRED();
+                var heat = helper.getMockedHeaterControllerFaked(require('../nodes/heater/heater'))
+                var hc = new heat(RED, {
+                    group: 'someGroup',
+                    calendar: JSON.stringify(helper.calendar),
+                    topic: 'heaterStatus'
+                });
+                hc.logs = ['test1', 'test2'];
+                var retLogs = hc.onLogsRequest();
+                should(retLogs).be.Object('onLogsRequest is not returning correct format');
+                should(retLogs.logs).be.Array('logs', 'onLogsRequest is not returning an array as logs');
+                should(retLogs.logs).be.deepEqual(hc.logs, 'onLogsRequest returned logs are not equal with sent logs');
+                should(retLogs.logs.length).be.equal(2, 'onLogsRequest is not returning entire log content');
+                done();
+            });
+
+            it("_writeLog: return without pushing anything length = 0", (done) => {
+                RED = helper.getMockedRED();
+                var heat = helper.getMockedHeaterControllerFaked(require('../nodes/heater/heater'))
+                var hc = new heat(RED, {
+                    group: 'someGroup',
+                    logLength: 0,
+                    calendar: JSON.stringify(helper.calendar),
+                    topic: 'heaterStatus'
+                });
+                hc._writeLog();
+                should(hc.logs.length).be.equal(0, "Logs are register even the logLength = 0");
+                done();
+            });
+
+            itParam("_writeLog: return does not change the log length", [
+                { statusHeater: 'on', logStatusHeater: 'on', logLength: 1 },
+                { statusHeater: 'on', logStatusHeater: 'off', logLength: 1 },
+                { statusHeater: 'on', logStatusHeater: undefined, logLength: 1 }
+            ], (val) => {
+                RED = helper.getMockedRED();
+                var heat = helper.getMockedHeaterControllerFaked(require('../nodes/heater/heater'))
+                var hc = new heat(RED, {
+                    group: 'someGroup',
+                    logLength: val.logLength,
+                    calendar: JSON.stringify(helper.calendar),
+                    topic: 'heaterStatus'
+                });
+                hc.status.currentHeaterStatus = val.statusHeater;
+                hc.logs = [{
+                    currentHeaterStatus: val.logStatusHeater
+                }];
+                hc._writeLog();
+                should(hc.logs.length).be.equal(1, "Logs are register even the logLength = 0");
+            });
+
+            itParam("_writeLog: return with additional logs", [
+                { statusHeater: 'on', logStatusHeater: 'off', logLength: 2 },
+                { statusHeater: 'off', logStatusHeater: 'on', logLength: 2 }
+            ], (val) => {
+                RED = helper.getMockedRED();
+                var heat = helper.getMockedHeaterControllerFaked(require('../nodes/heater/heater'))
+                var hc = new heat(RED, {
+                    group: 'someGroup',
+                    logLength: val.logLength,
+                    calendar: JSON.stringify(helper.calendar),
+                    topic: 'heaterStatus'
+                });
+                hc.status.currentHeaterStatus = val.statusHeater;
+                hc.logs = [{
+                    currentHeaterStatus: val.logStatusHeater
+                }];
+                hc._writeLog();
+                should(hc.logs.length).be.equal(2, "Logs are register even the logLength = 0");
             });
 
             itParam("Should throw exception: onTempChange", [{ payload: true }, { payload: '' }, { payload: function () { } }], (val) => {

@@ -17,7 +17,7 @@ var exp = {
         logLengthType: 'days',
         name: 'Heater setting currentTemp',
         order: 0,
-        outputLabels: ['Heater status', 'Computation status'],
+        outputLabels: ['Heater status', 'Computation status', 'Logs'],
         sliderMaxValue: 35,
         sliderMinValue: 10,
         sliderStep: 0.5,

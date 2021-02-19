@@ -149,7 +149,7 @@ describe("uiNodes", () => {
             should(fakeFunc.lastCall.args[0].topic).be.equal('event1', 'Event not registered or not called');
             should(sendFunc.callCount).be.equal(1, 'Send function not called');
             should(Array.isArray(sendFunc.firstCall.args[0])).be.True('Should send an array');
-            should(sendFunc.lastCall.args[0]).be.deepEqual([undefined, undefined], 'Output expected is an array of undefined');
+            should(sendFunc.lastCall.args[0]).be.deepEqual([undefined, undefined, undefined], 'Output expected is an array of undefined');
             should(doneCB.callCount).be.equal(1, 'Input CallBack is not called');
             should(uiNode._sendToFrontEnd.callCount).be.equal(1, 'front end function not called');
             done();
@@ -166,7 +166,7 @@ describe("uiNodes", () => {
             should(fakeFunc.lastCall.args[0].topic).be.equal('event1', 'Event not registered or not called');
             should(sendFunc.callCount).be.equal(1, 'Send function not called');
             should(Array.isArray(sendFunc.firstCall.args[0])).be.True('Should send an array');
-            should(sendFunc.lastCall.args[0]).be.deepEqual([undefined, undefined], 'Output expected is an array of undefined');
+            should(sendFunc.lastCall.args[0]).be.deepEqual([undefined, undefined, undefined], 'Output expected is an array of undefined');
             should(uiNode._sendToFrontEnd.callCount).be.equal(1, 'front end function not called');
             done();
         });

@@ -10,6 +10,7 @@ const weekDays = [
 ];
 class Heater extends UINode {
     debugOffSet = 0;
+    logs = [];
     constructor(RED, config) {
         super(RED, config)
         this.log('Heater Constructor')
@@ -27,6 +28,7 @@ class Heater extends UINode {
         this.addEvent('currentTemp', this.onTempChange); //this topic changes currentTemperature (WE MUST RECEIVE THIS MESSAGE)
         this.addEvent('userConfig', this.onUserConfig);//this topic can be used to change user settings, isLocked, userTargetValue
         this.addEvent('setCalendar', this.onSetCalendar); //this topic can be used to change current calendar
+        this.addEvent('logs', this.onLogsRequest); //this topic can be used to change current calendar
 
         //FOR DEBUG ONLY
         /* istanbul ignore next */
@@ -62,6 +64,11 @@ class Heater extends UINode {
         this.context().set('status', this.status);
         this.status.currentSchedule = this.getScheduleOffSet();
         this.status.nextSchedule = this.getScheduleOffSet(1);
+        this.context().set('logs', this.logs);
+    }
+
+    onLogsRequest(msg) {
+        return { logs: this.logs };
     }
 
     onTempChange(msg) {
@@ -206,9 +213,20 @@ class Heater extends UINode {
             this.status.currentHeaterStatus = 'on';
         }
 
+        this._writeLog();
         //if currentTemp = 5, target = 5, threshold != 0 then there is a possibility for having no choice but keep the initial status
         //if there is no initial status then set it to OFF very very very low probability
         return this.status.currentHeaterStatus || this.oldStatus.currentHeaterStatus || 'off';
+    }
+
+    _writeLog() {
+        if (this.config.logLength <= 0) return;
+        var lastValue = this.logs.length > 0 ? this.logs[this.logs.length - 1] : {};
+        if (lastValue.currentHeaterStatus === this.status.currentHeaterStatus) return;
+        if (this.logs.length === this.config.logLength) {
+            this.logs.shift();
+        }
+        this.logs.push(JSON.parse(JSON.stringify(this.status)));
     }
 
     //TODO fix this
