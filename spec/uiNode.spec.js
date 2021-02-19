@@ -263,6 +263,45 @@ describe("uiNodes", () => {
             should(UINode.prototype.onClose.callCount).be.equal(1, "onClose is not called when calling _close");
             done();
         });
+
+        itParam('Test _sendOutPut: should send message to next node', [
+            { input: { status: { test: 'someStatus' } } },
+            { input: { heaterStatus: 'on' } },
+            { input: { logs: { logs: 'someLogs' } } },
+            { input: { logs: { logs: 'someLogs' }, status: { test: 'someStatus' } } },
+            { input: { status: { test: 'someStatus' }, heaterStatus: 'on' } },
+            { input: { logs: { logs: 'someLogs' }, heaterStatus: 'on' } },
+            { input: { logs: { logs: 'someLogs' }, heaterStatus: 'on', status: { test: 'someStatus' } } }
+        ], function (val) {
+            var UINode = helper.getNodeUI();
+            var fakeSend = sinon.fake();
+            uiNode = new UINode(RED, { id: 'dummyID', group: 'aGroup', displayMode: 'buttons', topic: 'aTopic' });
+            uiNode._sendOutPut(val.input, fakeSend);
+
+            should(fakeSend.callCount).be.equal(1, 'Send is not call: ' + JSON.stringify(val));
+            should(fakeSend.firstCall.args[0]).be.Array('Send method not called with an array');
+            var cntTests = 0;
+            if (val.input.heaterStatus) {
+                should(fakeSend.firstCall.args[0][0]).be.Object('Heater status is not an object: ' + JSON.stringify(val));
+                should(fakeSend.firstCall.args[0][0].topic).be.equal('aTopic', 'heaterStatus has a wrong topic: ' + JSON.stringify(val));
+                should(fakeSend.firstCall.args[0][0].payload).be.equal(val.input.heaterStatus, 'send is not called with correct heater status: ' + JSON.stringify(val));
+                cntTests++;
+            }
+            if (val.input.status) {
+                should(fakeSend.firstCall.args[0][1]).be.Object('status is not an object: ' + JSON.stringify(val));
+                should(fakeSend.firstCall.args[0][1].topic).be.equal('status', 'Status has a wrong topic: ' + JSON.stringify(val));
+                should(fakeSend.firstCall.args[0][1].payload).be.deepEqual(val.input.status, 'send is not called with correct status: ' + JSON.stringify(val));
+                cntTests++;
+            }
+            if (val.input.logs) {
+                should(fakeSend.firstCall.args[0][2]).be.Object('logs is not an object: ' + JSON.stringify(val));
+                should(fakeSend.firstCall.args[0][2].topic).be.equal('logs', 'Logs has a wrong topic: ' + JSON.stringify(val));
+                should(fakeSend.firstCall.args[0][2].payload).be.deepEqual(val.input.logs, 'logs is not called with correct content: ' + JSON.stringify(val));
+                cntTests++;
+            }
+            should(cntTests).be.greaterThan(0, 'No checked performed for this test');
+        });
+
         itParam('Test _sendToFrontEnd: should call websocket.send', [
             {
                 heaterStatus: "on",
