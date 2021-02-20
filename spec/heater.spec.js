@@ -199,9 +199,9 @@ describe("heater.spec.js", () => {
                 time: '00:00',
                 state: 'off'
             }, {
-                //     time: '08:00',
-                //     state: 'off'
-                // }, {
+                time: '08:00',
+                state: 'off'
+            }, {
                 time: '20:00',
                 state: 'on'
             }, {
@@ -220,7 +220,7 @@ describe("heater.spec.js", () => {
                 var fakeTimer = helper.setMockedDate('2021-01-31T' + val.time + ':00.000');//Sunday
                 hc._messageIn({
                     topic: 'currentTemp',
-                    payload: 20
+                    payload: 21
                 }, fakeSend);
                 fakeTimer.restore();
                 should(fakeSend.callCount).be.equal(2, 'Send function not called :' + JSON.stringify(val))
