@@ -171,6 +171,7 @@ describe("ws", () => {
 
             it('Test send: client does not exists', function (done) {
                 should(() => {
+                    ws.send('dummyID', 'test', 'test');
                     ws.send('test', 'test', 'test');
                 }).throw('Backend client not registered', 'Un registered client can call send method');
                 done();

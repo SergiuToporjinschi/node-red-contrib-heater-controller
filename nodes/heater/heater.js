@@ -271,7 +271,7 @@ class Heater extends UINode {
         if (forced_ByScheduler || scheduleChanged) {
             this.status.targetValue = this.status.currentSchedule.temp;
             var heaterNewStatus = this.calculateStatus(this.status.targetValue);
-            if (heaterNewStatus != this.oldStatus.currentHeaterStatus) {
+            if (heaterNewStatus !== this.oldStatus.currentHeaterStatus) {
                 this.status.isUserCustom = false;
             }
             return heaterNewStatus;
