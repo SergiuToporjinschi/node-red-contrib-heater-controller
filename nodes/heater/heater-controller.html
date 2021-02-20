@@ -40,14 +40,7 @@
 
       <div class="form-row">
           <label for="node-input-threshold"><i class="fa fa-arrows-v"></i> <span data-i18n="heater_controller.label.hysteresis"></label>
-          <input type="number" min="-100" max="100" step="0.1" list="defaultNumbers" id="node-input-threshold" data-i18n="[placeholder]heater_controller.placeholder.value" dir="">
-          <datalist id="defaultNumbers">
-                  <option value="0">
-                  <option value="0.5">
-                  <option value="1">
-                  <option value="1.5">
-                  <option value="2">
-          </datalist>
+          <input type="number" min="-100" max="100" step="0.1" id="node-input-threshold" data-i18n="[placeholder]heater_controller.placeholder.value" dir="">
       </div>
       <div class="form-row">
           <label style="width:100%; border-bottom: 1px solid #eee;"><span data-i18n="heater_controller.label.logTitle"> </span></label>
@@ -55,7 +48,7 @@
       <div class="ident">
           <div class="form-row">
               <label for="node-input-logLength"><i class="fa fa-file-text-o" aria-hidden="true"></i> <span data-i18n="heater_controller.label.logLength"></span></label>
-              <input type="number" step="1" min="0" max="100" id="node-input-logLength" data-i18n="[placeholder]heater_controller.placeholder.value">
+              <input type="number" min="0" max="100" id="node-input-logLength">
           </div>
       </div>
       <div id="slider-settings">
@@ -73,17 +66,8 @@
                 </div>
                 <div class="form-row">
                     <label for="node-input-sliderStep"> <span data-i18n="heater_controller.label.step"></span></label>
-                    <input type="number" min="0.1" step="0.1" list="stepSliderValues" id="node-input-sliderStep" data-i18n="[placeholder]heater_controller.placeholder.value">
+                    <input type="number" min="0.1" step="0.1" id="node-input-sliderStep" data-i18n="[placeholder]heater_controller.placeholder.value">
                 </div>
-                <datalist id="stepSliderValues">
-                        <option value="0.1"></option>
-                        <option value="0.5"></option>
-                        <option value="1"></option>
-                        <option value="1.5"></option>
-                        <option value="2"></option>
-                        <option value="2.5"></option>
-                        <option value="3"></option>
-                </datalist>
             </div>
       </div>
       <div class="form-row">
@@ -148,10 +132,10 @@
             topic: { value: '' },
             title: { value: 'Heater' },
             logLength: {
-                value: 1,
+                value: 0,
                 required: true,
                 validate: function(v){
-                    return RED.validators.number(v)(v) && v >= 0 && v <= 100;
+                    return RED.validators.number()(v) && v >= 0 && v <= 100;
                 }
             },
             sliderMinValue: {
@@ -280,7 +264,7 @@
             }
         },
         inputs: 1,
-        outputs: 3,
+        outputs: 2,
         align: 'left',
         icon: 'heater.png',
         paletteLabel: 'heater',
@@ -298,9 +282,9 @@
 
             $('#daysType').text(RED._('node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.daysType'));
             $('#changesType').text(RED._('node-red-contrib-heater_controller/ui_heater_controller:heater_controller.label.changesType'));
-            $('#red-ui-editor-node-label-form-input-0').val('currentTemp | userConfig | setCalendar');
+            $('#red-ui-editor-node-label-form-input-0').val('currentTemp | userConfig | setCalendar | config | status');
             $('#red-ui-editor-node-label-form-output-0').val('Heater status');
-            $('#red-ui-editor-node-label-form-output-1').val('Computation status');
+            $('#red-ui-editor-node-label-form-output-1').val('Info');
             ace.edit($('#node-info-input-info-editor>.ace_editor')[0]).setValue('Description');
             $('#node-input-size').elementSizer({
                 width: '#node-input-width',
@@ -328,31 +312,30 @@
                             )
                         )
                 } catch (e) {
-                    console.log('Invalid JSON in Heater calendar ')
+                    console.log('Invalid JSON in Heater calendar ');
                 }
             });
             this.editor.focus();
         },
 
         oneditsave: function () {
-            var calendarVal = this.editor.getValue()
-            this.editor.destroy()
-            delete this.editor
-            this.topic = $('#node-input-topic').val()
-            debugger
-            this.logLength = Number.parseInt(this.logLength)
-            this.sliderMaxValue = Number.parseFloat(this.sliderMaxValue)
-            this.sliderMinValue = Number.parseFloat(this.sliderMinValue)
-            this.sliderStep = Number.parseFloat(this.sliderStep)
-            this.threshold = Number.parseFloat(this.threshold)
-            $('#node-input-calendar').val(calendarVal)
+            var calendarVal = this.editor.getValue();
+            this.editor.destroy();
+            delete this.editor;
+            this.topic = $('#node-input-topic').val();
+            this.logLength = Number.parseInt($('#node-input-logLength').val());
+            this.sliderMaxValue = Number.parseFloat($('#node-input-sliderMaxValue').val());
+            this.sliderMinValue = Number.parseFloat($('#node-input-sliderMinValue').val());
+            this.sliderStep = Number.parseFloat($('#node-input-sliderStep').val());
+            this.threshold = Number.parseFloat($('#node-input-threshold').val());
+            $('#node-input-calendar').val(calendarVal);
         },
         oneditcancel: function () {
-            this.editor.destroy()
-            delete this.editor
+            this.editor.destroy();
+            delete this.editor;
         },
         oneditresize: function (size) {
-            this.editor.resize()
+            this.editor.resize();
         }
     })
 </script>
@@ -444,7 +427,7 @@
       <p>We have two outputs:
           <ol class='node-ports'>
               <li>Heater status: Emitted each time when the heater status has been recalculated; </li>
-              <li>Computation status: Emitted when status has been calculate; </li>
+              <li>Info: Emitted when status has been calculate; </li>
           </ol>
       </p>
       <dd>Heater status syntax:</dd>

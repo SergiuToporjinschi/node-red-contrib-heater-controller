@@ -28,7 +28,9 @@ class Heater extends UINode {
         this.addEvent('currentTemp', this.onTempChange); //this topic changes currentTemperature (WE MUST RECEIVE THIS MESSAGE)
         this.addEvent('userConfig', this.onUserConfig);//this topic can be used to change user settings, isLocked, userTargetValue
         this.addEvent('setCalendar', this.onSetCalendar); //this topic can be used to change current calendar
-        this.addEvent('logs', this.onLogsRequest); //this topic can be used to change current calendar
+        this.addEvent('logs', this._onLogsRequest); //this topic can be used to request the logs
+        this.addEvent('config', this._onConfigRequest); //this topic can be used to request current node configuration
+        this.addEvent('status', this._onStatusRequest); //this topic can be used to request current status node
 
         //FOR DEBUG ONLY
         /* istanbul ignore next */
@@ -62,12 +64,20 @@ class Heater extends UINode {
             'time': new Date().toLocaleString()
         }
         this.context().set('status', this.status);
+        this.context().set('logs', this.logs);
         this.status.currentSchedule = this.getScheduleOffSet();
         this.status.nextSchedule = this.getScheduleOffSet(1);
-        this.context().set('logs', this.logs);
     }
 
-    onLogsRequest() {
+    _onConfigRequest() {
+        return { config: this.filterConfig(this.config) };
+    }
+
+    _onStatusRequest() {
+        return { status: this.status };
+    }
+
+    _onLogsRequest() {
         return { logs: this.logs };
     }
 
@@ -151,7 +161,7 @@ class Heater extends UINode {
             this.error('Invalid calendar', error.details);
             throw error;
         }
-        return { heaterStatus: undefined, status: this.status };
+        return { status: this.status };
     }
 
     /**

@@ -3,8 +3,12 @@ var FrontEnd = require('./frontEnd')
 const WsServer = require('./webSocketServer')
 const frontConfigOptions = [
     'title',
+    'topic',
+    'logLength',
+    'threshold',
     'calendar',
     'unit',
+    'displayMode',
     'sliderMaxValue',
     'sliderMinValue',
     'sliderStep'
@@ -42,7 +46,7 @@ class UINode {
             throw new Error('Invalid arguments [topic:string, func:function]');
         }
         this.#events[topic] = func;
-        if (topic === 'userConfig') { //we are auto-binding this topic to back link of the node.
+        if (topic === 'userConfig') { //Front-end request bind to the input back-end
             this.#wsServer.registerIncomingEvents(topic, this.receive.bind(this), this.id);
         }
     }
@@ -60,17 +64,17 @@ class UINode {
         this.#wsServer.registerIncomingEvents('connection', this._newClientConnected.bind(this), this.id);
     }
 
-    _createClientConfig() {
+    filterConfig(config) {
         var frontEndConf = {};
         for (var i in frontConfigOptions) {
             var key = frontConfigOptions[i];
-            frontEndConf[key] = this.config[key];
+            frontEndConf[key] = config[key];
         }
         return frontEndConf;
     }
 
     _newClientConnected() {
-        this.#wsServer.send(this.id, 'config', this._createClientConfig());
+        this.#wsServer.send(this.id, 'config', this.filterConfig(this.config));
         this.#wsServer.send(this.id, 'status', this.status);
     }
 
@@ -193,9 +197,13 @@ class UINode {
     _sendOutPut(msg, send) {
         if (typeof (msg) !== 'object') return;
         var heaterStatus = typeof (msg.heaterStatus) !== 'undefined' ? { topic: this.config.topic, payload: msg.heaterStatus } : undefined;
-        var status = typeof (msg.status) !== 'undefined' ? { topic: 'status', payload: msg.status } : undefined;
-        var logs = typeof (msg.logs) !== 'undefined' ? { topic: 'logs', payload: msg.logs } : undefined;
-        send([heaterStatus, status, logs]);
+        delete msg.heaterStatus;
+        if (typeof (heaterStatus) !== 'undefined') {
+            send([heaterStatus]);
+        }
+        for (var i in msg) {
+            send([undefined, {topic: i, payload: msg[i]}]);
+        }
     }
 
     _sendToFrontEnd(obj) {

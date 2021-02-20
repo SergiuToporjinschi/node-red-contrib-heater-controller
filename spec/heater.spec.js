@@ -1,6 +1,7 @@
 var sinon = require('sinon');
 var should = require("should");
 var itParam = require('mocha-param');
+var _ = require('lodash');
 var helper = require("./testHelper.js");
 var HeaterController = require('../nodes/heater/heater');
 var tempRising = [];
@@ -222,10 +223,14 @@ describe("heater.spec.js", () => {
                     payload: 20
                 }, fakeSend);
                 fakeTimer.restore();
-                should(fakeSend.callCount).be.equal(1, 'Send function not called :' + JSON.stringify(val))
-                should(fakeSend.lastCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
-                should.deepEqual(fakeSend.lastCall.args[0][0], { topic: 'heaterStatus', payload: val.state }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
-                should.deepEqual(fakeSend.lastCall.args[0][1], { topic: 'status', payload: hc.status }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
+                should(fakeSend.callCount).be.equal(2, 'Send function not called :' + JSON.stringify(val))
+                should(fakeSend.firstCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
+                should(fakeSend.firstCall.args[0][0]).be.Object('Send is not called with an array:' + JSON.stringify(val));
+                should(fakeSend.firstCall.args[0][0]).be.deepEqual({ topic: 'heaterStatus', payload: val.state }, 'Not expected heaterStatus response:' + JSON.stringify(val));
+                should(fakeSend.secondCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
+                should(fakeSend.secondCall.args[0][0]).be.undefined('heaterStatus should be not sent second time:' + JSON.stringify(val));
+                should(fakeSend.secondCall.args[0][1]).be.Object('Status should be send:' + JSON.stringify(val));
+                should(fakeSend.secondCall.args[0][1]).be.deepEqual({ topic: 'status', payload: hc.status }, 'Status should be send:' + JSON.stringify(val));
             });
             itParam("Test recalculate userCustomTemp ", [
                 { isUserCustom: true, isLocked: true, currentTemp: 15, userCurrentTemp: 20, state: 'on' }, { isUserCustom: true, isLocked: true, currentTemp: 20, userCurrentTemp: 18, state: 'off' },
@@ -254,10 +259,14 @@ describe("heater.spec.js", () => {
                     }
                 }, fakeSend);
                 fakeTimer.restore();
-                should(fakeSend.callCount).be.equal(1, 'Send function not called :' + JSON.stringify(val))
-                should(fakeSend.lastCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
-                should.deepEqual(fakeSend.lastCall.args[0][0].payload, val.state, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
-                should.deepEqual(fakeSend.lastCall.args[0][1].payload, hc.status, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
+                should(fakeSend.callCount).be.equal(2, 'Send function not called :' + JSON.stringify(val))
+                should(fakeSend.firstCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
+                should(fakeSend.firstCall.args[0][0]).be.Object('Send is not called with an Object:' + JSON.stringify(val));
+                should(fakeSend.firstCall.args[0][0]).be.deepEqual({ topic: 'heaterStatus', payload: val.state }, 'Send is not called with correct state:' + JSON.stringify(val));
+
+                should(fakeSend.secondCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
+                should(fakeSend.secondCall.args[0][0]).be.undefined('heaterStatus should be not sent second time:' + JSON.stringify(val));
+                should(fakeSend.secondCall.args[0][1]).be.deepEqual({ topic: 'status', payload: hc.status }, 'Status should be send:' + JSON.stringify(val));
             });
         });
 
@@ -276,7 +285,49 @@ describe("heater.spec.js", () => {
                 sandbox.restore
             });
 
-            it("onLogsRequest", (done) => {
+            it("_onStatusRequest", (done) => {
+                RED = helper.getMockedRED();
+                var heat = helper.getMockedHeaterControllerFaked(require('../nodes/heater/heater'))
+                var hc = new heat(RED, {
+                    group: 'someGroup',
+                    calendar: JSON.stringify(helper.calendar),
+                    topic: 'heaterStatus'
+                });
+                hc.status = { attribute: 'someAttributeValue' };
+                var retLogs = hc._onStatusRequest();
+                should(retLogs).be.Object('_onStatusRequest is not returning correct format');
+                should(retLogs).be.deepEqual({ status: hc.status }, '_onStatusRequest is not returning the status');
+                done();
+            });
+
+            it("_onConfigRequest", (done) => {
+                RED = helper.getMockedRED();
+                var heat = helper.getMockedHeaterControllerFaked(require('../nodes/heater/heater'))
+                var frontConfAttr = [
+                    'title',
+                    'topic',
+                    'logLength',
+                    'threshold',
+                    'calendar',
+                    'unit',
+                    'displayMode',
+                    'sliderMaxValue',
+                    'sliderMinValue',
+                    'sliderStep'
+                ];
+                var conf = {
+                    group: 'someGroup',
+                    calendar: JSON.stringify(helper.calendar),
+                    topic: 'heaterStatus',
+                };
+                var hc = new heat(RED, conf);
+                var retLogs = hc._onConfigRequest();
+                should(retLogs).be.Object('_onStatusRequest is not returning correct format');
+                should(_.keys(retLogs.config)).deepEqual(frontConfAttr, '_onStatusRequest is not returning the status');
+                done();
+            });
+
+            it("_onLogsRequest", (done) => {
                 RED = helper.getMockedRED();
                 var heat = helper.getMockedHeaterControllerFaked(require('../nodes/heater/heater'))
                 var hc = new heat(RED, {
@@ -285,11 +336,11 @@ describe("heater.spec.js", () => {
                     topic: 'heaterStatus'
                 });
                 hc.logs = ['test1', 'test2'];
-                var retLogs = hc.onLogsRequest();
-                should(retLogs).be.Object('onLogsRequest is not returning correct format');
-                should(retLogs.logs).be.Array('logs', 'onLogsRequest is not returning an array as logs');
-                should(retLogs.logs).be.deepEqual(hc.logs, 'onLogsRequest returned logs are not equal with sent logs');
-                should(retLogs.logs.length).be.equal(2, 'onLogsRequest is not returning entire log content');
+                var retLogs = hc._onLogsRequest();
+                should(retLogs).be.Object('_onLogsRequest is not returning correct format');
+                should(retLogs.logs).be.Array('logs', '_onLogsRequest is not returning an array as logs');
+                should(retLogs.logs).be.deepEqual(hc.logs, '_onLogsRequest returned logs are not equal with sent logs');
+                should(retLogs.logs.length).be.equal(2, '_onLogsRequest is not returning entire log content');
                 done();
             });
 
@@ -375,10 +426,15 @@ describe("heater.spec.js", () => {
                     payload: val
                 }, fakeSend);
                 fakeTimer.restore();
-                should(fakeSend.callCount).be.equal(1, 'Send function not called :' + JSON.stringify(val))
-                should(fakeSend.lastCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
-                should.deepEqual(fakeSend.lastCall.args[0][0], { topic: 'heaterStatus', payload: val < 20 ? 'on' : 'off' }, 'this.send first parameter is not correct msg object: ' + JSON.stringify(val));
-                should.deepEqual(fakeSend.lastCall.args[0][1], { topic: 'status', payload: initialStatus }, 'this.send second parameter is not correct msg object: ' + JSON.stringify(val));
+                should(fakeSend.callCount).be.equal(2, 'Send function not called :' + JSON.stringify(val))
+                should(fakeSend.firstCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
+                should(fakeSend.firstCall.args[0][0]).be.Object('Send is not called with correct state:' + JSON.stringify(val));
+                should(fakeSend.firstCall.args[0][0]).be.deepEqual({ topic: 'heaterStatus', payload: val < 20 ? 'on' : 'off' }, 'Send called with incorrect state:' + JSON.stringify(val));
+
+                should(fakeSend.secondCall.args[0]).be.Array('Send is not called with an array:' + JSON.stringify(val));
+                should(fakeSend.secondCall.args[0][0]).be.undefined('Send is called twice with heater state:' + JSON.stringify(val));
+                should(fakeSend.secondCall.args[0][1]).be.Object('Send is not called with correct status:' + JSON.stringify(val));
+                should(fakeSend.secondCall.args[0][1]).be.deepEqual({ topic: 'status', payload: initialStatus }, 'Send is not called with correct status:' + JSON.stringify(val));
             });
 
             var exceptions = [undefined, 1,

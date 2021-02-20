@@ -138,43 +138,67 @@ describe("uiNodes", () => {
         });
 
         it('Test input: event returns valid topics to be send to output', function (done) {
-            var val = [undefined, { topic: 'status', payload: { test: 'somePayload' } }]
-            var fakeFunc = sinon.stub().returns(val);
+            var resp = { someTopic: { test: 'somePayload' } };
+            var fakeFunc = sinon.stub().returns(resp);
             var sendFunc = sinon.fake();
             var doneCB = sinon.fake();
             uiNode.addEvent('event1', fakeFunc);
             uiNode._sendToFrontEnd = sinon.fake();
             uiNode.input({ topic: 'event1', payload: 'test' }, sendFunc, doneCB);
             should(fakeFunc.callCount).be.equal(1, 'Event not registered or not called');
-            should(fakeFunc.lastCall.args[0].topic).be.equal('event1', 'Event not registered or not called');
+            should(fakeFunc.firstCall.args[0].topic).be.equal('event1', 'Event not registered or not called');
             should(sendFunc.callCount).be.equal(1, 'Send function not called');
-            should(Array.isArray(sendFunc.firstCall.args[0])).be.True('Should send an array');
-            should(sendFunc.lastCall.args[0]).be.deepEqual([undefined, undefined, undefined], 'Output expected is an array of undefined');
+            should(sendFunc.firstCall.args[0]).be.Array('Should send an array');
+            should(sendFunc.firstCall.args[0]).be.deepEqual([undefined, { topic: 'someTopic', payload: resp.someTopic }], 'Output should not have any heaterStatus');
             should(doneCB.callCount).be.equal(1, 'Input CallBack is not called');
             should(uiNode._sendToFrontEnd.callCount).be.equal(1, 'front end function not called');
             done();
         });
 
         it('Test input: with no done function', function (done) {
-            var val = [undefined, { topic: 'status', payload: { test: 'somePayload' } }]
+            var val = { someTopic: { test: 'somePayload' } };
             var fakeFunc = sinon.stub().returns(val);
             var sendFunc = sinon.fake();
             uiNode.addEvent('event1', fakeFunc);
             uiNode._sendToFrontEnd = sinon.fake();
             uiNode.input({ topic: 'event1', payload: 'test' }, sendFunc);
+
             should(fakeFunc.callCount).be.equal(1, 'Event not registered or not called');
-            should(fakeFunc.lastCall.args[0].topic).be.equal('event1', 'Event not registered or not called');
+            should(fakeFunc.firstCall.args[0].topic).be.equal('event1', 'Event not registered or not called');
             should(sendFunc.callCount).be.equal(1, 'Send function not called');
-            should(Array.isArray(sendFunc.firstCall.args[0])).be.True('Should send an array');
-            should(sendFunc.lastCall.args[0]).be.deepEqual([undefined, undefined, undefined], 'Output expected is an array of undefined');
+            should(sendFunc.firstCall.args[0]).be.Array('Should send an array');
+            should(sendFunc.firstCall.args[0]).be.deepEqual([undefined, { topic: 'someTopic', payload: val.someTopic }], 'Output should not have any heaterStatus');
             should(uiNode._sendToFrontEnd.callCount).be.equal(1, 'front end function not called');
             done();
         });
 
-        it('Test _createClientConfig: returns only config accepted by front-end', function (done) {
+        it('Test _createClientConfig: returns only configs set in node properties', function (done) {
             uiNode.config = helper.configEx;
-            var acceptedKeys = ['title', 'calendar', 'unit', 'sliderMaxValue', 'sliderMinValue', 'sliderStep'];
-            var configReturn = uiNode._createClientConfig();
+            const acceptedKeys = [
+                'title',
+                'topic',
+                'logLength',
+                'threshold',
+                'calendar',
+                'unit',
+                'displayMode',
+                'sliderMaxValue',
+                'sliderMinValue',
+                'sliderStep'
+            ];
+            var configReturn = uiNode.filterConfig({
+                'title': 'aTitle',
+                'topic': 'aTopic',
+                'logLength': -5,
+                'threshold': 0.5,
+                'calendar': 'some calendar',
+                'unit': 'K',
+                'displayMode': 'aDisplayMode',
+                'sliderMaxValue': 10,
+                'sliderMinValue': 100,
+                'sliderStep': 10,
+                'someOtherThing': 'withSomeOtherValue'
+            });
             should(configReturn).be.Object('Is not returning an object');
             should(_.keys(configReturn)).be.deepEqual(acceptedKeys, 'front-end config is not a valid object');
             done();
@@ -185,10 +209,11 @@ describe("uiNodes", () => {
             LOCAL_RED.server = helper.startHTTPServer();
             var config = {
                 title: 'test',
+                displayMode: 'buttons',
                 calendar: JSON.stringify(helper.calendar)
             }
             var UINode = helper.getNodeUI();
-            uiNode = new UINode(LOCAL_RED, Object.assign({}, config, { displayMode: 'buttons' }));
+            uiNode = new UINode(LOCAL_RED, config);
             uiNode.status = {
                 currentHeaterStatus: { temp: 22 },
                 nextSchedule: { temp: 20 },
@@ -265,8 +290,8 @@ describe("uiNodes", () => {
         });
 
         itParam('Test _sendOutPut: should send message to next node', [
-            { input: { status: { test: 'someStatus' } } },
             { input: { heaterStatus: 'on' } },
+            { input: { status: { test: 'someStatus' } } },
             { input: { logs: { logs: 'someLogs' } } },
             { input: { logs: { logs: 'someLogs' }, status: { test: 'someStatus' } } },
             { input: { status: { test: 'someStatus' }, heaterStatus: 'on' } },
@@ -276,28 +301,26 @@ describe("uiNodes", () => {
             var UINode = helper.getNodeUI();
             var fakeSend = sinon.fake();
             uiNode = new UINode(RED, { id: 'dummyID', group: 'aGroup', displayMode: 'buttons', topic: 'aTopic' });
-            uiNode._sendOutPut(val.input, fakeSend);
+            uiNode._sendOutPut(JSON.parse(JSON.stringify(val.input)), fakeSend);
 
-            should(fakeSend.callCount).be.equal(1, 'Send is not call: ' + JSON.stringify(val));
-            should(fakeSend.firstCall.args[0]).be.Array('Send method not called with an array');
+            should(fakeSend.callCount).be.equal(_.keys(val.input).length, 'Send is not call: ' + JSON.stringify(val));
             var cntTests = 0;
+            var calls = fakeSend.getCalls();
+            var hasHeater = false;
             if (val.input.heaterStatus) {
-                should(fakeSend.firstCall.args[0][0]).be.Object('Heater status is not an object: ' + JSON.stringify(val));
-                should(fakeSend.firstCall.args[0][0].topic).be.equal('aTopic', 'heaterStatus has a wrong topic: ' + JSON.stringify(val));
-                should(fakeSend.firstCall.args[0][0].payload).be.equal(val.input.heaterStatus, 'send is not called with correct heater status: ' + JSON.stringify(val));
                 cntTests++;
+                should(fakeSend.firstCall.args[0]).be.Array('Heater status is not an object: ' + JSON.stringify(val));
+                should(fakeSend.firstCall.args[0]).be.deepEqual([{ topic: 'aTopic', payload: val.input.heaterStatus }], 'Heater status is not an object: ' + JSON.stringify(val));
+                delete val.input.heaterStatus;
+                hasHeater = true;
             }
-            if (val.input.status) {
-                should(fakeSend.firstCall.args[0][1]).be.Object('status is not an object: ' + JSON.stringify(val));
-                should(fakeSend.firstCall.args[0][1].topic).be.equal('status', 'Status has a wrong topic: ' + JSON.stringify(val));
-                should(fakeSend.firstCall.args[0][1].payload).be.deepEqual(val.input.status, 'send is not called with correct status: ' + JSON.stringify(val));
-                cntTests++;
-            }
-            if (val.input.logs) {
-                should(fakeSend.firstCall.args[0][2]).be.Object('logs is not an object: ' + JSON.stringify(val));
-                should(fakeSend.firstCall.args[0][2].topic).be.equal('logs', 'Logs has a wrong topic: ' + JSON.stringify(val));
-                should(fakeSend.firstCall.args[0][2].payload).be.deepEqual(val.input.logs, 'logs is not called with correct content: ' + JSON.stringify(val));
-                cntTests++;
+            var attr = _.keys(val.input);
+            for (var i = 0; i < attr.length; i++) {
+                var key = attr[i];
+                var call = calls[hasHeater ? i + 1 : i];
+                cntTests++
+                should(call.args[0]).be.Array('Send argument should be an array');
+                should(call.args[0]).be.deepEqual([undefined, { topic: key, payload: val.input[key] }], 'Send argument should be an array');
             }
             should(cntTests).be.greaterThan(0, 'No checked performed for this test');
         });
