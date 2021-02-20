@@ -81,7 +81,7 @@ var exp = {
             "23:59": 19
         }
     },
-    getMockedRED: function (params) {
+    getMockedRED: function (withoutDoneMethod) {
         var Red = {
             server: {
                 on: function () { }
@@ -98,7 +98,9 @@ var exp = {
         var isDarkStub = sinon.stub().returns(false);
         var getThemeStub = sinon.stub().returns({});
         var constrUI = sinon.stub();
-        addWidgetStub.returns(sinon.fake());
+        if (!withoutDoneMethod) {
+            addWidgetStub.returns(sinon.fake());
+        }
         constrUI.returns({ addWidget: addWidgetStub, isDark: isDarkStub, getTheme: getThemeStub });
         Red.require.withArgs('node-red-dashboard').returns(constrUI);
         return Red;

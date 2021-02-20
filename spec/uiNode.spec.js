@@ -274,6 +274,7 @@ describe("uiNodes", () => {
         });
 
         it('Test _close: should call onClose if exists', function (done) {
+            var RED = helper.getMockedRED(true);
             var WS = helper.getWsMocked();
             var UINode = helper.getNodeUI(WS);
             var id = 'dummyID';
