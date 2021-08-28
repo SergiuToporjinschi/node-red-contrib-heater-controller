@@ -191,10 +191,10 @@ class UINode {
         if (typeof (resp) === 'undefined') return;
 
         this._sendToFrontEnd(resp); //send messages to front-end if any
-        this._sendOutPut(resp, send); //send message to back-end if any
+        this._sendOutPut(resp, send, msg._msgid); //send message to back-end if any
     }
 
-    _sendOutPut(msg, send) {
+    _sendOutPut(msg, send, id) {
         if (typeof (msg) !== 'object') return;
         var heaterStatus = typeof (msg.heaterStatus) !== 'undefined' ? { topic: this.config.topic, payload: msg.heaterStatus } : undefined;
         delete msg.heaterStatus;
@@ -202,7 +202,9 @@ class UINode {
             send([heaterStatus]);
         }
         for (var i in msg) {
-            send([undefined, {topic: i, payload: msg[i]}]);
+            var message = { topic: i, payload: msg[i] };
+            if (id) { message._msgid = id; }
+            send([undefined, message]);
         }
     }
 
