@@ -74,24 +74,24 @@ Input example
 Output on `info` example
 ```json
 {
-  "topic":"status", //same input topic
+  "topic":"status", --same input topic
   "payload":{
-    "currentTemp": 10, //current room temperature (ref no.2)
-    "targetValue": 20, //current target temperature (ref no.1)
-    "isUserCustom": false, //is a current target user temperature considered (ref no.1 and 9)
-    "isLocked": false,  //is locked to a custom target value (ref no.8)
-    "userTargetValue": 20, //last user target temperature (ref no.1)
-    "currentSchedule": { //current schedule from calendar (ref no.5)
+    "currentTemp": 10, --current room temperature (ref no.2)
+    "targetValue": 20, --current target temperature (ref no.1)
+    "isUserCustom": false, --is a current target user temperature considered (ref no.1 and 9)
+    "isLocked": false,  --is locked to a custom target value (ref no.8)
+    "userTargetValue": 20, --last user target temperature (ref no.1)
+    "currentSchedule": { --current schedule from calendar (ref no.5)
       "time": "08:00",
       "day": "Saturday",
       "temp": 20
     },
-    "nextSchedule": { //next schedule from calendar (ref no.6)
+    "nextSchedule": { --next schedule from calendar (ref no.6)
       "time": "20:00",
       "day": "Saturday",
       "temp": 22
     },
-    "currentHeaterStatus": "on", //current heater status (ref no.3)
+    "currentHeaterStatus": "on", --current heater status (ref no.3)
     "time":"9/4/2021, 1:47:27 PM"
   }
 }
@@ -108,8 +108,8 @@ Input example
 Output on `info` example
 ```json
 {
-  "topic":"logs",  //same input topic
-  "payload":[ //an array with the last actions
+  "topic":"logs",  --same input topic
+  "payload":[ --an array with the last actions
     {
       "currentTemp": 10,
       "targetValue": 20,
@@ -123,8 +123,8 @@ Output on `info` example
         "day": "Saturday",
         "temp": 22
       },
-      "currentHeaterStatus": "on", //heater status when the action was triggered (ref no.3)
-      "time":"9/4/2021, 1:47:27 PM" //execution time
+      "currentHeaterStatus": "on", --heater status when the action was triggered (ref no.3)
+      "time":"9/4/2021, 1:47:27 PM" --execution time
     }
   ]
 }
