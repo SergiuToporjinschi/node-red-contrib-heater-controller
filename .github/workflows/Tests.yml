@@ -5,21 +5,21 @@ name: Tests
 
 on:
   push:
-    paths: 
+    paths:
       - '**.js'
       - '**.css'
       - '**.json'
       - '**.html'
       - '**.yml'
-    branches: [ Refactoring ]
+    branches: [ Master ]
   pull_request:
-    paths: 
+    paths:
       - '**.js'
       - '**.css'
       - '**.json'
       - '**.html'
       - '**.yml'
-    branches: [ Refactoring ]
+    branches: [ Master ]
 
 jobs:
   build:
@@ -41,14 +41,14 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: npm run test-cov
-      
+
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Codacy Coverage Reporter
-      if: runner.os == 'Linux' 
+      if: runner.os == 'Linux'
       uses: codacy/codacy-coverage-reporter-action@0.2.0
       with:
         project-token: ${{ secrets.CODACY_TOKEN }}
