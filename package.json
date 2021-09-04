@@ -13,7 +13,7 @@
   "description": "A dashboard ui interface node for controlling a heater.",
   "homepage": "https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller#readme",
   "scripts": {
-    "start": "nodemon C:/Users/Sergi/AppData/Roaming/npm/node_modules/node-red/red.js",
+    "start": "nodemon %USERPROFILE%/AppData/Roaming/npm/node_modules/node-red/red.js",
     "test": "mocha",
     "test-cov": "nyc npm run test",
     "test-dev": "nodemon --exec \"mocha\""
