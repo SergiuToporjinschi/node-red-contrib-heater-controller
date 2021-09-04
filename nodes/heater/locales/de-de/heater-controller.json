@@ -14,7 +14,7 @@
          "daysType": "Tage",
          "changesType": "Änderungen",
          "logTitle": "Protokolliert",
-         "slider": "Schieberegler",
+         "slider": "Schieberegler/Tasten",
          "min": "Min",
          "max": "Max",
          "step": "Schrittweite",
@@ -23,8 +23,7 @@
          "fahrenheitUnit": "Fahrenheit",
          "kelvinUnit": "Kelvin",
          "hysteresis": "Hysterese",
-         "upThreshold": "Oberer Schwellwert",
-         "lowerThreshold": "Unterer Schwellwert",
+         "threshold": "Schwellwert",
          "calendar": "Kalender"
       },
       "placeholder": {

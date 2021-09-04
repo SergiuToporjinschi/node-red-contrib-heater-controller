@@ -1,0 +1,39 @@
+<div class='heater-buttons wrapper' layout="column" flex layout-align="center stretch" ng-init='init()'>
+    <p ng-if="config.title" class="title">{{config.title}}</p>
+    <div ng-show='typeof(config) === "undefined"' layout="row" layout-sm="column" layout-align="space-around">
+        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+    </div>
+    <div ng-show='typeof(config) !== "undefined"' class="content">
+        <div class="info-column">
+            <div class="info-item" ng-class="!status.currentTemp ? 'missing' : '' " title="Current temperature">
+                <i class="fa" ng-class="status.currentTemp ? 'fa-thermometer-half' : 'fa-thermometer-empty'" aria-hidden="true"></i>{{status.currentTemp ? (status.currentTemp | number:1) : "--.-"}}&deg;{{config.unit}}
+            </div>
+            <div class="info-item" title="Current scheduled temperature">
+                <i class="fa fa-calendar-o" aria-hidden="true"></i>{{status.currentSchedule.temp}}&deg;{{config.unit}}
+            </div>
+            <div class="info-item" title="Next scheduled temperature">
+                <i class="fa fa-calendar-plus-o" aria-hidden="true"></i>{{status.nextSchedule.temp}}&deg;{{config.unit}}
+            </div>
+            <div class="info-item missing" ng-class="!status.currentTemp ? 'missing' : '' " title="{{!status.currentTemp?'Calendar is missing' :'Current schedule'}}">
+                <i aria-hidden="true" class="fa fa-calendar"></i> {{!status.currentTemp ? 'Missing!!!' : status.currentSchedule.day}}
+            </div>
+            <div class="info-item" title="Current status">
+                <i title="Heater status" class="fa fa-fire icon" ng-class="status.currentHeaterStatus == 'on' ? 'iconTrue' : 'iconFalse'" aria-hidden="true"></i> State
+            </div>
+            <div class="info-item">
+                <i ng-click='isLocked($event)' ng-class="status.isLocked ? 'fa-lock' : 'fa-unlock-alt'" class="fa no-select link-pointer" style="font-size: 2em; color:#0094ce"
+                    title="Locking on current target (isLocked)"></i>
+                <i ng-click='toSchedule($event)' class="fa fa-rotate-left no-select link-pointer" style="font-size: 1.5em; color:#0094ce" title="Reset target value to current schedule (isUserCustomFalse)"></i>
+            </div>
+        </div>
+        <div class="control-column">
+            <md-button ng-click="buttonsChangeTemp('+')" md-no-ink class="md-primary control-button" ng-disabled="buttonsDisabled('+')"><i class="fa fa-chevron-up"></i></md-button>
+            <div title="Current target (user value or calendar). Double-click for reset." ng-class="{'user-mode': status.isUserCustom}" class="target-temp temp no-select link-pointer" md-swipe-left="toSchedule($event)"
+                md-swipe-right="toSchedule($event)" ng-dblclick="toSchedule($event)">
+                {{status.targetValue ? (status.targetValue | number:1) : "--.-"}}&deg;{{config.unit}}
+            </div>
+            <md-button ng-click="buttonsChangeTemp('-')" md-no-ink class="md-primary control-button" ng-disabled="buttonsDisabled('-')" style="margin:0"><i class="fa fa-chevron-down"></i>
+            </md-button>
+        </div>
+    </div>
+</div>

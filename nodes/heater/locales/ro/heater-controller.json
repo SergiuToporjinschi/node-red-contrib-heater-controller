@@ -14,7 +14,7 @@
             "daysType": "Zile",
             "changesType": "Changes",
             "logTitle": "Istoric",
-            "slider": "Slider",
+            "slider": "Slider/Butoane",
             "min": "Min",
             "max": "Max",
             "step": "Step",
@@ -23,8 +23,7 @@
             "fahrenheitUnit": "Fahrenheit",
             "kelvinUnit": "Kelvin",
             "hysteresis": "Hystereza",
-            "upThreshold": "Limita superioara",
-            "lowerThreshold": "Limita inferioara",
+            "threshold": "Limita histereza",
             "calendar": "Calendar"
         },
         "placeholder": {

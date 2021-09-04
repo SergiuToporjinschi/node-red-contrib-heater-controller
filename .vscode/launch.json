@@ -5,26 +5,38 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Run",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "sourceMaps": false,
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "start"
+            ]
+        },
+        {
+            "name": "UnitTest",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "sourceMaps": false,
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "test-dev"
+            ]
+        },
+        {
+            "name": "Attach by Process ID",
             "type": "node",
             "request": "attach",
-            "name": "Attach by Process ID",
             "processId": "${command:PickProcess}",
             "restart": true,
             "protocol": "inspector"
             // "port": 9229
             // "processId": 9228
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Jasmine Individual Test",
-            "program": "${workspaceRoot}/node_modules/mocha/bin/mocha",
-            "args": [
-                "${workspaceRoot}\\spec\\test.spec.js"
-            ],
-            "env": {
-                "NODE_PATH": "."
-            }
         }
     ]
 }
