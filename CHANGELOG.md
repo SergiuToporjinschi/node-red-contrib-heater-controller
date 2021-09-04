@@ -1,7 +1,11 @@
-### v3.0.0 (???? NOT YET Bear with me)
+### v3.0.0 (September 4, 2021)
 *  Structural changes;
 *  Migration to ECMA6
 *  isUserCustomLocked becomes isLocked;
+*  One single message for all `userConfig`
+*  Supports buttons interface;
+*  Different output points for controlling the heater and getting node info
+*  Exception can be caught with catch node
 ### v2.0.1 (January 29, 2020)
 *  Adding optional title [Suggestion: UI element to identify heater / add heater name #35](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/issues/35);
 ### v2.0.0 (January 19, 2020)
