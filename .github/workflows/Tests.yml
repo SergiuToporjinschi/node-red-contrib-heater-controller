@@ -11,7 +11,7 @@ on:
       - '**.json'
       - '**.html'
       - '**.yml'
-    branches: [ Master ]
+    branches: [ master ]
   pull_request:
     paths:
       - '**.js'
@@ -19,7 +19,7 @@ on:
       - '**.json'
       - '**.html'
       - '**.yml'
-    branches: [ Master ]
+    branches: [ master ]
 
 jobs:
   build:
