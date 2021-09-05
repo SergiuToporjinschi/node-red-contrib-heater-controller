@@ -38,7 +38,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm install
+    - run: npm install --global windows-build-tools@4.0.0
     - run: npm run build --if-present
     - run: npm run test-cov
     
