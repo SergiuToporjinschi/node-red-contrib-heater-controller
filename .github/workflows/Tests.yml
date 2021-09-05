@@ -39,7 +39,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: install windows-build-tools
-      if: runner.os != 'Linux' && runner.os == 15
+      if: runner.os != 'Linux' && runner.os == "15.x"
       run: npm install --global --production windows-build-tools
     - run: |
         npm ci
