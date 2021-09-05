@@ -23,9 +23,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
         node-version:  [12.x, 14.x, 15.x, 16.x]
@@ -44,7 +42,7 @@ jobs:
         
     - name: installForWindows
       if: runner.os != 'Linux'
-    - run: |
+      run: |
         npm install --global --no-optional windows-build-tools@5.2.2 --vs2015
         npm install
         npm run build --if-present
@@ -52,7 +50,7 @@ jobs:
         
     - name: installForLinux
       if: runner.os == 'Linux'
-    - run: |
+      run: |
         npm ci
         npm run build --if-present
         npm run test-cov
