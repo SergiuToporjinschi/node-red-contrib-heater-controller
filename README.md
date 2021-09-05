@@ -14,9 +14,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/SergiuToporjinschi/node-red-contrib-heater-controller/badge.svg?branch=master&service=github)](https://coveralls.io/github/SergiuToporjinschi/node-red-contrib-heater-controller?branch=Refactoring&service=github)
 # node-red-contrib-heater-controller
 ```diff
--Version 3.0.0 will work on:  
--NodeJS: 16.x 
--node-red: 2.0.6
+-Requirements for version 3.0.0:
+-NodeJS: 16.x Minimum version 12.x
+-node-red: 2.0.6 Minimum version 1.x
 ```
 A dashboard ui interface node for controlling a heater;
 
