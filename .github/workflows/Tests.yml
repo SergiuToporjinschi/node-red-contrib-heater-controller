@@ -42,6 +42,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm config set python python2.7
+    - run: npm config set msvs_version 2015 –global
     - run: npm install --global --no-optional windows-build-tools --vs2015
       if: runner.os != 'Linux'
     - run: npm install
