@@ -13,6 +13,10 @@
 [![Tests](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/workflows/Tests/badge.svg)](https://github.com/SergiuToporjinschi/node-red-contrib-heater-controller/actions)
 [![Coverage Status](https://coveralls.io/repos/github/SergiuToporjinschi/node-red-contrib-heater-controller/badge.svg?branch=master&service=github)](https://coveralls.io/github/SergiuToporjinschi/node-red-contrib-heater-controller?branch=Refactoring&service=github)
 # node-red-contrib-heater-controller
+**<span style="color:red">NOTE:</span>
+<span style="color:red">Version 3.0.0 will work on:
+NodeJS: 16
+node-red: 2.0.6**</span>
 A dashboard ui interface node for controlling a heater;
 
 ## Interface
