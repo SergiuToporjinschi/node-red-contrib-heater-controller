@@ -22,7 +22,8 @@ on:
     branches: [ master ]
 
 jobs:
-  b${{ matrix.node-version }}Win:
+  buildWinows:
+    name: Windows${{ matrix.node-version }}
     runs-on: windows-latest
     strategy:
       fail-fast: false
@@ -50,7 +51,8 @@ jobs:
         npm run test-cov
 
 
-  b${{ matrix.node-version }}Linux:
+  buildLinux:
+    name: Linux${{ matrix.node-version }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
