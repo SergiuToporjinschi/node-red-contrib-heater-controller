@@ -22,7 +22,7 @@ on:
     branches: [ master ]
 
 jobs:
-  buildWinows:
+  buildWindows:
     name: Windows${{ matrix.node-version }}
     runs-on: windows-latest
     strategy:
@@ -34,12 +34,12 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: '2.7'
-        
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    
+
     - name: installForWindows
       shell: cmd
       run: |
@@ -64,12 +64,12 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: '2.7'
-        
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-       
+
     - name: installForLinux
       run: |
         npm ci
