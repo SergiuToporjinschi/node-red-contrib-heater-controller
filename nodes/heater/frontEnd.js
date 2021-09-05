@@ -2,12 +2,12 @@
 'use strict';
 const displayModeFiles = {
     buttons: {
-        html: './nodes/heater/frontEndButtons.html',
-        css: './nodes/heater/frontEndButtons.css'
+        html: '/frontEndButtons.html',
+        css: '/frontEndButtons.css'
     },
     slider: {
-        html: './nodes/heater/frontEndSlider.html',
-        css: './nodes/heater/frontEndSlider.css'
+        html: '/frontEndSlider.html',
+        css: '/frontEndSlider.css'
     }
 }
 
@@ -18,8 +18,8 @@ class FrontEnd {
     getHTML(displayMode, isDark, theme) {
         //TODO take in consideration isDark theme;
         var fs = require('fs');
-        var cssContent = fs.readFileSync(displayModeFiles[displayMode || 'slider'].css, 'utf8');
-        var htmlContent = fs.readFileSync(displayModeFiles[displayMode || 'slider'].html, 'utf8');
+        var cssContent = fs.readFileSync(__dirname + displayModeFiles[displayMode || 'slider'].css, 'utf8');
+        var htmlContent = fs.readFileSync(__dirname + displayModeFiles[displayMode || 'slider'].html, 'utf8');
         return '<style>' + cssContent + '</style>' + htmlContent;
     }
 
