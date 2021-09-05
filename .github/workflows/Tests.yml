@@ -44,7 +44,9 @@ jobs:
       if: runner.os != 'Linux'
       run: |
         npm install --global --no-optional windows-build-tools@5.2.2 --vs2015
+        npm audit fix
         npm install
+        npm audit fix
         npm run build --if-present
         npm run test-cov
         
