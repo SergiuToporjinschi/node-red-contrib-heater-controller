@@ -60,7 +60,7 @@
   font-weight: bold;
 }
 
-.heater-slider md-slider .md-track {
+.heater-slider .md-slider .md-track {
   background-color: gray;
 }
 
