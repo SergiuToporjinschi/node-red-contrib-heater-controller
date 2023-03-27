@@ -31,6 +31,7 @@
             <div>
                 <md-slider md-discrete ng-disabled='!status || !status.targetValue || !status.currentTemp' ng-change="userTargetChanged($event)" class="md-primary" ng-model="status.userTargetValue"
                     step="{{config.sliderStep}}" min="{{config.sliderMinValue}}" max="{{config.sliderMaxValue}}" title="Current user target temperature (userTargetValue)">
+                </md-slider>
             </div>
         </div>
     </div>

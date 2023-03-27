@@ -1,5 +1,5 @@
 .heater-slider.wrapper {
-  padding: 0.5em;
+  padding: 0em;
 }
 
 .heater-slider p.title {
@@ -36,7 +36,7 @@
 
 .heater-slider .current-cal-temp {
   color: #0094ce;
-  font-size: 1.5em;
+  font-size: large;
   font-weight: bold;
 }
 
@@ -56,7 +56,7 @@
 
 .heater-slider .temp {
   color: #0094ce;
-  font-size: 5em;
+  font-size: 4em;
   font-weight: bold;
 }
 
