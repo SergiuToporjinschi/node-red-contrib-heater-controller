@@ -55,12 +55,12 @@ class Heater extends UINode {
         this.status = {
             'currentTemp': undefined, //Current room temperature
             'targetValue': undefined, //Target temperature for the room
-            'isUserCustom': undefined, //Is targetValue a user custom value?
-            'isLocked': undefined, //Is targetValue locked (locker is true)
+            'isUserCustom': false, //Is targetValue a user custom value?
+            'isLocked': false, //Is targetValue locked (locker is true)
             'userTargetValue': undefined, //Target temperature set by user
             'currentSchedule': undefined, //Current target temperature from scheduler for this moment
             'nextSchedule': undefined, //Next target temperature from scheduler for next change
-            'currentHeaterStatus': undefined, //Is heater running?
+            'currentHeaterStatus': "off", //Is heater running?
             'time': new Date().toLocaleString()
         }
         this.context().set('status', this.status);
@@ -255,7 +255,7 @@ class Heater extends UINode {
         var forced_ByScheduler = this.oldStatus.currentTemp === undefined;
 
         //Schedule has been changed but the targetTemperature is locked, only currentTemp can change the status
-        //I know that I could merge those if's but I want to keep it very simple
+        //I know that I could merge those if's, but I want to keep it very simple
         if (!forced_ByScheduler && this.status.isLocked) {
             this.status.targetValue = this.status.userTargetValue;
             return this.calculateStatus(this.status.targetValue);
@@ -270,14 +270,13 @@ class Heater extends UINode {
         //Schedule has been changed
         if (forced_ByScheduler || scheduleChanged) {
             this.status.targetValue = this.status.currentSchedule.temp;
+            this.status.userTargetValue = this.status.currentSchedule.temp;
             var heaterNewStatus = this.calculateStatus(this.status.targetValue);
-            if (heaterNewStatus !== this.oldStatus.currentHeaterStatus) {
-                this.status.isUserCustom = false;
-            }
+            this.status.isUserCustom = false;
             return heaterNewStatus;
         }
 
-        //if no other chases are reached the it will be user custom value else scenario should not exits
+        //if no other chases are reached then it will be user custom value else scenario should not exist
         if (this.status.isUserCustom) {
             this.status.targetValue = this.status.userTargetValue;
             return this.calculateStatus(this.status.targetValue);
